@@ -1,6 +1,6 @@
 import Dynamsoft from "../Dynamsoft";
 import React from 'react';
-import './BarcodeScanner.css';
+import '../style/BarcodeScanner.css';
 
 class BarcodeScanner extends React.Component {
     constructor(props){

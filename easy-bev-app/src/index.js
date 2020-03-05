@@ -1,5 +1,6 @@
 import index from "./js/index";
-import Qrbutton from "./components/Qrbutton";
+import Cart from "./components/Cart";
+
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
@@ -11,7 +12,7 @@ import ReactDOM from 'react-dom';
 const routing = (
     <Router>
         <div>
-            <Route exact path="/" component={Qrbutton} />
+            <Route exact path="/" component={Cart} />
             <Route path="/login" component={SignIn} />
             <Route path="/signup" component={SignUp} />
 
