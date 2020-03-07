@@ -1,7 +1,8 @@
 import Dynamsoft from "../Dynamsoft";
 import React from 'react';
 import BarcodeScanner from './BarcodeScanner';
-
+import Button from "@material-ui/core/Button";
+import Footer from "./Footer";
 class Cart extends React.Component {
     constructor(props){
         super(props);
@@ -21,14 +22,19 @@ class Cart extends React.Component {
     //         this.reader.destroy();
     //     }
     // }
-    render() {
-        return (
-            <div id = "cart">
-                { !this.state.bShowScanner ? (                <button onClick={this.showScanner}>Scan</button>
+// {/*<button id = "scanButton" onClick={this.showScanner}>Scan</button>*/}
 
-                ) : (
-                    <div>
+render() {
+        return (
+            <div id = "cart" style={style.cart}>
+                { !this.state.bShowScanner ? (
+                    <Button onclick={this.showScanner} variant="contained">Default</Button>
+
+
+                    ) : (
+                    <div style={style.cameraViewContainer}>
                         <button id = "scan" onClick={this.hideScanner}>Cancel</button>
+
                         <BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>
                     </div>
                 ) }
@@ -40,6 +46,7 @@ class Cart extends React.Component {
                         </p>
                     ) }
                 </div>
+                <Footer></Footer>
             </div>
         );
     }
@@ -96,7 +103,18 @@ const style = {
         maxHeight: "200px",
         overflowY: "auto",
         resize: "both"
+    },
+    cart:{
+        width:"100%",
+        position:"absolute",
+        top:"25%",
+    },
+    cameraViewContainer:{
+        position:"absolute",
+        width:"100%",
+        height:"100%",
     }
+
 
 }
 
