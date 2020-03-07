@@ -5,6 +5,9 @@
   "dependencies": {
     "@material-ui/core": "^4.9.4",
     "@material-ui/icons": "^4.9.1",
+    "any-db": "^2.2.1",
+    "any-db-sqlite3": "^2.1.4",
+    "bcrypt": "^4.0.1",
     "dynamsoft-javascript-barcode": "^7.3.0-v2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -32,5 +35,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
