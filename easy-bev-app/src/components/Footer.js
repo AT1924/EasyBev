@@ -19,8 +19,20 @@ class Footer extends React.Component {
         }
     }
     update(whereto){
+        console.log("UPDATE", whereto);
         this.state = {chosen: whereto}
+        console.log("STATE", this.state)
     }
+
+    getColor(which){
+        if (which === this.state.chosen){
+            return "primary";
+        }else{
+            return "secondary";
+        }
+
+    }
+
 
     render() {
         return (<div id = "footer">
@@ -28,10 +40,10 @@ class Footer extends React.Component {
                 <Grid item xs={12}>
                     <Grid container direction="row" justify="center" alignItems="flex-end" spacing={2}>
 
-                        <IconButton onclick={this.update("FEED")} color = "primary"><LibraryBooksOutlinedIcon/></IconButton>
-                        <IconButton onclick={this.update("CART")} color = "secondary"><ShoppingCartIcon/></IconButton>
-                        <IconButton onclick={this.update("ORDERS")} color = "secondary"><AssignmentIcon/></IconButton>
-                        <IconButton onclick={this.update("MESSAGE")} color = "secondary"><ChatIcon/></IconButton>
+                        <IconButton onClick={() => {this.state = {chosen:"FEED"}}} color = {this.state.chosen === "FEED"? "primary":"secondary"}><LibraryBooksOutlinedIcon/></IconButton>
+                        <IconButton onClick={() => {this.state = {chosen:"CART"}}} color = {this.state.chosen === "CART"? "primary":"secondary"}><ShoppingCartIcon/></IconButton>
+                        <IconButton onClick={() => {this.state = {chosen:"ORDERS"}}} color = {this.state.chosen === "ORDERS"? "primary":"secondary"}><AssignmentIcon/></IconButton>
+                        <IconButton onClick={() => {this.state = {chosen:"MESSAGE"}}} color = {this.state.chosen === "MESSAGE"? "primary":"secondary"}><ChatIcon/></IconButton>
 
                     </Grid>
                 </Grid>
@@ -50,6 +62,6 @@ const style = {
     root: {
         flexGrow: 1,
     }
-}
+};
 
 export default Footer;
