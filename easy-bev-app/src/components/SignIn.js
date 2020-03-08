@@ -14,6 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Tabs from "@material-ui/core/Tabs";
+import Paper from "@material-ui/core/Paper";
+import Tab from "@material-ui/core/Tab";
 
 function Copyright() {
     return (
@@ -49,8 +52,9 @@ const styles = theme => ({
 });
 
 class SignIn extends React.Component {
+
     state = {
-        email: '', password: '', error: false, errorMsg: '', redirect: false,
+        email: '', password: '', error: false, errorMsg: '', redirect: false, type: "merchants",
     };
 
     signIn = async e => {
@@ -60,7 +64,8 @@ class SignIn extends React.Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ type:"distributors", email: this.state.email, password: this.state.password }),
+
+            body: JSON.stringify({type:this.state.type, email: this.state.email, password: this.state.password }),
         });
         const body = await response.json();
         console.log(body);
@@ -80,16 +85,28 @@ class SignIn extends React.Component {
         return false;
     };
 
+
     handleChange = name => (event) => {
         this.setState({ [name]: event.target.value });
     };
+
+    handle = () => (event) => {
+        if (this.state.type === "distributor") {
+            this.setState({ type: "merchants" });
+            console.log("merchants");
+        } else {
+            this.setState({ type: "distributors" });
+            console.log("dist");
+        }
+    };
+
 
     render() {
         const { classes } = this.props;
         return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
-                <div className={classes.paper}>
+                <div className={classes.paper} >
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -97,6 +114,17 @@ class SignIn extends React.Component {
                         Sign in
                     </Typography>
                     <form className={classes.form} noValidate onSubmit={this.signIn}>
+                        <Paper square>
+                            <Tabs
+                                value={this.state.type}
+                                indicatorColor="primary"
+                                textColor="primary"
+                                onChange={this.handle()}
+                            >
+                                <Tab label="Merchant" id='merchant' value="merchant" />
+                                <Tab label="Distributor" id='dist' value="distributor" />
+                            </Tabs>
+                        </Paper>
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -125,6 +153,9 @@ class SignIn extends React.Component {
                             control={<Checkbox value="remember" color="primary" />}
                             label="Remember me"
                         />
+
+
+
                         <Button
                             type="submit"
                             fullWidth
@@ -134,6 +165,8 @@ class SignIn extends React.Component {
                         >
                             Sign In
                         </Button>
+
+                            <Grid/>
                         <Grid container>
                             {/*<Grid item xs>*/}
                             {/*    <Link href="#" variant="body2">*/}
