@@ -1,30 +1,37 @@
 const express = require('express');
+var session = require('express-session');
+
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const app = express();
-const port = process.env.PORT || 8080;
+const deasync = require('deasync');
 
+const port = process.env.PORT || 8080;
+const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
 
 
 const CREATE_DISTRIBUTORS =
     'CREATE TABLE Distributors   (\
         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,\
-        name TEXT NOT NULL UNIQUE,\
+        name TEXT NOT NULL,\
+        email TEXT NOT NULL UNIQUE ,\
         password TEXT NOT NULL,\
         meta TEXT );';
 
 const CREATE_MERCHANTS =
     'CREATE TABLE  Merchants   (\
      id INTEGER PRIMARY KEY AUTOINCREMENT,\
-     name TEXT NOT NULL UNIQUE,\
+     name TEXT NOT NULL,\
+     email TEXT NOT NULL UNIQUE ,\
      password TEXT NOT NULL,\
-     address TEXT NOT NULL,\
-     city TEXT NOT NULL,\
-     state TEXT NOT NULL,\
-     country TEXT NOT NULL,\
-     zipcode TEXT NOT NULL\
+     address TEXT ,\
+     city TEXT,\
+     state TEXT,\
+     country TEXT,\
+     zipcode TEXT\
     );';
 
 const CREATE_ORDERS =
@@ -48,11 +55,95 @@ const CREATE_MESSAGES =
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP\
       );';
 
+
 const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS];
 const db = require('any-db')
 const saltRounds = 10;
 create_tables();
 
+function getPassword(email, type){
+    let done = false;
+    const out = {};
+    console.log("type is ", type);
+    const conn = db.createConnection('sqlite3://easy-bev.db')
+    conn.query('select password from ' + type+ ' where email = ?', [email], function (err, data){
+        console.log(data);
+
+        if (err || data.rowCount !== 1){
+            console.log("error is", err)
+
+            out.error = err ? "SQL error" : "invalid credentials";
+        }else{
+            console.log("HERE2")
+            out.body = data.rows[0].password;
+        }
+        done = true;
+
+    });
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end()
+    return out;
+
+}
+
+function signUp(email, password, type){
+    let done = false;
+    let out = {};
+    if(TYPES.includes(type.toLowerCase())){
+        bcrypt.hash(password, saltRounds)
+            .then(hashedPassword => {
+                const conn = db.createConnection('sqlite3://easy-bev.db');
+
+                const insert = 'insert into ' +  type + ' (name, email, password) values (?,?,?)';
+
+                conn.query(insert, [type, email, hashedPassword], function (error, data) {
+                    out.error = error;
+                    conn.end();
+                    done = true;
+                })
+            })
+    }else{
+        console.log("invalid type");
+        out.error = "invalid type";
+        done = true;
+    }
+
+    deasync.loopWhile(function (){return !done});
+    return out;
+
+}
+
+
+function signIn(email, password, type){
+    let done = false;
+    const out = {};
+    if(TYPES.includes(type.toLowerCase())){
+        const passwordOut = getPassword(email, type);
+        console.log("RECEIVED",passwordOut);
+        if(!passwordOut.error){
+            bcrypt.compare(password,passwordOut.body).then((valid) =>{
+                console.log("valid is", valid)
+                if (valid){
+                    out.error = "";
+                }else{
+                    out.error = "invalid credentials";
+                }
+                done = true;
+            })
+        }else{
+            out.error = passwordOut.error;
+            done = true;
+        }
+
+    }else{
+        out.error = "invalid type";
+    }
+
+    deasync.loopWhile(() =>{return !done});
+    return out;
+}
 
 function create_tables () {
     for(tableQuery of QUERIES){
@@ -61,23 +152,74 @@ function create_tables () {
 }
 
 function create_table (sql) {
+    let done = false;
     const conn = db.createConnection('sqlite3://easy-bev.db')
     conn.query(sql, function (err) {
         if (err) {
-            console.log(sql)
-            console.log(err)
+            console.log(sql);
+            console.log(err);
         }
+        done = true;
     });
     conn.end()
+    deasync.loopWhile(()=>{return !done})
 }
-function ValidateEmail (email) {
+function validateEmail (email) {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         return true
     }
     return false
 }
 
+app.get('/api/authenticate', (req,res) =>{
 
+})
+
+app.post('/api/signup', (req, res) => {
+    const email = req.body.email;
+    const type = req.body.type;
+    const password = req.body.password;
+    const response = {error:"invalid"};
+    if(validateEmail(email)) {
+        if (email && type && password) {
+            if (req.session.signed) {
+                console.log("IN!")
+            } else {
+                console.log("NOT IN!");
+                const email = req.body.email;
+                const type = req.body.type;
+                response.error = signUp(email, password, type).error;
+            }
+        }
+    }else{
+        response.error = "Invalid email";
+    }
+    res.send(response);
+
+
+});
+
+app.post('/api/signin', (req, res) => {
+    const response = {};
+    if(req.session.signed){
+        console.log("IN!")
+    }else{
+        console.log("NOT IN!");
+        const email = req.body.email;
+        const type = req.body.type;
+        let password = req.body.password;
+        if(email && type && password){
+            const out = signIn(email, password, type);
+            if(out.error){
+                response.error = out.error;
+            }else{
+                req.session.valid = true;
+            }
+        }
+    }
+    res.send(response);
+
+});
 
 app.get('/api/hello', (req, res) => {
     res.send({express: 'Hello From Express'})
@@ -86,7 +228,7 @@ app.get('/api/hello', (req, res) => {
 app.post('/api/get_client', (req, res) => {
     conn.query('select * from Clients where user_id = ?', [req.body.id], function (error, data) {
         if (error) {
-            console.log('INNER')
+            console.log('INNER');
             console.log(er)
 
         } else {
@@ -99,7 +241,5 @@ app.post('/api/get_client', (req, res) => {
 
     })
 });
-
-
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
