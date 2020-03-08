@@ -53,7 +53,7 @@ const styles = theme => ({
 
 class SignUp extends React.Component {
     state = {
-        email: '', password: '', error: false, errorMsg: '', type: "merchant", company: '',
+        email: '', password: '', error: false, errorMsg: '', type: "merchants", company: '',
     };
 
     signUp = async e => {
@@ -70,7 +70,6 @@ class SignUp extends React.Component {
         if ("error" in body) {
             console.log(body);
             this.setState({ errorMsg: body.error});
-
             return false;
         }
         else if ("first_name" in body) {
@@ -88,11 +87,11 @@ class SignUp extends React.Component {
     };
 
     handle = () => (event) => {
-        if (this.state.type === "distributor") {
-            this.setState({ type: "merchant" });
+        if (this.state.type === "distributors") {
+            this.setState({ type: "merchants" });
             console.log("merchant");
         } else {
-            this.setState({ type: "distributor" });
+            this.setState({ type: "distributors" });
             console.log("dist");
         }
     };
@@ -117,8 +116,8 @@ class SignUp extends React.Component {
                                 textColor="primary"
                                 onChange={this.handle()}
                             >
-                                <Tab label="Merchant" id='merchant' value="merchant" />
-                                <Tab label="Distributor" id='dist' value="distributor" />
+                                <Tab label="Merchant" id='merchant' value="merchants" />
+                                <Tab label="Distributor" id='dist' value="distributors" />
                             </Tabs>
                         </Paper>
                         <Grid container spacing={2}>

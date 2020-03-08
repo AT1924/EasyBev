@@ -91,7 +91,7 @@ class SignIn extends React.Component {
     };
 
     handle = () => (event) => {
-        if (this.state.type === "distributor") {
+        if (this.state.type === "distributors") {
             this.setState({ type: "merchants" });
             console.log("merchants");
         } else {
@@ -121,8 +121,8 @@ class SignIn extends React.Component {
                                 textColor="primary"
                                 onChange={this.handle()}
                             >
-                                <Tab label="Merchant" id='merchant' value="merchant" />
-                                <Tab label="Distributor" id='dist' value="distributor" />
+                                <Tab label="Merchant" id='merchant' value="merchants" />
+                                <Tab label="Distributor" id='dist' value="distributors" />
                             </Tabs>
                         </Paper>
                         <TextField
