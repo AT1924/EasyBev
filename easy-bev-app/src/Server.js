@@ -182,13 +182,16 @@ app.post('/api/signup', (req, res) => {
     const response = {error:"invalid"};
     if(validateEmail(email)) {
         if (email && type && password) {
-            if (req.session.signed) {
+            if (req.session.valid) {
                 console.log("IN!")
             } else {
                 console.log("NOT IN!");
                 const email = req.body.email;
                 const type = req.body.type;
                 response.error = signUp(email, password, type).error;
+                if (!response.error){
+                    req.session.valid = true;
+                }
             }
         }
     }else{
@@ -201,7 +204,7 @@ app.post('/api/signup', (req, res) => {
 
 app.post('/api/signin', (req, res) => {
     const response = {};
-    if(req.session.signed){
+    if(req.session.valid){
         console.log("IN!")
     }else{
         console.log("NOT IN!");
@@ -209,12 +212,18 @@ app.post('/api/signin', (req, res) => {
         const type = req.body.type;
         let password = req.body.password;
         if(email && type && password){
-            const out = signIn(email, password, type);
-            if(out.error){
-                response.error = out.error;
+            if(validateEmail(email)) {
+                const out = signIn(email, password, type);
+                if(out.error){
+                    response.error = out.error;
+                }else{
+                    req.session.valid = true;
+                }
             }else{
-                req.session.valid = true;
+                response.error = "invalid email";
             }
+
+
         }
     }
     res.send(response);
