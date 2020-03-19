@@ -175,7 +175,7 @@ function validateEmail (email) {
     return false
 }
 
-app.get('/api/authenticate', (req,res) =>{
+app.post('/api/authenticate', (req,res) =>{
     console.log("in authenticate sending", req.session.valid);
     if (req.session.valid){
         res.send({valid:true})

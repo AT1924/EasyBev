@@ -1,4 +1,3 @@
-import PrivateRouteComponent from './components/PrivateRouteComponent'
 import Cart from "./components/Cart";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignIn from "./components/SignIn";
@@ -15,53 +14,22 @@ const defaultTheme = createMuiTheme();
 
 
 
-// function isLogin(){
-//     let done = false;
-//     const response = fetch('/api/authenticate', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     }).then(()=>{
-//         done = true;
-//     });
-//     deasync.loopWhile(()=>{return !done});
-//     return response.valid;
-// }
-
-
-
-
-async function whatToRender(props, Component){
-
-
+function isLogin(){
+    return localStorage.getItem("login");
 }
 
-// const PrivateRouteBluePrint = ({component: Component, ...rest}) => {
-//
-//     return (
-//
-//         // Show the component only when the user is logged in
-//         // Otherwise, redirect the user to /signin page
-//         <Route {...rest} render={
-//         } />
-//     );
-// };
 
-// const PublicRoute = ({component: Component, restricted, ...rest}) => {
-//     return (
-//         // restricted = false meaning public route
-//         // restricted = true meaning restricted route
-//         <Route {...rest} render={props => (
-//             isLoggedIn() && restricted ?
-//                 <Redirect to="/dashboard" />
-//                 : <Component {...props} />
-//         )} />
-//     );
-// };
-const privateRouteComponentWrapper = (comp) => {
-    return <PrivateRouteComponent/>;
-};
+const PrivateRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={(props) => (
+        isLogin()
+            ? <Component {...props} />
+            : <Redirect to={{
+                pathname: '/login',
+                state: { from: props.location }
+            }} />
+    )} />
+);
+
 
 class App extends React.Component {
     state = {theme: defaultTheme};
@@ -73,10 +41,11 @@ class App extends React.Component {
         <Router>
             <div>
                 <Route exact path="/" component={SignIn} />
+                <PrivateRoute path='/feed' component={feed} />
                 <Route path="/cart" component={Cart} />
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
-                <Route path="/feed" component={privateRouteComponentWrapper} />
+                {/*<Route path="/feed" component={feed} />*/}
                 <Route path="/orders" component={Orders}/>
                 <Route path="/message" component={Message}/>
 
