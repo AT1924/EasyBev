@@ -101,6 +101,8 @@ function signUp(email, password, type){
                 conn.query(insert, [type, email, hashedPassword], function (error, data) {
                     out.error = error;
                     conn.end();
+                    out.status = "SUCCESS";
+
                     done = true;
                 })
             })
@@ -111,6 +113,7 @@ function signUp(email, password, type){
     }
 
     deasync.loopWhile(function (){return !done});
+    console.log("RETURNING ", out)
     return out;
 
 }
@@ -126,6 +129,7 @@ function signIn(email, password, type){
             bcrypt.compare(password,passwordOut.body).then((valid) =>{
                 console.log("valid is", valid)
                 if (valid){
+                    out.status = "SUCCESS";
                     out.error = "";
                 }else{
                     out.error = "invalid credentials";
@@ -172,24 +176,31 @@ function validateEmail (email) {
 }
 
 app.get('/api/authenticate', (req,res) =>{
-
-})
+    console.log("in authenticate sending", req.session.valid);
+    if (req.session.valid){
+        res.send({valid:true})
+    }else{
+        res.send({error:"Unauthorized"})
+    }
+});
 
 app.post('/api/signup', (req, res) => {
     const email = req.body.email;
     const type = req.body.type;
     const password = req.body.password;
-    const response = {error:"invalid"};
+    let response = {error:"invalid"};
     if(validateEmail(email)) {
         if (email && type && password) {
             if (req.session.valid) {
                 console.log("IN!")
+                response.status = "Cookie says already in";
             } else {
                 console.log("NOT IN!");
                 const email = req.body.email;
                 const type = req.body.type;
-                response.error = signUp(email, password, type).error;
+                response  = signUp(email, password, type);
                 if (!response.error){
+                    console.log("NOT ERROR");
                     req.session.valid = true;
                 }
             }
@@ -203,9 +214,10 @@ app.post('/api/signup', (req, res) => {
 });
 
 app.post('/api/signin', (req, res) => {
-    const response = {};
+    let response = {};
     if(req.session.valid){
-        console.log("IN!")
+        console.log("IN!");
+        response.status = "Cookie says already in";
     }else{
         console.log("NOT IN!");
         const email = req.body.email;
@@ -213,10 +225,8 @@ app.post('/api/signin', (req, res) => {
         let password = req.body.password;
         if(email && type && password){
             if(validateEmail(email)) {
-                const out = signIn(email, password, type);
-                if(out.error){
-                    response.error = out.error;
-                }else{
+                response = signIn(email, password, type);
+                if(!response.error){
                     req.session.valid = true;
                 }
             }else{
@@ -224,6 +234,8 @@ app.post('/api/signin', (req, res) => {
             }
 
 
+        }else{
+            response.error = "Missing input";
         }
     }
     res.send(response);

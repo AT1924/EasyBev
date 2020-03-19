@@ -13,9 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import Box from '@material-ui/core/Box';
 import Nav from "./Nav";
+
 
 const useStyles = makeStyles(theme => ({
     '@global': {
@@ -99,7 +98,7 @@ const tiers = [
 
 export default function Pricing() {
     const classes = useStyles();
-
+    console.log("bouta return")
     return (
         <React.Fragment>
             <CssBaseline />
