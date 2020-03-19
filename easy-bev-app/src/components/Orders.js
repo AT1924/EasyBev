@@ -1,25 +1,45 @@
 import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import StarIcon from '@material-ui/icons/StarBorder';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import OrderComponent from './OrderComponent'
-import OrderTitle from './OrderTitle';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import Box from '@material-ui/core/Box';
 import Nav from "./Nav";
+import withStyles from "@material-ui/core/styles/withStyles";
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const useStyles = makeStyles(theme => ({
+const SimpleExpansionPanel  = (props) => {
+
+
+    return (
+        <div >
+            <ExpansionPanel>
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                >
+                    <Typography>{props.children}</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Typography>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+                        sit amet blandit leo lobortis eget.
+                    </Typography>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+
+
+        </div>
+    );
+}
+
+
+
+
+const styles = theme => ({
     '@global': {
         ul: {
             margin: 0,
@@ -62,68 +82,55 @@ const useStyles = makeStyles(theme => ({
             paddingBottom: theme.spacing(6),
         },
     },
-}));
+});
 
-const tiers = [
-    {
-        title: 'Free',
-        price: '0',
-        description: ['10 users included', '2 GB of storage', 'Help center access', 'Email support'],
-        buttonText: 'Sign up for free',
-        buttonVariant: 'outlined',
-    },
-    {
-        title: 'Pro',
-        subheader: 'Most popular',
-        price: '15',
-        description: [
-            '20 users included',
-            '10 GB of storage',
-            'Help center access',
-            'Priority email support',
-        ],
-        buttonText: 'Get started',
-        buttonVariant: 'contained',
-    },
-    {
-        title: 'Enterprise',
-        price: '30',
-        description: [
-            '50 users included',
-            '30 GB of storage',
-            'Help center access',
-            'Phone & email support',
-        ],
-        buttonText: 'Contact us',
-        buttonVariant: 'outlined',
-    },
-];
 
-export default function Pricing() {
-    const classes = useStyles();
 
-    return (
-        <React.Fragment>
-            <CssBaseline />
-            <Nav/>
 
-            <Container maxWidth="md" component="main">
-                <Grid container spacing={5} alignItems="flex-end">
-                    <Grid item>
-                        <OrderTitle/>
-                        <OrderComponent/>
+
+class Orders extends React.Component{
+    constructor() {
+        super();
+    }
+
+
+
+    render() {
+
+        return (
+            <React.Fragment>
+                <CssBaseline/>
+                <Nav/>
+
+                <Container maxWidth="md" component="main">
+                    <Grid container spacing={5} alignItems="center">
+                        <Grid item>
+                            // list of items where each item is a quantity
+                            // order component maintain a list of items as JSON that is quantity and UPC code
+                            <ul>
+
+                                {['a', 'b', 'c'].map(function(item) {
+                                    return<li><SimpleExpansionPanel children={item}/></li>;
+                                })}
+
+
+
+                            </ul>
+
+
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Container>
+                </Container>
 
-            <Container maxWidth="md" component="footer" className={classes.footer}>
-            <Grid container spacing={4} justify="space-evenly">
+                <Container maxWidth="md" component="footer" >
+                    <Grid container spacing={4} justify="space-evenly">
 
-            </Grid>
-        </Container>
-
+                    </Grid>
+                </Container>
 
 
-        </React.Fragment>
-    );
+            </React.Fragment>
+        );
+    }
 }
+export default withStyles(styles)(Orders);
