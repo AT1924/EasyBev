@@ -128,6 +128,8 @@ class SignIn extends React.Component {
                                     indicatorColor="primary"
                                     textColor="primary"
                                     onChange={this.handle()}
+                                    centered
+                                    variant="fullWidth"
                                 >
                                     <Tab label="Merchant" id='merchant' value="merchants" />
                                     <Tab label="Distributor" id='dist' value="distributors" />

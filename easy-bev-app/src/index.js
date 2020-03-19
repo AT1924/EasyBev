@@ -3,6 +3,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import feed from "./components/feed";
+import Profile from "./components/Profile";
 import Orders from "./components/Orders";
 import Message from "./components/Message";
 import { Route,Redirect, Link, BrowserRouter as Router } from 'react-router-dom'
@@ -15,7 +16,11 @@ const defaultTheme = createMuiTheme();
 
 
 function isLogin(){
-    return localStorage.getItem("login");
+    if (localStorage.getItem("login") === "true") {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
@@ -42,6 +47,7 @@ class App extends React.Component {
             <div>
                 <Route exact path="/" component={SignIn} />
                 <PrivateRoute path='/feed' component={feed} />
+                <PrivateRoute path='/profile' component={Profile} />
                 <Route path="/cart" component={Cart} />
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />

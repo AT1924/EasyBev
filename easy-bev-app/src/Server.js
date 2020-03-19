@@ -155,6 +155,9 @@ function create_tables () {
     }
 }
 
+// michael I NEEd A PROFILE endpoint that gives me information about the user
+// for distributors i want a list of their clients aswell
+
 function create_table (sql) {
     let done = false;
     const conn = db.createConnection('sqlite3://easy-bev.db')

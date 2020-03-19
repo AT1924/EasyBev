@@ -9,6 +9,9 @@ import Link from '@material-ui/core/Link';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import withStyles from "@material-ui/core/styles/withStyles";
 import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Redirect from "react-router-dom/es/Redirect";
 
 const styles = theme => ({
     '@global': {
@@ -38,21 +41,32 @@ const styles = theme => ({
 });
 
 class Nav extends React.Component{
-    constructor() {
-        super();
-        // this.state = {
-        //     width: window.innerWidth,
-        // };
-        // this.handleWindowSizeChange = this.handleWindowSizeChange.bind(this);
-        // console.log(window.innerWidth);
-    }
+    state = {anchorEl : null, redirect: false, redirectLoc: "",};
 
+    handleClick = event => {
+        this.setState({ anchorEl: event.currentTarget });
+    };
+
+    handleClose = () => {
+        this.setState({ anchorEl: null });
+    };
+
+    redirect = name => (event) => {
+        if (name === "/") {
+            localStorage.setItem('login', "false");
+        }
+        this.setState({ redirect: true, redirectLoc: [name] });
+    };
 
     render() {
         const { classes } = this.props;
         // the rest is the same...
-
-        if (isMobile) {
+        if (this.state.redirect) {
+            return (
+                <Redirect to={this.state.redirectLoc}/>
+            )
+        }
+        else if (isMobile) {
             return (
                 <React.Fragment>
                     <CssBaseline />
@@ -72,9 +86,20 @@ class Nav extends React.Component{
                                     Orders
                                 </Link>
                             </nav>
-                            <Button href="#" color="primary" className={classes.link}>
+                            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
                                 <AccountCircleIcon/>
                             </Button>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={this.state.anchorEl}
+                                keepMounted
+                                open={Boolean(this.state.anchorEl)}
+                                onClose={this.handleClose}
+                            >
+                                <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                                <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                                <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                            </Menu>
                         </Toolbar>
                     </AppBar>
                 </React.Fragment>
@@ -102,9 +127,19 @@ class Nav extends React.Component{
                                     Orders
                                 </Link>
                             </nav>
-                            <Button href="#" color="primary" className={classes.link}>
+                            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
                                 <AccountCircleIcon/>
                             </Button>
+                            <Menu
+                                id="simple-menu"
+                                anchorEl={this.state.anchorEl}
+                                keepMounted
+                                open={Boolean(this.state.anchorEl)}
+                                onClose={this.handleClose}
+                            >
+                                <MenuItem onClick={this.redirect("/profile")}>My account</MenuItem>
+                                <MenuItem onClick={this.redirect("/")}>Logout</MenuItem>
+                            </Menu>
                         </Toolbar>
                     </AppBar>
                 </React.Fragment>
