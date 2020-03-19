@@ -58,7 +58,7 @@ class SignUp extends React.Component {
 
     signUp = async e => {
         e.preventDefault();
-        const response = await fetch('/api/signin', {
+        const response = await fetch('/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
