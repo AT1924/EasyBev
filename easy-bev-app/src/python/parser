@@ -1,0 +1,66 @@
+import csv
+import re
+import sqlite3
+
+#Converts all sizes into milliliters
+#Removes unknown characters from UPC codes
+#creates items table
+
+table = []
+with open('brown.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    first = True
+    for row in csv_reader:
+        if first:
+            first = False
+            continue
+        upc = row[0]
+        upc = re.sub("[^0-9]", "", upc)
+        name = row[1]
+        size = row[2]
+        qty = float(row[3])
+        price = float(row[4])
+        if 'LTR' in size:#1 liter
+            assert size == 'LTR'
+            size = 1000.0
+        elif 'ML' in size:#milliliter
+            assert size[:-2].isdecimal()
+            size = float(size[:-2])
+        elif 'L' in size:
+            assert size[:-1].isdecimal()
+            assert size[-1] == 'L'
+            size = float(size[:-1]) * 1000
+        elif 'OZ' in size:#ounce
+            assert size[:-2].isdecimal()
+            size = float(size[:-2]) * 29.5735
+        elif '.' in size: #liter
+            size = float(size)
+            size *= 1000
+        elif size.isdecimal():#xxx milliliter
+            size = float(size)
+             #already in millilter
+        else:
+            print("ERROR: unrecognized size format for", row)
+        table.append([upc, name, size, qty, price, 1])
+
+conn = sqlite3.connect('../easy-bev.db')
+c = conn.cursor()
+c.execute('''DROP TABLE items;''')
+c.execute(
+    '''CREATE TABLE if not exists items(
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     upc INTEGER not null,
+     name text not null,
+     size real NOT NULL,
+     qty real NOT NULL,
+     price real not null,
+     dist_id INTEGER not null,
+     FOREIGN KEY(dist_id) REFERENCES Distributors(id)
+    )''')
+for row in table:
+    c.execute(''' INSERT INTO items(upc, name, size, qty, price, dist_id) VALUES(?,?,?,?,?,?) ''', row)
+
+conn.commit()
+conn.close()
+
+

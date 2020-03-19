@@ -17,6 +17,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import Tabs from "@material-ui/core/Tabs";
 import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
+import Redirect from "react-router-dom/es/Redirect";
 
 function Copyright() {
     return (
@@ -54,7 +55,7 @@ const styles = theme => ({
 class SignIn extends React.Component {
 
     state = {
-        email: '', password: '', error: false, errorMsg: '', redirect: false, type: "merchants",
+        email: '', password: '', error: false, errorMsg: '', redirect: false, type: "merchants", signin: false,
     };
 
     signIn = async e => {
@@ -69,14 +70,15 @@ class SignIn extends React.Component {
         });
         const body = await response.json();
         console.log(body);
-        if ("error" in body) {
+        if (body.error) {
             console.log(body);
             this.setState({ errorMsg: body.error});
 
             return false;
         }
-        else if ("first_name" in body) {
-            console.log("signed in");
+        else if (!(body.error)){
+            localStorage.setItem('login', "true");
+            this.setState({ signin: true });
         }
         else {
             console.log(body);
@@ -103,89 +105,97 @@ class SignIn extends React.Component {
 
     render() {
         const { classes } = this.props;
-        return (
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <div className={classes.paper} >
-                    <Avatar className={classes.avatar}>
-                        <LockOutlinedIcon />
-                    </Avatar>
-                    <Typography component="h1" variant="h5">
-                        Sign in
-                    </Typography>
-                    <form className={classes.form} noValidate onSubmit={this.signIn}>
-                        <Paper square>
-                            <Tabs
-                                value={this.state.type}
-                                indicatorColor="primary"
-                                textColor="primary"
-                                onChange={this.handle()}
+        if (this.state.signin) {
+            return (
+                <Redirect to="/feed"/>
+                )
+
+        } else {
+            return (
+                <Container component="main" maxWidth="xs">
+                    <CssBaseline />
+                    <div className={classes.paper} >
+                        <Avatar className={classes.avatar}>
+                            <LockOutlinedIcon />
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Sign in
+                        </Typography>
+                        <form className={classes.form} noValidate onSubmit={this.signIn}>
+                            <Paper square>
+                                <Tabs
+                                    value={this.state.type}
+                                    indicatorColor="primary"
+                                    textColor="primary"
+                                    onChange={this.handle()}
+                                >
+                                    <Tab label="Merchant" id='merchant' value="merchants" />
+                                    <Tab label="Distributor" id='dist' value="distributors" />
+                                </Tabs>
+                            </Paper>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="Email Address"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                onChange={this.handleChange('email')}
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={this.handleChange('password')}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox value="remember" color="primary" />}
+                                label="Remember me"
+                            />
+
+
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
                             >
-                                <Tab label="Merchant" id='merchant' value="merchants" />
-                                <Tab label="Distributor" id='dist' value="distributors" />
-                            </Tabs>
-                        </Paper>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            onChange={this.handleChange('email')}
-                        />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={this.handleChange('password')}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
-                        />
-
-
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Sign In
-                        </Button>
+                                Sign In
+                            </Button>
 
                             <Grid/>
-                        <Grid container>
-                            {/*<Grid item xs>*/}
-                            {/*    <Link href="#" variant="body2">*/}
-                            {/*        Forgot password?*/}
-                            {/*    </Link>*/}
-                            {/*</Grid>*/}
-                            <Grid item>
-                                <Link href="/signup" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
+                            <Grid container>
+                                {/*<Grid item xs>*/}
+                                {/*    <Link href="#" variant="body2">*/}
+                                {/*        Forgot password?*/}
+                                {/*    </Link>*/}
+                                {/*</Grid>*/}
+                                <Grid item>
+                                    <Link href="/signup" variant="body2">
+                                        {"Don't have an account? Sign Up"}
+                                    </Link>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </form>
-                </div>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </Container>
-        );
+                        </form>
+                    </div>
+                    <Box mt={8}>
+                        <Copyright />
+                    </Box>
+                </Container>
+            );
+        }
+
     }
 
 
