@@ -85,12 +85,15 @@ const styles = theme => ({
 });
 
 
-
+// MICHAEL: FOR /orders I want a list of information, order quantity and UPC value to display
+// in the order list on the front-end. GET request for all orders for the current signed in
+// user.
 
 
 class Orders extends React.Component{
     constructor() {
         super();
+        this.orderValues = null;
     }
 
 
@@ -102,7 +105,7 @@ class Orders extends React.Component{
                 <CssBaseline/>
                 <Nav/>
 
-                <Container maxWidth="md" component="main">
+                <Container style={{marginTop: "100px"}} maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
                         <Grid item>
                             // list of items where each item is a quantity
