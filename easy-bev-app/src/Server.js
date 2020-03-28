@@ -71,6 +71,7 @@ const CREATE_CODES =
      FOREIGN KEY(d_id) REFERENCES Distributors(id)\
 );';
 
+
 const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS, CREATE_CODES];
 const db = require('any-db');
 const saltRounds = 10;
@@ -220,10 +221,7 @@ function create_tables () {
     for(tableQuery of QUERIES){
         create_table(tableQuery);
     }
-    const conn = db.createConnection('sqlite3://easy-bev.db')
-    conn.query('PRAGMA foreign_keys = ON;', function (err) {
-    });
-    conn.end();
+
 
 }
 
@@ -236,7 +234,10 @@ function create_table (sql) {
             console.log(sql);
             console.log(err);
         }
-        done = true;
+        conn.query('PRAGMA foreign_keys = ON;', function (err){
+            done = true;
+        });
+
     });
     conn.end();
     deasync.loopWhile(()=>{return !done})
