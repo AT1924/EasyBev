@@ -250,14 +250,16 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.post('/api/get_client', (req, res) => {
-    conn.query('select * from Clients where user_id = ?', [req.body.id], function (error, data) {
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    console.log(req.body.id);
+    conn.query('select * from Merchants where id = ?', [req.body.id], function (error, data) {
         if (error) {
             console.log('INNER');
-            console.log(er)
+            console.log(error);
 
         } else {
-            const clients = data.rows
-
+            const clients = data.rows;
+            console.log(clients);
             res.send(clients)
         }
 

@@ -63,7 +63,7 @@ class Nav extends React.Component{
         // the rest is the same...
         if (this.state.redirect) {
             return (
-                <Redirect to={this.state.redirectLoc}/>
+                <Redirect to={this.state.redirectLoc[0]}/>
             )
         }
         else if (isMobile) {
