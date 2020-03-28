@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         margin: 'auto',
-        maxWidth: 500,
+        maxWidth: 1000,
     },
     image: {
         width: 128,
@@ -142,16 +142,13 @@ class Feed extends React.Component{
                 <CssBaseline/>
                 <Nav/>
 
-                <Container style={{marginTop: "100px"}} maxWidth="md" component="main">
+                <Container maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
                         <Grid item>
                             <ul>
-
                                 {adds.map(function(item) {
                                     return<li><Ad children={item}/></li>;
                                 })}
-
-
 
                             </ul>
 

@@ -234,9 +234,7 @@ function create_table (sql) {
             console.log(sql);
             console.log(err);
         }
-        conn.query('PRAGMA foreign_keys = ON;', function (err){
-            done = true;
-        });
+
 
     });
     conn.end();
@@ -301,7 +299,7 @@ app.post('/api/signup', (req, res) => {
     }else{
         response.error = "Invalid email";
     }
-    console.log("in sign up, sending", response)
+    console.log("in sign up, sending", response);
     res.send(response);
 
 
