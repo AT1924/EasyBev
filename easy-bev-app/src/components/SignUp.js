@@ -55,7 +55,7 @@ const styles = theme => ({
 class SignUp extends React.Component {
     state = {
         email: '', password: '', error: false, errorMsg: '', type: "merchants", company: '', signin: false, code: 42069,
-        address: '', state: '', zip: '',
+        address: '', state: '', zip: '', city: '',
     };
 
     signUp = async e => {
@@ -65,7 +65,8 @@ class SignUp extends React.Component {
             headers: {
                 'Content-Type': 'application/json',
             },//ben 42069 IS A PLACEHOLDER FOR THE ACTUAL CODE, MUST TAKE THAT AS INPUT WHEN SIGNING UP
-            body: JSON.stringify({code: this.state.code, company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
+            body: JSON.stringify({code: this.state.code, company: this.state.company, address: this.state.address,
+                city: this.state.city, state: this.state.state, zip: this.state.zip,
                 type:this.state.type, email: this.state.email, password: this.state.password }),
         });
         const body = await response.json();
@@ -184,6 +185,17 @@ class SignUp extends React.Component {
                                         margin="normal"
                                         required
                                         fullWidth
+                                        id="city"
+                                        label="City"
+                                        name="city"
+                                        autoComplete="city"
+                                        onChange={this.handleChange('city')}
+                                    />
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
                                         id="State"
                                         label="State"
                                         name="state"
@@ -246,6 +258,17 @@ class SignUp extends React.Component {
                                      name="address"
                                      autoComplete="address"
                                      onChange={this.handleChange('address')}
+                                 />
+                                 <TextField
+                                     variant="outlined"
+                                     margin="normal"
+                                     required
+                                     fullWidth
+                                     id="city"
+                                     label="City"
+                                     name="city"
+                                     autoComplete="city"
+                                     onChange={this.handleChange('city')}
                                  />
                                  <TextField
                                      variant="outlined"
