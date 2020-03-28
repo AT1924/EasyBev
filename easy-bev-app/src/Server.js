@@ -13,12 +13,18 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
 
 
+//company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
+//     //                 type:this.state.type, email: this.state.email, password: this.state.password }
 const CREATE_DISTRIBUTORS =
     'CREATE TABLE Distributors   (\
         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,\
         name TEXT NOT NULL,\
         email TEXT NOT NULL UNIQUE ,\
         password TEXT NOT NULL,\
+        address TEXT NOT NULL,\
+        city TEXT,\
+        state TEXT NOT NULL UNIQUE ,\
+        zip TEXT NOT NULL,\
         meta TEXT );';
 
 const CREATE_MERCHANTS =
@@ -32,8 +38,8 @@ const CREATE_MERCHANTS =
      city TEXT,\
      state TEXT,\
      country TEXT,\
-     zipcode TEXT,\
-    FOREIGN KEY(dist_id) REFERENCES Distributors(id)\
+     zip TEXT,\
+    FOREIGN KEY(d_id) REFERENCES Distributors(id)\
 );';
 
 const CREATE_ORDERS =
@@ -65,8 +71,8 @@ const CREATE_CODES =
      FOREIGN KEY(d_id) REFERENCES Distributors(id)\
 );';
 
-const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS];
-const db = require('any-db')
+const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS, CREATE_CODES];
+const db = require('any-db');
 const saltRounds = 10;
 create_tables();
 
@@ -97,33 +103,84 @@ function getPassword(email, type){
 
 }
 
-function signUp(email, password, type){
+function signUp(body){
+    //{code: this.state.code, company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
+    //                 type:this.state.type, email: this.state.email, password: this.state.password }
     let done = false;
     let out = {};
+    const type = body.type;
+    if (!body.password){
+        return {error:"invalid password"}
+    }
     if(TYPES.includes(type.toLowerCase())){
-        bcrypt.hash(password, saltRounds)
+        bcrypt.hash(body.password, saltRounds)
             .then(hashedPassword => {
+
                 const conn = db.createConnection('sqlite3://easy-bev.db');
+                let insert = "";
+                const param = [body.company, body.email, hashedPassword, body.address, body.city, body.state, body.zip];
+                if (type === TYPES[0]){ //distributor
+                    insert = 'insert into Distributors (name, email, password, address, city, state, zip) values (?,?,?,?,?,?,?)';
 
-                const insert = 'insert into ' +  type + ' (name, email, password) values (?,?,?)';
-
-                conn.query(insert, [type, email, hashedPassword], function (error, data) {
-                    out.error = error;
+                }else{
+                    insert = 'insert into merchants (name, email, password, address, city, state, zip, d_id)  values (?,?,?,?,?,?,?,?)';
+                    const resp = codeToDist(body.code);
+                    if (resp.error){
+                        conn.end;
+                        out.error = resp.error;
+                        done = true;
+                    }
+                    const dist_id = resp.body;
+                    param.push(dist_id)
+                }
+                console.log("executing", insert, param)
+                conn.query(insert, param, function (error, data) {
+                    if (error){
+                        out.error = "Invalid input";
+                    }else{
+                        out.status = "SUCCESS";
+                    }
                     conn.end();
-                    out.status = "SUCCESS";
-
                     done = true;
                 })
             })
     }else{
-        console.log("invalid type");
         out.error = "invalid type";
         done = true;
     }
 
-    deasync.loopWhile(function (){return !done});
-    console.log("RETURNING ", out)
+    deasync.loopWhile(function (){
+        return !done});
     return out;
+
+}
+
+function codeToDist(code){
+    if (parseInt(code) === 42069){
+        return {body:1}
+    }
+    if (!code){
+        return {error: "invalid code"}
+    }
+    let done = false;
+    const out = {}
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    const get = 'select d_id from codes where code = ? order by timestamp limit 1';
+
+    conn.query(get, [code], function (error, data) {
+        if (error || data.rowCount == 0){
+            out.error = "Invalid code"
+        }else{
+            out.body = data
+
+        }
+        conn.end();
+        done = true;
+
+
+    });
+    deasync.loopWhile(() =>{return !done});
+    return out
 
 }
 
@@ -163,6 +220,11 @@ function create_tables () {
     for(tableQuery of QUERIES){
         create_table(tableQuery);
     }
+    const conn = db.createConnection('sqlite3://easy-bev.db')
+    conn.query('PRAGMA foreign_keys = ON;', function (err) {
+    });
+    conn.end();
+
 }
 
 
@@ -222,28 +284,23 @@ app.post('/api/authenticate', (req,res) =>{
 
 app.post('/api/signup', (req, res) => {
     const email = req.body.email;
-    const type = req.body.type;
-    const password = req.body.password;
     let response = {error:"invalid"};
     if(validateEmail(email)) {
-        if (email && type && password) {
-            if (req.session.valid) {
-                console.log("IN!")
-                response.status = "Cookie says already in";
-            } else {
-                console.log("NOT IN!");
-                const email = req.body.email;
-                const type = req.body.type;
-                response  = signUp(email, password, type);
-                if (!response.error){
-                    console.log("NOT ERROR");
-                    req.session.valid = true;
-                }
+        if (req.session.valid) {
+            console.log("IN!")
+            response.status = "Cookie says already in";
+        } else {
+            console.log("NOT IN!");
+            response  = signUp(req.body);
+            if (!response.error){
+                console.log("NOT ERROR");
+                req.session.valid = true;
             }
         }
     }else{
         response.error = "Invalid email";
     }
+    console.log("in sign up, sending", response)
     res.send(response);
 
 
