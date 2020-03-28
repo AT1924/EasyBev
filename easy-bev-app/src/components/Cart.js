@@ -2,6 +2,8 @@ import Dynamsoft from "../Dynamsoft";
 import React from 'react';
 import BarcodeScanner from './BarcodeScanner';
 import Button from "@material-ui/core/Button";
+import Cart_Search from './Cart_Search';
+import Nav from "./Nav";
 import Footer from "./Footer";
 class Cart extends React.Component {
     constructor(props){
@@ -26,28 +28,33 @@ class Cart extends React.Component {
 
 render() {
         return (
-            <div id = "cart" style={style.cart}>
-                {/*{ !this.state.bShowScanner ? (*/}
-                {/*    <Button onClick={this.showScanner} variant="contained">Default</Button>*/}
+            <React.Fragment>
+                <Nav/>
+                <div id = "cart" style={style.cart}>
+                    <Cart_Search/>
+
+                    {/*{ !this.state.bShowScanner ? (*/}
+                    {/*    <Button onClick={this.showScanner} variant="contained">Default</Button>*/}
 
 
-                {/*    ) : (*/}
-                {/*    <div style={style.cameraViewContainer}>*/}
-                {/*        <button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
+                    {/*    ) : (*/}
+                    {/*    <div style={style.cameraViewContainer}>*/}
+                    {/*        <button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
 
-                {/*        <BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
-                {/*    </div>*/}
-                {/*) }*/}
+                    {/*        <BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
+                    {/*    </div>*/}
+                    {/*) }*/}
 
-                {/*<div className="div-message" style={style.div_message} ref={this.refDivMessage}>*/}
-                {/*    { this.state.messages.map((message, index) =>*/}
-                {/*        <p key={ this.state.messageKeyBase + index }>*/}
-                {/*            { message }*/}
-                {/*        </p>*/}
-                {/*    ) }*/}
-                {/*</div>*/}
-                <Footer></Footer>
-            </div>
+                    {/*<div className="div-message" style={style.div_message} ref={this.refDivMessage}>*/}
+                    {/*    { this.state.messages.map((message, index) =>*/}
+                    {/*        <p key={ this.state.messageKeyBase + index }>*/}
+                    {/*            { message }*/}
+                    {/*        </p>*/}
+                    {/*    ) }*/}
+                    {/*</div>*/}
+
+                </div>
+            </React.Fragment>
         );
     }
     appendMessage = str => {
