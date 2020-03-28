@@ -255,7 +255,7 @@ function getMerchantInfo(){
 
 function getDistributorInfo(){
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn
+    conn.query('select * from Distributors where ')
 }
 
 function getInfo(type, email){
