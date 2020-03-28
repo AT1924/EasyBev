@@ -250,12 +250,26 @@ function validateEmail (email) {
 }
 
 function getMerchantInfo(){
+    conn.query('select * from Merchants where id = ?', [req.body.id], function (error, data) {
+        if (error) {
+            console.log('INNER');
+            console.log(error);
 
+        } else {
+            const clients = data.rows;
+            console.log(clients);
+            res.send(clients)
+        }
+
+        conn.end()
+
+    })
 }
 
 function getDistributorInfo(){
     const conn = db.createConnection('sqlite3://easy-bev.db');
     conn.query('select * from Distributors where ')
+
 }
 
 function getInfo(type, email){
@@ -364,20 +378,7 @@ app.post('/api/profile', (req,res) => {
 app.post('/api/get_client', (req, res) => {
     const conn = db.createConnection('sqlite3://easy-bev.db');
     console.log(req.body.id);
-    conn.query('select * from Merchants where id = ?', [req.body.id], function (error, data) {
-        if (error) {
-            console.log('INNER');
-            console.log(error);
-
-        } else {
-            const clients = data.rows;
-            console.log(clients);
-            res.send(clients)
-        }
-
-        conn.end()
-
-    })
+    getDistributorInfo()
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
