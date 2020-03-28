@@ -234,10 +234,9 @@ function create_table (sql) {
             console.log(sql);
             console.log(err);
         }
-
-
+        done = true;
+        conn.end();
     });
-    conn.end();
     deasync.loopWhile(()=>{return !done})
 }
 function validateEmail (email) {
@@ -376,7 +375,7 @@ app.post('/api/profile', (req,res) => {
 app.post('/api/get_client', (req, res) => {
     const conn = db.createConnection('sqlite3://easy-bev.db');
     console.log(req.body.id);
-    getDistributorInfo()
+    //getDistributorInfo()
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
