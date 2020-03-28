@@ -14,10 +14,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
-import Tabs from "@material-ui/core/Tabs";
-import Paper from "@material-ui/core/Paper";
-import Tab from "@material-ui/core/Tab";
-import Redirect from "react-router-dom/es/Redirect";
 import Nav from "./Nav";
 
 const styles = theme => ({
@@ -46,34 +42,54 @@ class Profile extends React.Component {
         email: '', password: '', error: false, errorMsg: '', redirect: false, type: "merchants", signin: false,
     };
 
-    // signIn = async e => {
+    // getInfo = async e => {
     //     e.preventDefault();
-    //     const response = await fetch('/api/signin', {
+    //     const response = await fetch('/api/get_client', {
     //         method: 'POST',
     //         headers: {
     //             'Content-Type': 'application/json',
     //         },
     //
-    //         body: JSON.stringify({type:this.state.type, email: this.state.email, password: this.state.password }),
+    //         body: JSON.stringify({}),
     //     });
     //     const body = await response.json();
     //     console.log(body);
-    //     if (body.error) {
-    //         console.log(body);
-    //         this.setState({ errorMsg: body.error});
-    //
-    //         return false;
-    //     }
-    //     else if (!(body.error)){
-    //         localStorage.setItem('login', "true");
-    //         this.setState({ signin: true });
-    //     }
-    //     else {
-    //         console.log(body);
-    //     }
+    //     // if (body.error) {
+    //     //     console.log(body);
+    //     //     this.setState({ errorMsg: body.error});
+    //     //
+    //     //     return false;
+    //     // }
+    //     // else if (!(body.error)){
+    //     //     localStorage.setItem('login', "true");
+    //     //     this.setState({ signin: true });
+    //     // }
+    //     // else {
+    //     //     console.log(body);
+    //     // }
     //
     //     return false;
     // };
+
+    async getData() {
+        try {
+            fetch("/api/get_client", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            })
+                .then( (response) => {
+                   console.log(response.json());
+                });
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
 
     handleChange = name => (event) => {
@@ -93,6 +109,7 @@ class Profile extends React.Component {
 
     render() {
         const { classes } = this.props;
+        const info = this.getData();
             return (
                 <React.Fragment>
                     <CssBaseline />
@@ -105,72 +122,122 @@ class Profile extends React.Component {
                                 Profile
                             </Typography>
                             <form className={classes.form} noValidate onSubmit={this.signIn}>
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+                                {/*    fullWidth*/}
+                                {/*    id="company"*/}
+                                {/*    label="Company Name"*/}
+                                {/*    name="company"*/}
+                                {/*    autoComplete="company"*/}
+                                {/*    onChange={this.handleChange('company')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
+                                    disabled
                                     fullWidth
+                                    margin="normal"
                                     id="company"
                                     label="Company Name"
-                                    name="company"
-                                    autoComplete="company"
-                                    onChange={this.handleChange('company')}
+                                    defaultValue="Akhils Company"
                                 />
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+                                {/*    fullWidth*/}
+                                {/*    id="address"*/}
+                                {/*    label="Street Address"*/}
+                                {/*    name="address"*/}
+                                {/*    autoComplete="address"*/}
+                                {/*    onChange={this.handleChange('company')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
                                     fullWidth
+                                    margin="normal"
+                                    disabled
                                     id="address"
-                                    label="Street Address"
-                                    name="address"
-                                    autoComplete="address"
-                                    onChange={this.handleChange('company')}
+                                    label="Address"
+                                    defaultValue="85 Canal St."
                                 />
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+                                {/*    fullWidth*/}
+                                {/*    id="State"*/}
+                                {/*    label="State"*/}
+                                {/*    name="state"*/}
+                                {/*    autoComplete="state"*/}
+                                {/*    onChange={this.handleChange('company')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
                                     fullWidth
+                                    margin="normal"
+                                    disabled
                                     id="State"
                                     label="State"
-                                    name="state"
-                                    autoComplete="state"
-                                    onChange={this.handleChange('company')}
+                                    defaultValue="RI"
                                 />
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+                                {/*    fullWidth*/}
+                                {/*    id="zip"*/}
+                                {/*    label="Zip-code"*/}
+                                {/*    name="zip"*/}
+                                {/*    autoComplete="zip"*/}
+                                {/*    onChange={this.handleChange('company')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
                                     fullWidth
+                                    margin="normal"
+                                    disabled
                                     id="zip"
                                     label="Zip-code"
-                                    name="zip"
-                                    autoComplete="zip"
-                                    onChange={this.handleChange('company')}
+                                    defaultValue="02912"
                                 />
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    fullWidth*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+
+                                {/*    id="email"*/}
+                                {/*    label="Email Address"*/}
+                                {/*    name="email"*/}
+                                {/*    autoComplete="email"*/}
+                                {/*    onChange={this.handleChange('email')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
                                     fullWidth
+                                    margin="normal"
+                                    disabled
                                     id="email"
-                                    label="Email Address"
-                                    name="email"
-                                    autoComplete="email"
-                                    onChange={this.handleChange('email')}
+                                    label="Email"
+                                    defaultValue="akhil@bob.com"
                                 />
+                                {/*<TextField*/}
+                                {/*    variant="outlined"*/}
+                                {/*    margin="normal"*/}
+                                {/*    required*/}
+                                {/*    fullWidth*/}
+                                {/*    name="password"*/}
+                                {/*    label="Password"*/}
+                                {/*    type="password"*/}
+                                {/*    id="password"*/}
+                                {/*    autoComplete="current-password"*/}
+                                {/*    onChange={this.handleChange('password')}*/}
+                                {/*/>*/}
                                 <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    required
+                                    hidden
                                     fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type="password"
+                                    margin="normal"
+                                    disabled
                                     id="password"
-                                    autoComplete="current-password"
-                                    onChange={this.handleChange('password')}
+                                    label="Password"
+                                    defaultValue="02912"
                                 />
 
                                 <Button
@@ -180,7 +247,7 @@ class Profile extends React.Component {
                                     color="primary"
                                     className={classes.submit}
                                 >
-                                    Sign In
+                                    Edit
                                 </Button>
 
                                 <Grid/>
