@@ -13,6 +13,8 @@ import image1 from './logo.png';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        margin: 15,
+        width: '100%',
     },
     paper: {
         padding: theme.spacing(2),
@@ -31,9 +33,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const adds = [["2 for 1", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $100'],
+               ["Buy 1 get 1 50% off!", 'All beer and wine is available in the offer!', 'Expires: 3/02/21', 'Up to $500'],
+            ["5 for 2", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $1000']];
+
 const Ad  = (props) => {
     const classes = useStyles();
-
+    console.log(props.children[0]);
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
@@ -47,13 +53,13 @@ const Ad  = (props) => {
                         <Grid item xs container direction="column" spacing={2}>
                             <Grid item xs>
                                 <Typography gutterBottom variant="subtitle1">
-                                    Standard license
+                                    {props.children[0]}
                                 </Typography>
                                 <Typography variant="body2" gutterBottom>
-                                    Full resolution 1920x1080 • JPEG
+                                    {props.children[1]}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
-                                    ID: 1030114
+                                    {props.children[2]}
                                 </Typography>
                             </Grid>
                             <Grid item>
@@ -63,7 +69,9 @@ const Ad  = (props) => {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <Typography variant="subtitle1">$19.00</Typography>
+                            <Typography variant="subtitle1">
+                                {props.children[3]}
+                            </Typography>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -121,18 +129,11 @@ const styles = theme => ({
 });
 
 
-// MICHAEL: FOR /orders I want a list of information, order quantity and UPC value to display
-// in the order list on the front-end. GET request for all orders for the current signed in
-// user.
-
-
 class Feed extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
     }
-
-
 
     render() {
 
@@ -144,11 +145,9 @@ class Feed extends React.Component{
                 <Container style={{marginTop: "100px"}} maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
                         <Grid item>
-                            // list of items where each item is a quantity
-                            // order component maintain a list of items as JSON that is quantity and UPC code
                             <ul>
 
-                                {['a', 'b', 'c'].map(function(item) {
+                                {adds.map(function(item) {
                                     return<li><Ad children={item}/></li>;
                                 })}
 
