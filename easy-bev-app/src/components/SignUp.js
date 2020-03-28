@@ -63,8 +63,8 @@ class SignUp extends React.Component {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({company: this.state.company, type:this.state.type, email: this.state.email, password: this.state.password }),
+            },//ben 42069 IS A PLACEHOLDER FOR THE ACTUAL CODE, MUST TAKE THAT AS INPUT WHEN SIGNING UP
+            body: JSON.stringify({code: 42069, company: this.state.company, type:this.state.type, email: this.state.email, password: this.state.password }),
         });
         const body = await response.json();
         console.log(body);

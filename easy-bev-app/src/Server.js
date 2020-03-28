@@ -24,6 +24,7 @@ const CREATE_DISTRIBUTORS =
 const CREATE_MERCHANTS =
     'CREATE TABLE  Merchants   (\
      id INTEGER PRIMARY KEY AUTOINCREMENT,\
+     d_id INTEGER not null,\
      name TEXT NOT NULL,\
      email TEXT NOT NULL UNIQUE ,\
      password TEXT NOT NULL,\
@@ -31,8 +32,9 @@ const CREATE_MERCHANTS =
      city TEXT,\
      state TEXT,\
      country TEXT,\
-     zipcode TEXT\
-    );';
+     zipcode TEXT,\
+    FOREIGN KEY(dist_id) REFERENCES Distributors(id)\
+);';
 
 const CREATE_ORDERS =
     'CREATE TABLE  orders (\
@@ -55,6 +57,13 @@ const CREATE_MESSAGES =
       timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP\
       );';
 
+const CREATE_CODES =
+    'CREATE TABLE  codes (\
+     code INTEGER PRIMARY KEY,\
+     d_id INTEGER NOT NULL,\
+     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+     FOREIGN KEY(d_id) REFERENCES Distributors(id)\
+);';
 
 const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS];
 const db = require('any-db')
@@ -131,6 +140,7 @@ function signIn(email, password, type){
                 if (valid){
                     out.status = "SUCCESS";
                     out.error = "";
+
                 }else{
                     out.error = "invalid credentials";
                 }
@@ -155,8 +165,6 @@ function create_tables () {
     }
 }
 
-// michael I NEEd A PROFILE endpoint that gives me information about the user
-// for distributors i want a list of their clients aswell
 
 function create_table (sql) {
     let done = false;
@@ -168,7 +176,7 @@ function create_table (sql) {
         }
         done = true;
     });
-    conn.end()
+    conn.end();
     deasync.loopWhile(()=>{return !done})
 }
 function validateEmail (email) {
@@ -178,6 +186,31 @@ function validateEmail (email) {
     return false
 }
 
+function getMerchantInfo(){
+
+}
+
+function getDistributorInfo(){
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn
+}
+
+function getInfo(type, email){
+    let done = false;
+    const out = {};
+    if(TYPES.includes(type.toLowerCase())){
+
+            done = true;
+
+    }else{
+        return {error:"Invalid type"}
+    }
+    deasync.loopWhile(()=>{
+        return !done;
+    });
+    return out;
+
+}
 app.post('/api/authenticate', (req,res) =>{
     console.log("in authenticate sending", req.session.valid);
     if (req.session.valid){
@@ -231,6 +264,8 @@ app.post('/api/signin', (req, res) => {
                 response = signIn(email, password, type);
                 if(!response.error){
                     req.session.valid = true;
+                    req.session.type = type;
+                    req.session.email = email;
                 }
             }else{
                 response.error = "invalid email";
@@ -247,6 +282,25 @@ app.post('/api/signin', (req, res) => {
 
 app.get('/api/hello', (req, res) => {
     res.send({express: 'Hello From Express'})
+});
+
+
+// michael I NEEd A PROFILE endpoint that gives me information about the user
+// for distributors i want a list of their clients as well
+
+app.post('/api/profile', (req,res) => {
+    if (req.session.valid){
+        const type = req.session.type;
+        if (type){
+            const response = getInfo(type, req.session.email);
+            res.send(response)
+        }else{
+            res.send({error:"no type was found in user session"})
+        }
+    }else{
+        res.send({error:"user session says they are not signed in"})
+    }
+
 });
 
 app.post('/api/get_client', (req, res) => {
