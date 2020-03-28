@@ -4,7 +4,9 @@ import BarcodeScanner from './BarcodeScanner';
 import Button from "@material-ui/core/Button";
 import Cart_Search from './Cart_Search';
 import Nav from "./Nav";
-import Footer from "./Footer";
+import Cart_basket from './Cart_basket';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 class Cart extends React.Component {
     constructor(props){
         super(props);
@@ -31,7 +33,23 @@ render() {
             <React.Fragment>
                 <Nav/>
                 <div id = "cart" style={style.cart}>
-                    <Cart_Search/>
+
+                    <Container maxWidth="md" component="main">
+
+                        <Grid container spacing={5} alignItems="center">
+                            <Cart_Search/>
+                            <Grid item>
+                            </Grid>
+                            <Grid item>
+                                <Cart_basket/>
+                            </Grid>
+                        </Grid>
+                    </Container>
+
+
+
+
+
 
                     {/*{ !this.state.bShowScanner ? (*/}
                     {/*    <Button onClick={this.showScanner} variant="contained">Default</Button>*/}
