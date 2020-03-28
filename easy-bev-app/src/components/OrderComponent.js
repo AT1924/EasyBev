@@ -19,49 +19,30 @@ const useStyles = makeStyles(theme => ({
 export default function SimpleExpansionPanel() {
     const classes = useStyles();
 
-    return (
-        <div className={classes.root}>
-            <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                >
-                    <Typography className={classes.heading}>6 Beers</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                        sit amet blandit leo lobortis eget.
-                    </Typography>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+    const SimpleExpansionPanel  = (props) => {
 
-            <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
-                >
-                    <Typography className={classes.heading}>13,000 WhiteClaws!</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                        sit amet blandit leo lobortis eget.
-                    </Typography>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
 
-            <ExpansionPanel >
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel3a-content"
-                    id="panel3a-header"
-                >
-                    <Typography className={classes.heading}>1 Grey Goose</Typography>
-                </ExpansionPanelSummary>
-            </ExpansionPanel>
-        </div>
-    );
+        return (
+            <div className={classes.root}>
+                <ExpansionPanel>
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon/>}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+                        <Typography className={classes.heading}>{props.key}</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <Typography>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+                            sit amet blandit leo lobortis eget.
+                        </Typography>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+
+
+            </div>
+        );
+    }
+    return SimpleExpansionPanel;
 }
