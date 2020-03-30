@@ -9,6 +9,7 @@ import Message from "./components/Message";
 import { Route,Redirect, Link, BrowserRouter as Router } from 'react-router-dom'
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './style/index.css'
 import {func} from "prop-types";
 const defaultTheme = createMuiTheme();
 
@@ -44,7 +45,7 @@ class App extends React.Component {
         return(
         <MuiThemeProvider theme={this.state.theme}>
         <Router>
-            <div>
+
                 <Route exact path="/" component={SignIn} />
                 {/*<PrivateRoute path='/feed' component={feed} />*/}
                 <PrivateRoute path='/profile' component={Profile} />
@@ -55,7 +56,7 @@ class App extends React.Component {
                 <Route path="/orders" component={Orders}/>
                 <Route path="/message" component={Message}/>
 
-            </div>
+
         </Router>
         </MuiThemeProvider>)
     }

@@ -17,10 +17,27 @@ class Cart extends React.Component {
         this.state = {
             messageKeyBase: 0,
             messages: [],
-            bShowScanner: false
+            bShowScanner: false,
+            cartListData: [],
         };
 
     }
+
+    populateCart = (searchData) => {
+        if (searchData != null) {
+            this.setState(state => {
+                let values = Object.values(searchData);
+                let item = [values[0], values[1]];
+                state.cartListData.push(item);
+
+                return state;
+            });
+        }
+
+    };
+
+
+
     // componentDidUpdate(){
     //     this.refDivMessage.current.scrollTop = this.refDivMessage.current.scrollHeight;
     // }
@@ -40,10 +57,13 @@ render() {
                 <Grid id="contained" container spacing={10} direction="column" justify="space-between">
 
                     <Grid item >
-                        <Cart_Search style={style.cart_search}/>
+                        <Cart_Search style={style.cart_search} callback={this.populateCart}/>
                     </Grid>
                     <Grid item>
-                        <Cart_basket/>
+
+                        <Cart_basket children={this.state.cartListData}/>
+
+
                     </Grid>
                 </Grid>
 

@@ -3,8 +3,11 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from '@material-ui/core/Typography';
+import CartTable from "./CartTable";
+
 
 const styles = theme =>({
     root: {
@@ -24,12 +27,17 @@ const styles = theme =>({
 });
 
 
-
-
 class Cart_basket extends React.Component{
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        this.state = {
+            children : []
+        };
 
+    }
+
+    createData(name, price) {
+        return { name, price};
     }
 
 
@@ -40,11 +48,16 @@ class Cart_basket extends React.Component{
                 <Card className={styles.root} variant="outlined">
                     <CardContent>
                         <Typography className={styles.title} variant="h5" component="h2">
-                            This is the Cart
+                            This is Your Cart
                         </Typography>
                         <Typography className={styles.pos} color="textSecondary">
                             Your items are listed below
                         </Typography>
+
+                        <Grid container>
+                            {console.log("logger", this.props.children)}
+                            <CartTable children={this.props.children}/>
+                        </Grid>
 
                     </CardContent>
 
