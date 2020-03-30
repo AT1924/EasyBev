@@ -4,9 +4,11 @@ import BarcodeScanner from './BarcodeScanner';
 import Button from "@material-ui/core/Button";
 import Cart_Search from './Cart_Search';
 import Nav from "./Nav";
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Cart_basket from './Cart_basket';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import { sizing } from '@material-ui/system';
 class Cart extends React.Component {
     constructor(props){
         super(props);
@@ -17,6 +19,7 @@ class Cart extends React.Component {
             messages: [],
             bShowScanner: false
         };
+
     }
     // componentDidUpdate(){
     //     this.refDivMessage.current.scrollTop = this.refDivMessage.current.scrollHeight;
@@ -31,20 +34,24 @@ class Cart extends React.Component {
 render() {
         return (
             <React.Fragment>
+                <CssBaseline />
                 <Nav/>
+
+                <Grid id="contained" container spacing={10} direction="column" justify="space-between">
+
+                    <Grid item >
+                        <Cart_Search style={style.cart_search}/>
+                    </Grid>
+                    <Grid item>
+                        <Cart_basket/>
+                    </Grid>
+                </Grid>
+
+
+
                 <div id = "cart" style={style.cart}>
 
-                    <Container maxWidth="md" component="main">
 
-                        <Grid container spacing={5} alignItems="center">
-                            <Cart_Search/>
-                            <Grid item>
-                            </Grid>
-                            <Grid item>
-                                <Cart_basket/>
-                            </Grid>
-                        </Grid>
-                    </Container>
 
 
 
@@ -124,6 +131,9 @@ render() {
 }
 
 const style = {
+    contained: {
+        height: "100vh",
+    },
     div_message: {
         maxHeight: "200px",
         overflowY: "auto",
@@ -131,13 +141,16 @@ const style = {
     },
     cart:{
         width:"100%",
-        position:"absolute",
+        position:"relative",
         top:"25%",
     },
     cameraViewContainer:{
         position:"absolute",
         width:"100%",
         height:"100%",
+    },
+    cart_search:{
+        width:"100%",
     }
 
 
