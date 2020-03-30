@@ -108,8 +108,6 @@ class Orders extends React.Component{
                 <Container style={{marginTop: "100px"}} maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
                         <Grid item>
-                            // list of items where each item is a quantity
-                            // order component maintain a list of items as JSON that is quantity and UPC code
                             <ul>
 
                                 {['a', 'b', 'c'].map(function(item) {
