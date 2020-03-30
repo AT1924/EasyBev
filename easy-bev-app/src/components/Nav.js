@@ -114,16 +114,16 @@ class Nav extends React.Component{
                                 EasyBev
                             </Typography>
                             <nav>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                <Link variant="button" color="textPrimary" href="/feed" className={classes.link}>
                                     Feed
                                 </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
                                     Messaging
                                 </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                <Link variant="button" color="textPrimary" href="/orders" className={classes.link}>
                                     Orders
                                 </Link>
                             </nav>
