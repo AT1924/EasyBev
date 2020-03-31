@@ -180,6 +180,9 @@ function codeToDist(code){
 
 
     });
+
+    //go to akhil function and get his input
+    //
     deasync.loopWhile(() =>{return !done});
     return out
 
@@ -240,49 +243,108 @@ function create_table (sql) {
     deasync.loopWhile(()=>{return !done})
 }
 function validateEmail (email) {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    if (email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
         return true
     }
     return false
 }
 
-function getMerchantInfo(){
-    conn.query('select * from Merchants where id = ?', [req.body.id], function (error, data) {
-        if (error) {
-            console.log('INNER');
-            console.log(error);
 
-        } else {
-            const clients = data.rows;
-            console.log(clients);
-            res.send(clients)
-        }
-
-        conn.end()
-
-    })
-}
-
-function getDistributorInfo(){
-    const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('select * from Distributors where ')
-
-}
-
-function getInfo(type, email){
+function getItems(){
     let done = false;
     const out = {};
-    if(TYPES.includes(type.toLowerCase())){
+    const conn = db.createConnection('sqlite3://easy-bev.db')
+    conn.query('select * from items', function (error, data) {
+        if (error) {
+            out.error = "SQL error";
+        } else {
+            out.body = {items: data.rows};
+        }
+        conn.end();
+        done = true;
 
+    });
+    deasync.loopWhile(()=>{return !done});
+    return out;
+}
+
+
+function getMerchantInfo(info){
+    let done = false;
+    const out = {};
+
+    if (validateEmail(info.email)){
+        const conn = db.createConnection('sqlite3://easy-bev.db')
+        conn.query('select * from Merchants where email = ?', [info.email], function (error, data) {
+            if (error || data.rowCount !== 1) {
+                out.error = data.rowCount === 0 ? "no such email found" : "multiple same emails found";
+            } else {
+                out.body = {merchant:data.rows[0]};
+            }
             done = true;
+            conn.end()
+
+        });
+    }else{
+        done = true;
+        out.error= "invalid email, reroute to login";
+    }
+
+    deasync.loopWhile(()=>{return !done});
+    return out;
+}
+
+function getDistributorInfo(info){
+    let done = false;
+    const out = {};
+
+    if (validateEmail(info.email)){
+        const conn = db.createConnection('sqlite3://easy-bev.db')
+        conn.query('select * from Distributors where email = ?', [info.email], function (err, data){
+            if (err || data.rowCount !== 1){
+                out.error = data.rowCount === 0 ? "no such email found" : "multiple same emails found";
+            }else{
+                out.body = {};
+                out.body.distributor = data.rows[0];
+
+            }
+            conn.query('select * from Merchants where d_id = ?', [out.body.distributor.id], function (err, data){
+                if (err){
+                    out.error = "SQL error:" + err;
+                }else{
+                    out.body.merchants = data.rows
+
+                }
+                done = true;
+                conn.end()
+
+            })
+
+        })
+
 
     }else{
-        return {error:"Invalid type"}
+        done = true;
+        out.error= "invalid email, reroute to login";
     }
-    deasync.loopWhile(()=>{
-        return !done;
-    });
+
+    deasync.loopWhile(()=>{return !done})
     return out;
+}
+
+function getInfo(info){
+    if (info.type){
+        if(info.type === TYPES[0]){
+            return getDistributorInfo(info);
+        }else if (info.type === TYPES[1]){ //merchant
+            return getMerchantInfo(info);
+        }else{
+            return {error:"invalid type"}
+        }
+    }else{
+        return {error:"invalid session, redirect to login"}
+    }
+
 
 }
 app.post('/api/authenticate', (req,res) =>{
@@ -306,6 +368,7 @@ app.post('/api/signup', (req, res) => {
             response  = signUp(req.body);
             if (!response.error){
                 console.log("NOT ERROR");
+                req.session.info = {email:email, type:req.body.type};
                 req.session.valid = true;
             }
         }
@@ -333,8 +396,8 @@ app.post('/api/signin', (req, res) => {
                 response = signIn(email, password, type);
                 if(!response.error){
                     req.session.valid = true;
-                    req.session.type = type;
-                    req.session.email = email;
+                    req.session.info = {email:email, type:req.body.type};
+                    console.log("SETTING", req.session.info)
                 }
             }else{
                 response.error = "invalid email";
@@ -357,25 +420,26 @@ app.get('/api/hello', (req, res) => {
 // michael I NEEd A PROFILE endpoint that gives me information about the user
 // for distributors i want a list of their clients as well
 
-app.post('/api/profile', (req,res) => {
-    if (req.session.valid){
-        const type = req.session.type;
-        if (type){
-            const response = getInfo(type, req.session.email);
-            res.send(response)
-        }else{
-            res.send({error:"no type was found in user session"})
-        }
-    }else{
-        res.send({error:"user session says they are not signed in"})
-    }
-
-});
+// app.post('/api/profile', (req,res) => {
+//     if (req.session.valid){
+//         const type = req.session.type;
+//         if (type){
+//             const response = getInfo(type, req.session.email);
+//             res.send(response)
+//         }else{
+//             res.send({error:"no type was found in user session"})
+//         }
+//     }else{
+//         res.send({error:"user session says they are not signed in"})
+//     }
+//
+// });
 
 app.post('/api/get_client', (req, res) => {
-    const conn = db.createConnection('sqlite3://easy-bev.db');
-    console.log(req.body.id);
-    //getDistributorInfo()
+    res.send(getInfo(req.session.info))
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
+console.log("poop")
+// console.log(getInfo({type:"distributors", email:"michael_bardakji@brown.edu"}));
+console.log(getItems());
