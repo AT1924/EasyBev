@@ -9,6 +9,12 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const SimpleExpansionPanel  = (props) => {
 
@@ -25,8 +31,38 @@ const SimpleExpansionPanel  = (props) => {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                        sit amet blandit leo lobortis eget.
+
+                        <TableContainer>
+                            <Table size="small" aria-label="a dense table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell align="right">Price $</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+
+
+                                    <TableRow key="Svedka 12 Pack">
+                                        <TableCell component="th" scope="row">
+                                            Svedka 12 Pack
+                                        </TableCell>
+                                        <TableCell align="right">64.99</TableCell>
+                                    </TableRow>
+
+                                    <TableRow key="Budlight Keg 4 Count">
+                                        <TableCell component="th" scope="row">
+                                            Budlight Keg 4 Count
+                                        </TableCell>
+                                        <TableCell align="right">231.99</TableCell>
+                                    </TableRow>
+
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+
+
+
                     </Typography>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -105,13 +141,15 @@ class Orders extends React.Component{
                 <CssBaseline/>
                 <Nav/>
 
-                <Container style={{marginTop: "100px"}} maxWidth="md" component="main">
-                    <Grid container spacing={5} alignItems="center">
-                        <Grid item>
+                <Container style={{marginTop: "100px", height: "100vh"}} maxWidth="md" component="main">
+                    <h2>Orders</h2>
+                    <Grid container spacing={5} alignItems="center" justify="flex-start">
+
+                        <Grid item style={{width: "600px"}}>
                             <ul>
 
-                                {['a', 'b', 'c'].map(function(item) {
-                                    return<li><SimpleExpansionPanel children={item}/></li>;
+                                {['Order 1 : 2/21/19', 'Order 2 : 3/14/19', 'Order 3 : 3/21/19'].map(function(item) {
+                                    return<li><SimpleExpansionPanel  children={item}/></li>;
                                 })}
 
 
