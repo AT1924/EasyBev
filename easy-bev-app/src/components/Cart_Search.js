@@ -9,7 +9,8 @@ class Cart_Search extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            tags: []
+            tags: [],
+            inventory:[]
         };
 
         this.getChoice = this.getChoice.bind(this);
@@ -34,7 +35,7 @@ class Cart_Search extends React.Component{
             <React.Fragment>
                 <Autocomplete
                     id="search_bar"
-                    options={inventory}
+                    options={this.state.inventory}
                     getOptionLabel={(option) => option.name}
                     style={{ width: 400 }}
                     onChange={this.getChoice}
@@ -48,13 +49,13 @@ class Cart_Search extends React.Component{
 
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const inventory = [
-    { name: 'WhiteClaw 6 Pack', price: 14.99 },
-    { name: 'Svedka 14 Count', price: 109.99 },
-    { name: 'Smirnoff Blue Raspberry 2 Count', price: 21.99 },
-    { name: 'BudLight 3 Count Keg', price: 250.00 },
-    { name: 'Mikes Hard Lemonade 6 Count', price: 10.89 },
-];
+// const inventory = [
+//     { name: 'WhiteClaw 6 Pack', price: 14.99 },
+//     { name: 'Svedka 14 Count', price: 109.99 },
+//     { name: 'Smirnoff Blue Raspberry 2 Count', price: 21.99 },
+//     { name: 'BudLight 3 Count Keg', price: 250.00 },
+//     { name: 'Mikes Hard Lemonade 6 Count', price: 10.89 },
+// ];
 
 
 const style = {

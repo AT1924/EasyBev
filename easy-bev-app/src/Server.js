@@ -202,6 +202,7 @@ function signIn(email, password, type){
                     out.status = "SUCCESS";
                     out.error = "";
 
+
                 }else{
                     out.error = "invalid credentials";
                 }
@@ -370,6 +371,8 @@ app.post('/api/signup', (req, res) => {
                 console.log("NOT ERROR");
                 req.session.info = {email:email, type:req.body.type};
                 req.session.valid = true;
+                response.body = getInfo(req.session.info).body
+
             }
         }
     }else{
@@ -377,8 +380,6 @@ app.post('/api/signup', (req, res) => {
     }
     console.log("in sign up, sending", response);
     res.send(response);
-
-
 });
 
 app.post('/api/signin', (req, res) => {
@@ -397,6 +398,7 @@ app.post('/api/signin', (req, res) => {
                 if(!response.error){
                     req.session.valid = true;
                     req.session.info = {email:email, type:req.body.type};
+                    response.body = getInfo(req.session.info).body;
                     console.log("SETTING", req.session.info)
                 }
             }else{
