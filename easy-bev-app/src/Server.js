@@ -440,6 +440,3 @@ app.post('/api/get_client', (req, res) => {
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
-console.log("poop")
-// console.log(getInfo({type:"distributors", email:"michael_bardakji@brown.edu"}));
-console.log(getItems());
