@@ -440,5 +440,9 @@ app.get('/api/hello', (req, res) => {
 app.post('/api/get_client', (req, res) => {
     res.send(getInfo(req.session.info))
 });
+app.post('/api/get_items', (req, res) => {
+    res.send(getItems())
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
