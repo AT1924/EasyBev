@@ -334,6 +334,7 @@ function getDistributorInfo(info){
 }
 
 function getInfo(info){
+    console.log("get info func received", info);
     if (info.type){
         if(info.type === TYPES[0]){
             return getDistributorInfo(info);
@@ -438,7 +439,9 @@ app.get('/api/hello', (req, res) => {
 // });
 
 app.post('/api/get_client', (req, res) => {
-    res.send(getInfo(req.session.info))
+    const myInfo = req.session.info;
+    const infoReturn = getInfo(myInfo);
+    res.send(infoReturn)
 });
 app.post('/api/get_items', (req, res) => {
     res.send(getItems())
