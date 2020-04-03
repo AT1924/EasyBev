@@ -25,25 +25,6 @@ class Cart extends React.Component {
 
     }
 
-    async getItems() {
-        try {
-            fetch("/api/get_items", {
-                method: "post",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-
-                //make sure to serialize your JSON body
-                body: JSON.stringify({})
-            })
-                .then( (response) => {
-                    console.log(response.json());
-                });
-        } catch(error) {
-            console.error(error);
-        }
-    }
 
     populateCart = (searchData) => {
         if (searchData != null) {
@@ -60,18 +41,8 @@ class Cart extends React.Component {
 
 
 
-    // componentDidUpdate(){
-    //     this.refDivMessage.current.scrollTop = this.refDivMessage.current.scrollHeight;
-    // }
-    // componentWillUnmount(){
-    //     if(this.reader){
-    //         this.reader.destroy();
-    //     }
-    // }
-// {/*<button id = "scanButton" onClick={this.showScanner}>Scan</button>*/}
-
 render() {
-    const info = this.getItems();
+
         return (
             <React.Fragment>
                 <CssBaseline />
@@ -197,6 +168,6 @@ const style = {
     }
 
 
-}
+};
 
 export default Cart;

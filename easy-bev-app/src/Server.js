@@ -266,7 +266,6 @@ function getItems(){
 
     });
     deasync.loopWhile(()=>{return !done});
-    console.log(out);
     return out;
 }
 

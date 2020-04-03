@@ -10,10 +10,32 @@ class Cart_Search extends React.Component{
         super(props);
         this.state = {
             tags: [],
+            inventory: [],
         };
 
         this.getChoice = this.getChoice.bind(this);
 
+    }
+
+    async getItems() {
+        try {
+            fetch("/api/get_items", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            })
+                .then( (response) => {
+                    console.log(response.json());
+                    return response.json();
+                });
+        } catch(error) {
+            console.error(error);
+        }
     }
 
     getChoice = (event, values) => {
@@ -29,7 +51,8 @@ class Cart_Search extends React.Component{
 
 
     render() {
-
+        const info = this.getItems();
+        console.log(info);
         return (
             <React.Fragment>
                 <Autocomplete
