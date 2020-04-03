@@ -9,6 +9,8 @@ import Cart_basket from './Cart_basket';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { sizing } from '@material-ui/system';
+
+
 class Cart extends React.Component {
     constructor(props){
         super(props);
@@ -21,6 +23,26 @@ class Cart extends React.Component {
             cartListData: [],
         };
 
+    }
+
+    async getItems() {
+        try {
+            fetch("/api/get_items", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            })
+                .then( (response) => {
+                    console.log(response.json());
+                });
+        } catch(error) {
+            console.error(error);
+        }
     }
 
     populateCart = (searchData) => {
@@ -49,6 +71,7 @@ class Cart extends React.Component {
 // {/*<button id = "scanButton" onClick={this.showScanner}>Scan</button>*/}
 
 render() {
+    const info = this.getItems();
         return (
             <React.Fragment>
                 <CssBaseline />
