@@ -47,12 +47,12 @@ class App extends React.Component {
         <Router>
 
                 <Route exact path="/" component={SignIn} />
-                {/*<PrivateRoute path='/feed' component={feed} />*/}
+                <PrivateRoute path='/feed' component={feed} />
                 <PrivateRoute path='/profile' component={Profile} />
                 <Route path="/cart" component={Cart} />
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
-                <Route path="/feed" component={feed} />
+                {/*<Route path="/feed" component={feed} />*/}
                 <Route path="/orders" component={Orders}/>
                 <Route path="/message" component={Message}/>
 

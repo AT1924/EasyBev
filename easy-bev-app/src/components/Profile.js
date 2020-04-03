@@ -122,17 +122,6 @@ class Profile extends React.Component {
                                 Profile
                             </Typography>
                             <form className={classes.form} noValidate onSubmit={this.signIn}>
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
-                                {/*    fullWidth*/}
-                                {/*    id="company"*/}
-                                {/*    label="Company Name"*/}
-                                {/*    name="company"*/}
-                                {/*    autoComplete="company"*/}
-                                {/*    onChange={this.handleChange('company')}*/}
-                                {/*/>*/}
                                 <TextField
                                     disabled
                                     fullWidth
@@ -141,17 +130,6 @@ class Profile extends React.Component {
                                     label="Company Name"
                                     defaultValue="Akhils Company"
                                 />
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
-                                {/*    fullWidth*/}
-                                {/*    id="address"*/}
-                                {/*    label="Street Address"*/}
-                                {/*    name="address"*/}
-                                {/*    autoComplete="address"*/}
-                                {/*    onChange={this.handleChange('company')}*/}
-                                {/*/>*/}
                                 <TextField
                                     fullWidth
                                     margin="normal"
@@ -160,17 +138,7 @@ class Profile extends React.Component {
                                     label="Address"
                                     defaultValue="85 Canal St."
                                 />
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
-                                {/*    fullWidth*/}
-                                {/*    id="State"*/}
-                                {/*    label="State"*/}
-                                {/*    name="state"*/}
-                                {/*    autoComplete="state"*/}
-                                {/*    onChange={this.handleChange('company')}*/}
-                                {/*/>*/}
+
                                 <TextField
                                     fullWidth
                                     margin="normal"
@@ -179,17 +147,7 @@ class Profile extends React.Component {
                                     label="State"
                                     defaultValue="RI"
                                 />
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
-                                {/*    fullWidth*/}
-                                {/*    id="zip"*/}
-                                {/*    label="Zip-code"*/}
-                                {/*    name="zip"*/}
-                                {/*    autoComplete="zip"*/}
-                                {/*    onChange={this.handleChange('company')}*/}
-                                {/*/>*/}
+
                                 <TextField
                                     fullWidth
                                     margin="normal"
@@ -198,18 +156,7 @@ class Profile extends React.Component {
                                     label="Zip-code"
                                     defaultValue="02912"
                                 />
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    fullWidth*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
 
-                                {/*    id="email"*/}
-                                {/*    label="Email Address"*/}
-                                {/*    name="email"*/}
-                                {/*    autoComplete="email"*/}
-                                {/*    onChange={this.handleChange('email')}*/}
-                                {/*/>*/}
                                 <TextField
                                     fullWidth
                                     margin="normal"
@@ -218,18 +165,7 @@ class Profile extends React.Component {
                                     label="Email"
                                     defaultValue="akhil@bob.com"
                                 />
-                                {/*<TextField*/}
-                                {/*    variant="outlined"*/}
-                                {/*    margin="normal"*/}
-                                {/*    required*/}
-                                {/*    fullWidth*/}
-                                {/*    name="password"*/}
-                                {/*    label="Password"*/}
-                                {/*    type="password"*/}
-                                {/*    id="password"*/}
-                                {/*    autoComplete="current-password"*/}
-                                {/*    onChange={this.handleChange('password')}*/}
-                                {/*/>*/}
+
                                 <TextField
                                     hidden
                                     fullWidth

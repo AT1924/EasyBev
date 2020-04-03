@@ -54,8 +54,8 @@ const styles = theme => ({
 
 class SignUp extends React.Component {
     state = {
-        email: '', password: '', error: false, errorMsg: '', type: "merchants", company: '', signin: false, code: 42069,
-        address: '', state: '', zip: '', city: '',
+        email: 'ben@ben.com', password: 'ben', error: false, errorMsg: '', type: "merchants", company: 'ben', signin: false, code: 42069,
+        address: 'ben', state: 'ben', zip: '92012', city: 'ben',
     };
 
     signUp = async e => {
@@ -335,6 +335,16 @@ class SignUp extends React.Component {
                                 </Grid>
                             </Grid>
                         </form>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            onClick={this.signUp}
+                        >
+                            Quick Sign up - ben@ben.com, ben
+                        </Button>
                     </div>
                     <Box mt={5}>
                         <Copyright/>

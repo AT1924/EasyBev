@@ -266,6 +266,7 @@ function getItems(){
 
     });
     deasync.loopWhile(()=>{return !done});
+    console.log(out);
     return out;
 }
 
@@ -371,6 +372,7 @@ app.post('/api/signup', (req, res) => {
             if (!response.error){
                 console.log("NOT ERROR");
                 req.session.info = {email:email, type:req.body.type};
+                console.log(req.session.info);
                 req.session.valid = true;
                 response.body = getInfo(req.session.info).body
 
