@@ -8,7 +8,17 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Cart_basket from './Cart_basket';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import CartItem_Details from "./CartItem_Details"
 import { sizing } from '@material-ui/system';
+
+const inventory = [
+    { upc: 8256607 , name: 'AMERICAN ANTHEM VODKA 10/12PKS, 50ML', size: 50, qty: 10, price: 100.00},
+    { upc: 8257606, name: 'CIROC VS, LTR', size: 1000, qty: 12, price: 100.00},
+    { upc: 8262802, name: 'BULLEIT RYE, 200', size: 200, qty: 48, price: 100.00},
+    { upc: 8776509, name: 'SEAGRAMS SEVEN CROWN 12/CS, 375', size: 375, qty: 12, price: 100.00},
+    { upc: 8260901, name: 'CIROC BLACK RASPBERRY 4/15PK, 50ML', size: 50, qty:4, price: 100.00},
+];
+
 
 
 class Cart extends React.Component {
@@ -21,6 +31,7 @@ class Cart extends React.Component {
             messages: [],
             bShowScanner: false,
             cartListData: [],
+            currItem: null
         };
 
     }
@@ -29,15 +40,42 @@ class Cart extends React.Component {
     populateCart = (searchData) => {
         if (searchData != null) {
             this.setState(state => {
-                let values = Object.values(searchData);
-                let item = [values[0], values[1]];
-                state.cartListData.push(item);
+                //let values = Object.values(searchData);
+                //let item = [values[0], values[1]];
+                //state.currItem = Object.values(searchData);
+                state.cartListData.push(Object.values(searchData));
 
                 return state;
             });
+
+            // here use search data to get all the information regarding the item
+
+
         }
 
+
     };
+
+
+    // populateCartSecond = (searchData) => {
+    //     if (searchData != null) {
+    //         this.setState(state => {
+    //             //let values = Object.values(searchData);
+    //             //let item = [values[0], values[1]];
+    //             state.cartListData.push(Object.values(searchData));
+    //
+    //             return state;
+    //         });
+    //
+    //         // here use search data to get all the information regarding the item
+    //
+    //
+    //     }
+    //
+    //
+    // };
+
+
 
 
 
@@ -50,13 +88,16 @@ render() {
 
                 <Grid id="contained" container spacing={10} direction="column" justify="space-between">
 
-                    <Grid item >
-                        <Cart_Search style={style.cart_search} callback={this.populateCart}/>
-                    </Grid>
+
+                        <Grid item >
+                            <Cart_Search style={style.cart_search} children={inventory} callback={this.populateCart}/>
+                        </Grid>
+
+
+
                     <Grid item>
 
-                        <Cart_basket children={this.state.cartListData}/>
-
+                        <Cart_basket children={this.state.cartListData} />
 
                     </Grid>
                 </Grid>
