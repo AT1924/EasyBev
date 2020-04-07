@@ -2,7 +2,6 @@ const express = require('express');
 var session = require('express-session');
 
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
 const app = express();
 const deasync = require('deasync');
 
@@ -335,7 +334,7 @@ function getDistributorInfo(info){
 
 function getInfo(info){
     console.log("get info func received", info);
-    if (info.type){
+    if (info && info.type){
         if(info.type === TYPES[0]){
             return getDistributorInfo(info);
         }else if (info.type === TYPES[1]){ //merchant
@@ -369,13 +368,13 @@ function getOrders(info){
     const type = info.type;
     if (type !== TYPES[1]){
         console.log(type)
-        return {error: "non-merchants can not make orders"}
+        return {error: "non-merchants can not get orders"}
     }
     let done = false;
     const out = {};
     const meta = getMerchantInfo(info).body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    console.log(meta)
+    console.log(meta);
     conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
         if(err){
             out.error = "sql error";
