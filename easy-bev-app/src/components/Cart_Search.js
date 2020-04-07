@@ -31,7 +31,6 @@ class Cart_Search extends React.Component{
             })
                 .then( (response) => {
                     console.log(response.json());
-                    return response.json();
                 });
         } catch(error) {
             console.error(error);
