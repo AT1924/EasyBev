@@ -157,7 +157,7 @@ class Profile extends React.Component {
         } else {
             console.log(body);
         }
-    }
+    };
 
     handleOpen = (name) => (event, isExpanding) => {
         if (name === 'panel1') {
@@ -201,6 +201,7 @@ class Profile extends React.Component {
         if (this.state.billing) {
             this.setState({billing: false})
         } else {
+            this.updatePay();
             this.setState({billing: true})
         }
     }
