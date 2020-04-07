@@ -87,6 +87,7 @@ class Cart extends React.Component {
 
     makeOrder = async e => {
         e.preventDefault();
+        console.log(this.state.cartListData);
         console.log("Sending order");
         const response = await fetch('/api/make_order', {
             method: 'POST',
@@ -125,7 +126,7 @@ class Cart extends React.Component {
                 //let values = Object.values(searchData);
                 //let item = [values[0], values[1]];
                 //state.currItem = Object.values(searchData);
-                state.cartListData.push(Object.values(searchData));
+                state.cartListData.push(searchData);
                 return state
             });
 
