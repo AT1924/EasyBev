@@ -22,13 +22,26 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Divider from "@material-ui/core/Divider";
 
 const styles = theme => ({
     paper: {
         marginTop: theme.spacing(8),
+        marginBottom: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+    },
+    root: {
+      margin: theme.spacing(5),
+    },
+    divide: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
     },
     avatar: {
         margin: theme.spacing(1),
@@ -49,7 +62,7 @@ class Profile extends React.Component {
         this.state = {
             email: '', company: '', state: '', zip: '', address: '',
             error: false, errorMsg: '', redirect: false, type: "Merchant", signin: false,
-            body: [], rows: [],
+            body: [], rows: [], panel1: true, panel2: false,
         };
 
     }
@@ -98,7 +111,21 @@ class Profile extends React.Component {
             console.error(error);
         }
     }
-
+    handleOpen = (name) => (event, isExpanding) => {
+        if (name === 'panel1') {
+            if (this.state.panel1 === true) {
+                this.setState({panel1: false})
+            } else {
+                this.setState({panel1: true, panel2: false})
+            }
+        } else {
+            if (this.state.panel2 === true) {
+                this.setState({panel2: false})
+            } else {
+                this.setState({panel2: true, panel1: false})
+            }
+        }
+    };
 
     handleChange = name => (event) => {
         this.setState({ [name]: event.target.value });
@@ -125,85 +152,202 @@ class Profile extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const {company, address, state, zip, email, type, rows} = this.state;
-        console.log(this.state);
+        const {company, address, state, zip, email, type, rows, panel1, panel2} = this.state;
 
             return (
                 <React.Fragment>
                     <CssBaseline />
                     <Nav/>
 
-                    <Container component="main" maxWidth="xs">
+                    <Container component="main" maxWidth='md'>
                         <CssBaseline />
-                        <div className={classes.paper} >
-                            <Typography component="h1" variant="h5">
-                                Profile
-                            </Typography>
-                            <form className={classes.form} noValidate onSubmit={this.signIn}>
-                                <TextField
-                                    disabled
-                                    fullWidth
-                                    margin="normal"
-                                    id="company"
-                                    label="Type"
-                                    value={type}
-                                />
-                                <TextField
-                                    disabled
-                                    fullWidth
-                                    margin="normal"
-                                    id="company"
-                                    label="Company Name"
-                                    value={company}
-                                />
-                                <TextField
-                                    fullWidth
-                                    margin="normal"
-                                    disabled
-                                    id="address"
-                                    label="Address"
-                                    value={address}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    margin="normal"
-                                    disabled
-                                    id="State"
-                                    label="State"
-                                    value={state}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    margin="normal"
-                                    disabled
-                                    id="zip"
-                                    label="Zip-code"
-                                    // defaultValue={zip}
-                                    value={zip}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    margin="normal"
-                                    disabled
-                                    id="email"
-                                    label="Email"
-                                    value={email}
-                                />
-
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submit}
+                        <div className={classes.root}>
+                            <ExpansionPanel expanded={panel1} onChange={this.handleOpen('panel1')}>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel2bh-content"
+                                    id="panel2bh-header"
                                 >
-                                    Edit
-                                </Button>
+                                    <Typography className={classes.heading}>User Information</Typography>
+                                    {/*<Typography className={classes.secondaryHeading}>*/}
+                                    {/*    Last Edited: 09/92/12*/}
+                                    {/*</Typography>*/}
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <form className={classes.form} noValidate onSubmit={this.signIn}>
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="company"
+                                            label="Type"
+                                            value={type}
+                                        />
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="company"
+                                            label="Company Name"
+                                            value={company}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="address"
+                                            label="Address"
+                                            value={address}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="State"
+                                            label="State"
+                                            value={state}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="zip"
+                                            label="Zip-code"
+                                            // defaultValue={zip}
+                                            value={zip}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="email"
+                                            label="Email"
+                                            value={email}
+                                        />
+
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            className={classes.submit}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </form>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                            <ExpansionPanel expanded={panel2} onChange={this.handleOpen('panel2')}>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel3bh-content"
+                                    id="panel3bh-header"
+                                >
+                                    <Typography className={classes.heading}>Billing Information</Typography>
+
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <form className={classes.form} noValidate onSubmit={this.signIn}>
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="payname"
+                                            label="Name"
+                                            defaultValue="Credit Card Holder Name"
+                                            // value={type}
+                                        />
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="payphone"
+                                            label="Phone"
+                                            defaultValue="Phone"
+                                            // value={company}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="payaddress"
+                                            label="Address"
+                                            defaultValue="Billing Address"
+                                            // value={address}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="paycountry"
+                                            label="Country"
+                                            defaultValue='Billing Country'
+                                            // value={state}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="billcity"
+                                            label="City"
+                                            defaultValue='Billing City'
+                                            // value={zip}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="billzip"
+                                            label="Postal Code"
+                                            defaultValue='Billing Zip'
+                                            // value={email}
+                                        />
+                                        <Divider className={classes.divide}/>
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="billcardnum"
+                                            label="Credit Card No."
+                                            defaultValue='Card Number'
+                                            // value={email}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="billvernum"
+                                            label="Card Verification No."
+                                            defaultValue='Billing Zip'
+                                            // value={email}
+                                        />
+
+
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            className={classes.submit}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </form>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                        </div>
+                        <div className={classes.paper} >
 
                                 {this.check() ? <Container>
+                                        <Typography component="h1" variant="h5" className={classes.divide}>
+                                            Client List
+                                        </Typography>
                                         <TableContainer component={Paper}>
                                             <Table className={classes.table} size="small" aria-label="a dense table">
                                                 <TableHead>
@@ -234,10 +378,8 @@ class Profile extends React.Component {
                                     </Container>}
 
 
-
-
                                 <Grid/>
-                            </form>
+
                         </div>
                     </Container>
 
