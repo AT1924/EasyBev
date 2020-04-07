@@ -36,9 +36,7 @@ class Cart_basket extends React.Component{
 
     }
 
-    createData(name, price) {
-        return { name, price};
-    }
+
 
 
     render() {
@@ -55,7 +53,6 @@ class Cart_basket extends React.Component{
                         </Typography>
 
                         <Grid container>
-                            {console.log("logger", this.props.children)}
                             <CartTable children={this.props.children}/>
                         </Grid>
 
