@@ -10,6 +10,11 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import CartItem_Details from "./CartItem_Details"
 import { sizing } from '@material-ui/system';
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import CartTable from "./CartTable";
+import CardActions from "@material-ui/core/CardActions";
+import Card from "@material-ui/core/Card";
 
 const inventory = [
     { upc: 8256607 , name: 'AMERICAN ANTHEM VODKA 10/12PKS, 50ML', size: 50, qty: 10, price: 100.00},
@@ -19,6 +24,22 @@ const inventory = [
     { upc: 8260901, name: 'CIROC BLACK RASPBERRY 4/15PK, 50ML', size: 50, qty:4, price: 100.00},
 ];
 
+const styles = theme =>({
+    root: {
+        minWidth: 275,
+    },
+    bullet: {
+        display: 'inline-block',
+        margin: '0 2px',
+        transform: 'scale(0.8)',
+    },
+    title: {
+        fontSize: 14,
+    },
+    pos: {
+        marginBottom: 12,
+    },
+});
 
 
 class Cart extends React.Component {
@@ -31,21 +52,83 @@ class Cart extends React.Component {
             messages: [],
             bShowScanner: false,
             cartListData: [],
-            currItem: null
+            currItem: null,
+            inventory: [],
+            response: '',
         };
-
     }
 
+    componentDidMount() {
+        this.getItems();
+    }
 
-    populateCart = (searchData) => {
+    async getItems() {
+        try {
+            fetch("/api/get_items", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            }).then( response => response.json())
+                .then(json => {
+                        console.log(json);
+                    this.setState({inventory: json.body.items});
+                    }
+                );
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+    signIn = async e => {
+        e.preventDefault();
+        const response = await fetch('/api/make_order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify({order:this.state.cartListData }),
+        });
+        const body = await response.json();
+        console.log(body);
+        if (body.error) {
+            console.log(body);
+            this.setState({ errorMsg: body.error});
+
+            return false;
+        }
+        else if (!(body.error)){
+            this.setState({ cartListData: [],
+            response: "Order Successful"});
+        }
+        else {
+            console.log(body);
+        }
+
+        return false;
+    };
+
+
+    populateCart = (searchData, qty) => {
+
         if (searchData != null) {
+            if (searchData.length === 7) {
+                searchData.push(qty);
+            } else {
+                searchData[7] = qty;
+            }
+            console.log(searchData);
             this.setState(state => {
                 //let values = Object.values(searchData);
                 //let item = [values[0], values[1]];
                 //state.currItem = Object.values(searchData);
                 state.cartListData.push(Object.values(searchData));
-
-                return state;
+                return state
             });
 
             // here use search data to get all the information regarding the item
@@ -55,28 +138,6 @@ class Cart extends React.Component {
 
 
     };
-
-
-    // populateCartSecond = (searchData) => {
-    //     if (searchData != null) {
-    //         this.setState(state => {
-    //             //let values = Object.values(searchData);
-    //             //let item = [values[0], values[1]];
-    //             state.cartListData.push(Object.values(searchData));
-    //
-    //             return state;
-    //         });
-    //
-    //         // here use search data to get all the information regarding the item
-    //
-    //
-    //     }
-    //
-    //
-    // };
-
-
-
 
 
 render() {
@@ -90,12 +151,38 @@ render() {
 
 
                         <Grid item >
-                            <Cart_Search  children={inventory} callback={this.populateCart}/>
+                            <Cart_Search  children={this.state.inventory} callback={this.populateCart}/>
                         </Grid>
 
                     <Grid item>
 
-                        <Cart_basket children={this.state.cartListData} />
+                        {/*<Cart_basket children={this.state.cartListData} />*/}
+                        <Card className={styles.root} variant="outlined">
+                            <CardContent>
+                                <Typography className={styles.title} variant="h5" component="h2">
+                                    This is Your Cart
+                                </Typography>
+                                <Typography className={styles.pos} color="textSecondary">
+                                    Your items are listed below
+                                </Typography>
+
+                                <Grid container>
+                                    <CartTable children={this.state.cartListData}/>
+                                </Grid>
+
+                            </CardContent>
+
+                            <CardActions>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    style={{ textTransform: 'none' }}
+                                >
+                                    Payment
+                                </Button>
+                            </CardActions>
+                            {this.state.response}
+                        </Card>
 
                     </Grid>
                 </Grid>

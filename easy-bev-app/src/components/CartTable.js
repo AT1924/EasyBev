@@ -57,17 +57,19 @@ class CartTable extends React.Component{
                             <TableRow>
                                 <TableCell>Name</TableCell>
                                 <TableCell align="right">Price $</TableCell>
+                                <TableCell align="right">Quantity</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {
                                 this.props.children.map((row) => (
 
-                                <TableRow key={row[1]}>
+                                <TableRow key={row[2]}>
                                     <TableCell component="th" scope="row">
-                                        {row[1]}
+                                        {row[2]}
                                     </TableCell>
-                                    <TableCell align="right">{row[4]}</TableCell>
+                                    <TableCell align="right">{row[5]}</TableCell>
+                                    <TableCell align="right">{row[7]}</TableCell>
                                 </TableRow>
                                     ))}
                         </TableBody>
