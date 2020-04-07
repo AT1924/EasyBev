@@ -2,7 +2,7 @@ const express = require('express');
 var session = require('express-session');
 
 const bodyParser = require('body-parser');
-//const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const app = express();
 const deasync = require('deasync');
 
@@ -130,9 +130,8 @@ function signUp(body){
         return {error:"invalid password"}
     }
     if(TYPES.includes(type.toLowerCase())){
-        // bcrypt.hash(body.password, saltRounds)
-        //     .then(hashedPassword => {
-                const hashedPassword = body.password;
+        bcrypt.hash(body.password, saltRounds)
+            .then(hashedPassword => {
                 const conn = db.createConnection('sqlite3://easy-bev.db');
                 let insert = "";
                 const param = [body.company, body.email, hashedPassword, body.address, body.city, body.state, body.zip];
@@ -160,7 +159,7 @@ function signUp(body){
                     conn.end();
                     done = true;
                 })
-            //})
+            })
     }else{
         out.error = "invalid type";
         done = true;
@@ -212,8 +211,8 @@ function signIn(email, password, type){
         const passwordOut = getPassword(email, type);
         console.log("RECEIVED",passwordOut);
         if(!passwordOut.error){
-            //bcrypt.compare(password,passwordOut.body).then((valid) =>{
-            if (password === passwordOut.body){
+            bcrypt.compare(password,passwordOut.body).then((valid) =>{
+            if (valid){
                 out.status = "SUCCESS";
                 out.error = "";
 
@@ -224,7 +223,7 @@ function signIn(email, password, type){
             done = true;
 
 
-            // })
+            })
         }else{
             out.error = passwordOut.error;
             done = true;
