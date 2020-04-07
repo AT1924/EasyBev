@@ -557,11 +557,6 @@ app.post('/api/get_items', (req, res) => {
 });
 
 
-app.post('/api/get_orders', (req, res) => {
-    const myInfo = req.session.info;
-    const infoReturn = getInfo(myInfo);
-    res.send(infoReturn)
-});
 app.post('/api/make_order', (req, res) => {
     res.send(makeOrder(req.session.info, req.body))
 });
@@ -569,5 +564,7 @@ app.post('/api/make_order', (req, res) => {
 app.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
+
+console.log(getOrders({email:"michael_bardakji@brown.edu", type:TYPES[1]}))
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
