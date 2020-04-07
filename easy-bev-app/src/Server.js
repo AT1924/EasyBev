@@ -2,7 +2,7 @@ const express = require('express');
 var session = require('express-session');
 
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 const app = express();
 const deasync = require('deasync');
 
@@ -15,6 +15,22 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 300000 }}));
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
 //     //                 type:this.state.type, email: this.state.email, password: this.state.password }
+const CREATE_PAYMENT =
+    'CREATE TABLE payment (\
+    id INTEGER PRIMARY KEY AUTOINCREMENT,\
+    name text not null,\
+    digits INTEGER NOT NULL UNIQUE,\
+    security_code INTEGER  not null,\
+    phone TEXT NOT NULL,\
+    address TEXT NOT NULL,\
+    country TEXT NOT NULL,\
+    city TEXT NOT NULL,\
+    postal_code TEXT NOT NULL,\
+    exp_month NUMERIC NOT NULL,\
+    exp_year NUMERIC NOT NULL,\
+    merchant bool not null,\
+    f_id INTEGER not null);';
+
 const CREATE_DISTRIBUTORS =
     'CREATE TABLE Distributors   (\
         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,\
@@ -72,7 +88,7 @@ const CREATE_CODES =
 );';
 
 
-const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS, CREATE_CODES];
+const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_ORDERS, CREATE_CODES, CREATE_PAYMENT];
 const db = require('any-db');
 const saltRounds = 10;
 create_tables();
@@ -114,9 +130,9 @@ function signUp(body){
         return {error:"invalid password"}
     }
     if(TYPES.includes(type.toLowerCase())){
-        bcrypt.hash(body.password, saltRounds)
-            .then(hashedPassword => {
-
+        // bcrypt.hash(body.password, saltRounds)
+        //     .then(hashedPassword => {
+                const hashedPassword = body.password;
                 const conn = db.createConnection('sqlite3://easy-bev.db');
                 let insert = "";
                 const param = [body.company, body.email, hashedPassword, body.address, body.city, body.state, body.zip];
@@ -144,7 +160,7 @@ function signUp(body){
                     conn.end();
                     done = true;
                 })
-            })
+            //})
     }else{
         out.error = "invalid type";
         done = true;
@@ -196,18 +212,19 @@ function signIn(email, password, type){
         const passwordOut = getPassword(email, type);
         console.log("RECEIVED",passwordOut);
         if(!passwordOut.error){
-            bcrypt.compare(password,passwordOut.body).then((valid) =>{
-                console.log("valid is", valid)
-                if (valid){
-                    out.status = "SUCCESS";
-                    out.error = "";
+            //bcrypt.compare(password,passwordOut.body).then((valid) =>{
+            if (password === passwordOut.body){
+                out.status = "SUCCESS";
+                out.error = "";
 
 
-                }else{
-                    out.error = "invalid credentials";
-                }
-                done = true;
-            })
+            }else{
+                out.error = "invalid credentials";
+            }
+            done = true;
+
+
+            // })
         }else{
             out.error = passwordOut.error;
             done = true;
@@ -295,6 +312,69 @@ function getMerchantInfo(info){
     return out;
 }
 
+// id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     name text not null,
+//     digits INTEGER NOT NULL UNIQUE,
+//     security_code INTEGER  not null
+// phone TEXT NOT NULL,
+//     address TEXT NOT NULL,
+//     country TEXT NOT NULL,
+//     city TEXT NOT NULL,
+//     postal_code TEXT NOT NULL,
+//     exp_month NUMERIC NOT NULL,
+//     exp_year NUMERIC NOT NULL
+// merchant boolean not null
+// f_id INTEGER not null
+
+function insertPayment(meta, payment){
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    const isMerchant = info.type === TYPES[1]
+    let done = false;
+    const out = {};
+    conn.query('insert into payment(name, digits, security_code, phone, address, country, city, postal_code, exp_month, exp_year, merchant, f_id) values()', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
+        if (err){
+            out.error = "sql error"+ err
+        }else{
+            out.status = "SUCCESS";
+        }
+        done = true;
+    });
+    deasync.loopWhile(()=>{return !done});
+}
+
+function updatePayment(info, payment){
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    const isMerchant = info.type === TYPES[1]
+    let done = false;
+    const out = {};
+    conn.query('update payment set name = ?, digits = ?, security_code = ?, phone= ?, address=?, country=?, city=?, postal_code=?, exp_month=?, exp_year=?, f_id=? where isMerchant = ? and f_id = ?', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
+        if (err){
+            out.error = "sql error"+ err
+        }else{
+            out.status = "SUCCESS";
+        }
+        done = true;
+    });
+    deasync.loopWhile(()=>{return !done});
+}
+
+function addPayment(info, payment){
+    if (validateEmail(info.email)) {
+        const meta = getInfo(info);
+        const conn = db.createConnection('sqlite3://easy-bev.db');
+        const isMerchant = info.type === TYPES[1]
+        conn.query('select * from payment where merchant = ? and f_id = ?', [isMerchant, meta.id], function (err, data) {
+            if (data.rowCount === 0) {
+                return insertPayment(meta, payment, isMerchant)
+            } else if (!err) {
+                return updatePayment(meta, payment, isMerchant)
+            } else {
+                return {error: "sql error" + err}
+            }
+        });
+    }
+}
+
 function getDistributorInfo(info){
     let done = false;
     const out = {};
@@ -335,7 +415,7 @@ function getDistributorInfo(info){
 
 function getInfo(info){
     console.log("get info func received", info);
-    if (info.type){
+    if (info && info.type){
         if(info.type === TYPES[0]){
             return getDistributorInfo(info);
         }else if (info.type === TYPES[1]){ //merchant
@@ -369,13 +449,13 @@ function getOrders(info){
     const type = info.type;
     if (type !== TYPES[1]){
         console.log(type)
-        return {error: "non-merchants can not make orders"}
+        return {error: "non-merchants can not get orders"}
     }
     let done = false;
     const out = {};
     const meta = getMerchantInfo(info).body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    console.log(meta)
+    console.log(meta);
     conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
         if(err){
             out.error = "sql error";
@@ -548,5 +628,11 @@ app.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
 
+app.post('/api/add_payment', (req, res) => {
+    res.send(addPayment(req.session.info, req.body))
+});
 
-app.listen(port, () => console.log(`Listening on port ${port}`))
+
+
+
+app.listen(port, () => console.log(`Listening on port ${port}`));
