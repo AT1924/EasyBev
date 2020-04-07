@@ -40,34 +40,10 @@ class Cart_basket extends React.Component{
 
 
     render() {
-
+        console.log(this.props.children);
         return (
             <React.Fragment>
-                <Card className={styles.root} variant="outlined">
-                    <CardContent>
-                        <Typography className={styles.title} variant="h5" component="h2">
-                            This is Your Cart
-                        </Typography>
-                        <Typography className={styles.pos} color="textSecondary">
-                            Your items are listed below
-                        </Typography>
 
-                        <Grid container>
-                            <CartTable children={this.props.children}/>
-                        </Grid>
-
-                    </CardContent>
-
-                    <CardActions>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            style={{ textTransform: 'none' }}
-                        >
-                            Payment
-                        </Button>
-                    </CardActions>
-                </Card>
             </React.Fragment>
         );
     }

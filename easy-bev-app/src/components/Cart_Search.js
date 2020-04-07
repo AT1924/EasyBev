@@ -9,6 +9,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import withStyles from "@material-ui/core/styles/withStyles";
 import Grid from '@material-ui/core/Grid';
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputBase from "@material-ui/core/InputBase";
 
 const styles = theme =>({
     root: {
@@ -25,7 +30,45 @@ const styles = theme =>({
     pos: {
         marginBottom: 12,
     },
+    margin: {
+        margin: theme.spacing(1),
+    },
 });
+
+const BootstrapInput = withStyles((theme) => ({
+    root: {
+        'label + &': {
+            marginTop: theme.spacing(3),
+        },
+    },
+    input: {
+        borderRadius: 4,
+        position: 'relative',
+        backgroundColor: theme.palette.background.paper,
+        border: '1px solid #ced4da',
+        fontSize: 16,
+        padding: '10px 26px 10px 12px',
+        transition: theme.transitions.create(['border-color', 'box-shadow']),
+        // Use the system font instead of the default Roboto font.
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:focus': {
+            borderRadius: 4,
+            borderColor: '#80bdff',
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+        },
+    },
+}))(InputBase);
 
 
 class Cart_Search extends React.Component{
@@ -35,6 +78,7 @@ class Cart_Search extends React.Component{
             tags: [],
             inventory: [],
             currItem: null,
+            orderq: 1,
         };
 
         this.getChoice = this.getChoice.bind(this);
@@ -62,45 +106,28 @@ class Cart_Search extends React.Component{
     }
 
 
-    // async getItems() {
-    //     try {
-    //         fetch("/api/get_items", {
-    //             method: "post",
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json'
-    //             },
-    //
-    //             //make sure to serialize your JSON body
-    //             body: JSON.stringify({})
-    //         })
-    //             .then( (response) => {
-    //                 console.log(response.json());
-    //                 return response.json();
-    //             });
-    //     } catch(error) {
-    //         console.error(error);
-    //     }
-    // }
-
     getChoice = (event, value) => {
+        if (value !== null) {
+            this.setState({
+                currItem: Object.values(value)
+            }, () => {
+                // This will output an array of objects
+                // given by Autocompelte options property.
+
+            });
+        }
+    };
 
 
-        this.setState({
-            currItem: Object.values(value)
-        }, () => {
-            // This will output an array of objects
-            // given by Autocompelte options property.
+    getChoiceSecond =  (value) => {
+        this.props.callback(this.state.currItem, this.state.orderq);
 
-        });
-    }
+    };
 
+    changeQ = () => (event) => {
+        this.setState({orderq: event.target.value})
+    };
 
-    getChoiceSecond = (value) => {
-        console.log("here");
-        this.props.callback(this.state.currItem);
-
-    }
 
 
 
@@ -124,20 +151,41 @@ class Cart_Search extends React.Component{
                 <Card className={styles.root} variant="outlined">
                     <CardContent>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item UPC : {this.state.currItem != null ? this.state.currItem[0]:""}
+                            Item UPC : {this.state.currItem != null ? this.state.currItem[1]:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Name : {this.state.currItem != null ? this.state.currItem[1]:""}
+                            Item Name : {this.state.currItem != null ? this.state.currItem[2]:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Size : {this.state.currItem != null ? this.state.currItem[2]:""}
+                            Item Size : {this.state.currItem != null ? this.state.currItem[3]:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Quantity : {this.state.currItem != null ? this.state.currItem[3]:""}
+                            Item Quantity : {this.state.currItem != null ? this.state.currItem[4]:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Price : {this.state.currItem != null ? this.state.currItem[4]:""}
+                            Item Price : {this.state.currItem != null ? this.state.currItem[5]:""}
                         </Typography>
+                        <FormControl className={styles.margin}>
+                            Order Quantity :
+                            <Select
+                                labelId="demo-customized-select-label"
+                                id="demo-customized-select"
+                                value={this.state.orderq}
+                                onChange={this.changeQ()}
+                                input={<BootstrapInput />}
+                            >
+                                <MenuItem value={1}>1</MenuItem>
+                                <MenuItem value={2}>2</MenuItem>
+                                <MenuItem value={3}>3</MenuItem>
+                                <MenuItem value={4}>4</MenuItem>
+                                <MenuItem value={5}>5</MenuItem>
+                                <MenuItem value={6}>6</MenuItem>
+                                <MenuItem value={7}>7</MenuItem>
+                                <MenuItem value={8}>8</MenuItem>
+                                <MenuItem value={9}>9</MenuItem>
+                                <MenuItem value={10}>10</MenuItem>
+                            </Select>
+                        </FormControl>
                     </CardContent>
                     <CardActions>
                         <Button variant="outlined" onClick={this.getChoiceSecond} size="small">Submit To Cart</Button>
