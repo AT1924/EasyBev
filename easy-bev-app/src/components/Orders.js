@@ -130,6 +130,7 @@ class Orders extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
+        this.state = {orders: []}
     }
 
     componentDidMount () {
@@ -151,7 +152,9 @@ class Orders extends React.Component{
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-                        console.log(json);
+                        console.log(json.body);
+                        // for (let i = 0; i< json.body.length; )
+                        this.setState({orders: json.body})
                     }
                 );
         } catch(error) {

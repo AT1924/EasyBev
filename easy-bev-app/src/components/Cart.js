@@ -145,7 +145,7 @@ render() {
                 <CssBaseline />
                 <Nav/>
 
-                <Grid id="contained" container spacing={10} direction="column" justify="space-between">
+                <Grid id="contained" container spacing={1} direction="column" justify="space-between">
 
 
                         <Grid item >
