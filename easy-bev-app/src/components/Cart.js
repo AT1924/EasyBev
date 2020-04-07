@@ -55,6 +55,7 @@ class Cart extends React.Component {
             currItem: null,
             inventory: [],
             response: '',
+            total: 0,
         };
     }
 
@@ -86,13 +87,14 @@ class Cart extends React.Component {
 
     makeOrder = async e => {
         e.preventDefault();
+        console.log("Sending order");
         const response = await fetch('/api/make_order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
 
-            body: JSON.stringify({order:this.state.cartListData }),
+            body: JSON.stringify(this.state.cartListData),
         });
         const body = await response.json();
         console.log(body);
@@ -117,11 +119,7 @@ class Cart extends React.Component {
     populateCart = (searchData, qty) => {
 
         if (searchData != null) {
-            if (searchData.length === 7) {
-                searchData.push(qty);
-            } else {
-                searchData[7] = qty;
-            }
+            searchData['oqty'] = qty;
             console.log(searchData);
             this.setState(state => {
                 //let values = Object.values(searchData);
@@ -168,6 +166,9 @@ render() {
 
                                 <Grid container>
                                     <CartTable children={this.state.cartListData}/>
+                                    <Typography>
+                                        Total : {this.state.total}
+                                    </Typography>
                                 </Grid>
 
                             </CardContent>

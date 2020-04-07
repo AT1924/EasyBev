@@ -351,12 +351,14 @@ function getInfo(info){
 }
 
 function getPrice(order) {
+    console.log("getting price of",order)
     let sum = 0;
     for (let i = 0; i < order.length; i++){
-        const item = order[i]
-        sum += item.price * item.num_qty
+        const item = order[i];
+        console.log('item', item)
+        sum += item.price * item.oqty;
     }
-    return sum
+    return sum;
 }
 
 function getOrders(info){
@@ -528,25 +530,6 @@ app.get('/api/hello', (req, res) => {
     res.send({express: 'Hello From Express'})
 });
 
-
-// michael I NEEd A PROFILE endpoint that gives me information about the user
-// for distributors i want a list of their clients as well
-
-// app.post('/api/profile', (req,res) => {
-//     if (req.session.valid){
-//         const type = req.session.type;
-//         if (type){
-//             const response = getInfo(type, req.session.email);
-//             res.send(response)
-//         }else{
-//             res.send({error:"no type was found in user session"})
-//         }
-//     }else{
-//         res.send({error:"user session says they are not signed in"})
-//     }
-//
-// });
-
 app.post('/api/get_client', (req, res) => {
     const myInfo = req.session.info;
     const infoReturn = getInfo(myInfo);
@@ -565,6 +548,5 @@ app.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
 
-console.log(getOrders({email:"michael_bardakji@brown.edu", type:TYPES[1]}))
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
