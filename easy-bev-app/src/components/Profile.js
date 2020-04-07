@@ -15,6 +15,13 @@ import Container from '@material-ui/core/Container';
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Nav from "./Nav";
+import TableContainer from "@material-ui/core/TableContainer";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
+import Paper from "@material-ui/core/Paper";
 
 const styles = theme => ({
     paper: {
@@ -37,39 +44,25 @@ const styles = theme => ({
 });
 
 class Profile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '', company: '', state: '', zip: '', address: '',
+            error: false, errorMsg: '', redirect: false, type: "Merchant", signin: false,
+            body: [], rows: [],
+        };
 
-    state = {
-        email: '', password: '', error: false, errorMsg: '', redirect: false, type: "merchants", signin: false,
-    };
+    }
 
-    // getInfo = async e => {
-    //     e.preventDefault();
-    //     const response = await fetch('/api/get_client', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //
-    //         body: JSON.stringify({}),
-    //     });
-    //     const body = await response.json();
-    //     console.log(body);
-    //     // if (body.error) {
-    //     //     console.log(body);
-    //     //     this.setState({ errorMsg: body.error});
-    //     //
-    //     //     return false;
-    //     // }
-    //     // else if (!(body.error)){
-    //     //     localStorage.setItem('login', "true");
-    //     //     this.setState({ signin: true });
-    //     // }
-    //     // else {
-    //     //     console.log(body);
-    //     // }
-    //
-    //     return false;
-    // };
+    componentDidMount () {
+        console.log("Component did mount");
+        const api = this.getData();
+        console.log('api done');
+    }
+
+    createData(id, name, email, state) {
+        return { id, name, email, state};
+    }
 
     async getData() {
         try {
@@ -82,10 +75,25 @@ class Profile extends React.Component {
 
                 //make sure to serialize your JSON body
                 body: JSON.stringify({})
-            })
-                .then( (response) => {
-                   console.log(response.json());
-                });
+            }).then( response => response.json())
+                .then(json => {
+                        console.log(json);
+                        if ('distributor' in json.body) {
+                            this.setState({company: json.body.distributor.name, type: "Distributor",
+                                address: json.body.distributor.address,
+                                state: json.body.distributor.state, zip: json.body.distributor.zip, email: json.body.distributor.email});
+                            const newRows = [];
+                            for (let i = 0; i < json.body.merchants.length; i++) {
+                                newRows.push(this.createData(json.body.merchants[i].id, json.body.merchants[i].name,
+                                    json.body.merchants[i].email, json.body.merchants[i].state))
+                            }
+                            this.setState({rows: newRows});
+                        } else {
+                            this.setState({company: json.body.merchant.name, address: json.body.merchant.address,
+                                state: json.body.merchant.state, zip: json.body.merchant.zip, email: json.body.merchant.email});
+                        }
+                    }
+                );
         } catch(error) {
             console.error(error);
         }
@@ -106,10 +114,20 @@ class Profile extends React.Component {
         }
     };
 
+    check = () => {
+        if (this.state.type === "Distributor") {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
 
     render() {
         const { classes } = this.props;
-        const info = this.getData();
+        const {company, address, state, zip, email, type, rows} = this.state;
+        console.log(this.state);
+
             return (
                 <React.Fragment>
                     <CssBaseline />
@@ -127,8 +145,16 @@ class Profile extends React.Component {
                                     fullWidth
                                     margin="normal"
                                     id="company"
+                                    label="Type"
+                                    value={type}
+                                />
+                                <TextField
+                                    disabled
+                                    fullWidth
+                                    margin="normal"
+                                    id="company"
                                     label="Company Name"
-                                    defaultValue="Akhils Company"
+                                    value={company}
                                 />
                                 <TextField
                                     fullWidth
@@ -136,7 +162,7 @@ class Profile extends React.Component {
                                     disabled
                                     id="address"
                                     label="Address"
-                                    defaultValue="85 Canal St."
+                                    value={address}
                                 />
 
                                 <TextField
@@ -145,7 +171,7 @@ class Profile extends React.Component {
                                     disabled
                                     id="State"
                                     label="State"
-                                    defaultValue="RI"
+                                    value={state}
                                 />
 
                                 <TextField
@@ -154,7 +180,8 @@ class Profile extends React.Component {
                                     disabled
                                     id="zip"
                                     label="Zip-code"
-                                    defaultValue="02912"
+                                    // defaultValue={zip}
+                                    value={zip}
                                 />
 
                                 <TextField
@@ -163,17 +190,7 @@ class Profile extends React.Component {
                                     disabled
                                     id="email"
                                     label="Email"
-                                    defaultValue="akhil@bob.com"
-                                />
-
-                                <TextField
-                                    hidden
-                                    fullWidth
-                                    margin="normal"
-                                    disabled
-                                    id="password"
-                                    label="Password"
-                                    defaultValue="02912"
+                                    value={email}
                                 />
 
                                 <Button
@@ -185,6 +202,39 @@ class Profile extends React.Component {
                                 >
                                     Edit
                                 </Button>
+
+                                {this.check() ? <Container>
+                                        <TableContainer component={Paper}>
+                                            <Table className={classes.table} size="small" aria-label="a dense table">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>Id</TableCell>
+                                                        <TableCell align="right">Company Name</TableCell>
+                                                        <TableCell align="right">Email</TableCell>
+                                                        <TableCell align="right">State</TableCell>
+                                                        {/*<TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody> 
+                                                    {rows.map((row) => (
+                                                        <TableRow key={row.id}>
+                                                            <TableCell component="th" scope="row">
+                                                                {row.id}
+                                                            </TableCell>
+                                                            <TableCell align="right">{row.name}</TableCell>
+                                                            <TableCell align="right">{row.email}</TableCell>
+                                                            <TableCell align="right">{row.state}</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                </Container> :
+                                    <Container>
+                                    </Container>}
+
+
+
 
                                 <Grid/>
                             </form>

@@ -41,6 +41,27 @@ class Cart_Search extends React.Component{
 
     }
 
+    async getItems() {
+        try {
+            fetch("/api/get_items", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            })
+                .then( (response) => {
+                    console.log(response.json());
+                });
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
+
     // async getItems() {
     //     try {
     //         fetch("/api/get_items", {
@@ -63,6 +84,7 @@ class Cart_Search extends React.Component{
     // }
 
     getChoice = (event, value) => {
+
 
         this.setState({
             currItem: Object.values(value)
