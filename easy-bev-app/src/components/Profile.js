@@ -47,7 +47,7 @@ const styles = theme => ({
     },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
-        color: theme.palette.text.secondary,
+        color: '#FF0000',
     },
     divide: {
         marginTop: theme.spacing(3),
@@ -73,6 +73,10 @@ class Profile extends React.Component {
             email: '', company: '', state: '', zip: '', address: '',
             error: false, errorMsg: '', redirect: false, type: "Merchant", signin: false,
             body: [], rows: [], panel1: true, panel2: false,
+            payname: '', payphone: '', payaddress: '', paycountry: '',
+            paycity: '', payzip: '', paycardnum: '', paycardver: '',
+            monthexp: '', yearexp: '', billing: true,
+            response: '',
         };
 
     }
@@ -121,6 +125,40 @@ class Profile extends React.Component {
             console.error(error);
         }
     }
+
+    updatePay = async e => {
+        e.preventDefault();
+        console.log("Updating payment");
+        const response = await fetch('/api/add_payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify({
+                name: this.state.payname, phone: this.state.payphone,
+                address: this.state.payaddress, country: this.state.paycountry,
+                city: this.state.paycity, postal_code: this.state.payzip,
+                digits: this.state.paycardnum, security_code: this.state.paycardver,
+                x_month: this.state.monthexp, x_year: this.state.yearexp
+            }),
+        });
+        const body = await response.json();
+        console.log(body);
+        if (body.error) {
+            console.log(body);
+            this.setState({errorMsg: body.error});
+            return false;
+        } else if (!(body.error)) {
+            this.setState({
+                cartListData: [],
+                response: "Order Successful"
+            });
+        } else {
+            console.log(body);
+        }
+    }
+
     handleOpen = (name) => (event, isExpanding) => {
         if (name === 'panel1') {
             if (this.state.panel1 === true) {
@@ -159,10 +197,27 @@ class Profile extends React.Component {
         }
     };
 
+    changeBill = () => {
+        if (this.state.billing) {
+            this.setState({billing: false})
+        } else {
+            this.setState({billing: true})
+        }
+    }
+
+    checkBill = () => {
+        if (this.state.payname === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     render() {
         const { classes } = this.props;
-        const {company, address, state, zip, email, type, rows, panel1, panel2} = this.state;
+        const {company, address, state, zip, email, type, rows, panel1, panel2,
+            payname, payphone, payaddress, paycountry, paycity, payzip, paycardnum, paycardver, monthexp, yearexp, billing} = this.state;
 
             return (
                 <React.Fragment>
@@ -261,113 +316,128 @@ class Profile extends React.Component {
                                     id="panel3bh-header"
                                 >
                                     <Typography className={classes.heading}>Billing Information</Typography>
+                                    {this.checkBill() ? <Typography className={classes.secondaryHeading}>
+                                        Please Enter Payment Information
+                                    </Typography> : <div></div>}
 
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
-                                    <form className={classes.form} noValidate onSubmit={this.signIn}>
+                                    <form className={classes.form} noValidate >
                                         <TextField
-                                            disabled
+                                            onChange={this.handleChange('payname')}
+                                            disabled={billing}
                                             fullWidth
                                             margin="normal"
                                             id="payname"
                                             label="Name"
-                                            defaultValue="Credit Card Holder Name"
-                                            // value={type}
+                                            // defaultValue="Credit Card Holder Name"
+                                            value={payname}
                                         />
                                         <TextField
-                                            disabled
+                                            onChange={this.handleChange('payphone')}
+                                            disabled={billing}
                                             fullWidth
                                             margin="normal"
                                             id="payphone"
                                             label="Phone"
-                                            defaultValue="Phone"
-                                            // value={company}
+                                            // defaultValue="Phone"
+                                            value={payphone}
                                         />
                                         <TextField
+                                            onChange={this.handleChange('payaddress')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="payaddress"
                                             label="Address"
-                                            defaultValue="Billing Address"
-                                            // value={address}
+                                            // defaultValue="Billing Address"
+                                            value={payaddress}
                                         />
 
                                         <TextField
+                                            onChange={this.handleChange('paycountry')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="paycountry"
                                             label="Country"
-                                            defaultValue='Billing Country'
-                                            // value={state}
+                                            // defaultValue='Billing Country'
+                                            value={paycountry}
                                         />
 
                                         <TextField
+                                            onChange={this.handleChange('paycity')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billcity"
                                             label="City"
-                                            defaultValue='Billing City'
-                                            // value={zip}
+                                            // defaultValue='Billing City'
+                                            value={paycity}
                                         />
 
                                         <TextField
+                                            onChange={this.handleChange('payzip')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billzip"
                                             label="Postal Code"
-                                            defaultValue='Billing Zip'
-                                            // value={email}
+                                            // defaultValue='Billing Zip'
+                                            value={payzip}
                                         />
                                         <Divider className={classes.divide}/>
                                         <TextField
+                                            onChange={this.handleChange('paycardnum')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billcardnum"
                                             label="Credit Card No."
-                                            defaultValue='Card Number'
-                                            // value={email}
+                                            // defaultValue='Card Number'
+                                            value={paycardnum}
                                         />
                                         <TextField
+                                            onChange={this.handleChange('paycardver')}
                                             fullWidth
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billvernum"
                                             label="Card Verification No."
-                                            defaultValue='Billing Zip'
-                                            // value={email}
+                                            // defaultValue='Billing Zip'
+                                            value={paycardver}
                                         />
                                         <TextField
+                                            onChange={this.handleChange('monthexp')}
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billexpmonth"
                                             label="Month of Expiration"
-                                            defaultValue='Expiry Month'
-                                            // value={email}
+                                            // defaultValue='Expiry Month'
+                                            value={monthexp}
                                         />
                                         <TextField
+                                            onChange={this.handleChange('yearexp')}
                                             margin="normal"
-                                            disabled
+                                            disabled={billing}
                                             id="billexpmonth"
                                             label="Year of Expiration"
-                                            defaultValue='Expiry Year'
-                                            // value={email}
+                                            // defaultValue='Expiry Year'
+                                            value={yearexp}
                                         />
-
+                                        {this.state.response}
 
                                         <Button
-                                            type="submit"
                                             fullWidth
                                             variant="contained"
                                             color="primary"
                                             className={classes.submit}
+                                            onClick={this.changeBill}
                                         >
-                                            Edit
+                                            {billing ? "Edit" : "Submit"}
                                         </Button>
+
+
                                     </form>
                                 </ExpansionPanelDetails>
                             </ExpansionPanel>

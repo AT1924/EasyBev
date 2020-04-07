@@ -121,7 +121,6 @@ class Cart extends React.Component {
 
         if (searchData != null) {
             searchData['oqty'] = qty;
-            console.log(searchData);
             this.setState(state => {
                 //let values = Object.values(searchData);
                 //let item = [values[0], values[1]];
@@ -129,6 +128,8 @@ class Cart extends React.Component {
                 state.cartListData.push(searchData);
                 return state
             });
+            console.log(searchData);
+            this.setState({total: this.state.total + searchData.price * searchData.oqty})
 
             // here use search data to get all the information regarding the item
 
