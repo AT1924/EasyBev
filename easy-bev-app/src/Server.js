@@ -351,7 +351,6 @@ function getInfo(info){
 }
 
 function getPrice(order) {
-    order = order.body;
     let sum = 0;
     for (let i = 0; i < order.length; i++){
         const item = order[i]
@@ -391,12 +390,11 @@ function getOrders(info){
     return  out
 
 }
-function makeOrder(info, body){
+function makeOrder(info, order){
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
     }
     const type = info.type;
-    const order = body.order;
 
     if (type !== TYPES[1]){
         return {error: "non-merchants can not make orders"}
@@ -406,7 +404,7 @@ function makeOrder(info, body){
     const out = {};
     const meta = getMerchantInfo(info).body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('insert into orders(d_id, m_id, order_json, price) values(?,?,?,?)', [meta.d_id,meta.id,order, getPrice(order)], function (err, data){
+    conn.query('insert into orders(d_id, m_id, order_json, price) values(?,?,?,?)', [meta.d_id,meta.id,JSON.stringify(order), getPrice(order)], function (err, data){
         if(err){
             console.log(err)
             out.error = "sql error";
@@ -568,7 +566,7 @@ app.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
 
-const temp =  [
+const order =  [
     {
         id: 99,
         upc: 81753825706,
@@ -591,5 +589,5 @@ const temp =  [
         num_qty:4
     }]
 console.log("WWAAIIIT")
-console.log(makeOrder({email:"michael_bardakji@brown.edu", type:TYPES[1]}, {body:temp}));
+console.log(makeOrder({email:"michael_bardakji@brown.edu", type:TYPES[1]}, order));
 app.listen(port, () => console.log(`Listening on port ${port}`))
