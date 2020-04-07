@@ -25,7 +25,8 @@ class BarcodeScanner extends React.Component {
                 }
             };
             this.scanner.onUnduplicatedRead = (txt, result) => {
-                this.props.appendMessage(result.barcodeFormatString + ': ' + txt);
+                // this.props.appendMessage(result.barcodeFormatString + ': ' + txt);
+                alert(result.barcodeFormatString + ': ' + txt)
             };
             await this.scanner.open();
 

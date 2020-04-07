@@ -1,0 +1,9 @@
+to start with HTTPS
+
+set HTTPS=true&&npm start
+
+to start back end
+cd src -> Node Server.js
+
+to create items table
+cd src/python -> python3 parser.py

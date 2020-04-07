@@ -9,6 +9,7 @@ import Message from "./components/Message";
 import { Route,Redirect, Link, BrowserRouter as Router } from 'react-router-dom'
 import React from 'react';
 import ReactDOM from 'react-dom';
+import BarcodeScanner from "./components/BarcodeScanner";
 import './style/index.css'
 import {func} from "prop-types";
 const defaultTheme = createMuiTheme();
@@ -52,9 +53,9 @@ class App extends React.Component {
                 <Route path="/cart" component={Cart} />
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
-                {/*<Route path="/feed" component={feed} />*/}
                 <Route path="/orders" component={Orders}/>
                 <Route path="/message" component={Message}/>
+                <Route path="/temp" component={BarcodeScanner}/>
 
 
         </Router>
