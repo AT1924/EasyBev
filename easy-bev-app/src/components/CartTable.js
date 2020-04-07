@@ -68,7 +68,7 @@ class CartTable extends React.Component{
                                     <TableCell component="th" scope="row">
                                         {row.name}
                                     </TableCell>
-                                    <TableCell align="right">{row.price}</TableCell>
+                                    <TableCell align="right">{row.price*row.oqty}</TableCell>
                                     <TableCell align="right">{row.oqty}</TableCell>
                                 </TableRow>
                                     ))}

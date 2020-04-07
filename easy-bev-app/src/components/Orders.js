@@ -27,7 +27,7 @@ const SimpleExpansionPanel  = (props) => {
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
-                    <Typography>{props.children}</Typography>
+                    <Typography>{props.children.id} : {props.children.timestamp} : $ {props.children.price} </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography>
@@ -37,26 +37,22 @@ const SimpleExpansionPanel  = (props) => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Name</TableCell>
-                                        <TableCell align="right">Price $</TableCell>
+                                        <TableCell align="right">Price</TableCell>
+                                        <TableCell align="right">Quantity</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
+                                    {
+                                        props.children.items.map((row) => (
 
-
-                                    <TableRow key="Svedka 12 Pack">
-                                        <TableCell component="th" scope="row">
-                                            Svedka 12 Pack
-                                        </TableCell>
-                                        <TableCell align="right">64.99</TableCell>
-                                    </TableRow>
-
-                                    <TableRow key="Budlight Keg 4 Count">
-                                        <TableCell component="th" scope="row">
-                                            Budlight Keg 4 Count
-                                        </TableCell>
-                                        <TableCell align="right">231.99</TableCell>
-                                    </TableRow>
-
+                                            <TableRow key={row.name}>
+                                                <TableCell component="th" scope="row">
+                                                    {row.name}
+                                                </TableCell>
+                                                <TableCell align="right">{row.price*row.oqty}</TableCell>
+                                                <TableCell align="right">{row.oqty}</TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -152,9 +148,12 @@ class Orders extends React.Component{
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-                        console.log(json.body);
-                        // for (let i = 0; i< json.body.length; )
-                        this.setState({orders: json.body})
+                        let ord = [];
+                        for (let i = 0; i< json.body.length; i++) {
+                            ord.push({id: json.body[i].id, price: json.body[i].price, timestamp: json.body[i].timestamp, items: JSON.parse(json.body[i].order_json)})
+                        }
+                        this.setState({orders: ord});
+                        console.log(ord);
                     }
                 );
         } catch(error) {
@@ -178,7 +177,7 @@ class Orders extends React.Component{
                         <Grid item style={{width: "600px"}}>
                             <ul>
 
-                                {['Order 1 : 2/21/19', 'Order 2 : 3/14/19', 'Order 3 : 3/21/19'].map(function(item) {
+                                {this.state.orders.map(function(item) {
                                     return<li><SimpleExpansionPanel  children={item}/></li>;
                                 })}
 
