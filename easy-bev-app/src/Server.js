@@ -2,6 +2,7 @@ const express = require('express');
 var session = require('express-session');
 
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const deasync = require('deasync');
 
