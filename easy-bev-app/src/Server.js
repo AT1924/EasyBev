@@ -81,7 +81,7 @@ function getPassword(email, type){
     let done = false;
     const out = {};
     console.log("type is ", type);
-    const conn = db.createConnection('sqlite3://easy-bev.db')
+    const conn = db.createConnection('sqlite3://easy-bev.db');
     conn.query('select password from ' + type+ ' where email = ?', [email], function (err, data){
         console.log(data);
 
@@ -349,6 +349,112 @@ function getInfo(info){
 
 
 }
+
+function getPrice(order) {
+    order = order.body;
+    let sum = 0;
+    for (let i = 0; i < order.length; i++){
+        const item = order[i]
+        sum += item.price * item.num_qty
+    }
+    return sum
+}
+
+function getOrders(info){
+    if (!info || !info.email){
+        return {error: 'invalid email, reroute to login'}
+    }
+    const type = info.type;
+    if (type !== TYPES[1]){
+        console.log(type)
+        return {error: "non-merchants can not make orders"}
+    }
+    let done = false;
+    const out = {};
+    const meta = getMerchantInfo(info).body.merchant;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    console.log(meta)
+    conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
+        if(err){
+            out.error = "sql error";
+        }else{
+            console.log("data is", data)
+            out.body = data.rows
+        }
+        done = true;
+    });
+
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return  out
+
+}
+function makeOrder(info, body){
+    if (!info || !info.email){
+        return {error: 'invalid email, reroute to login'}
+    }
+    const type = info.type;
+    const order = body.order;
+
+    if (type !== TYPES[1]){
+        return {error: "non-merchants can not make orders"}
+    }
+
+    let done = false;
+    const out = {};
+    const meta = getMerchantInfo(info).body.merchant;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query('insert into orders(d_id, m_id, order_json, price) values(?,?,?,?)', [meta.d_id,meta.id,order, getPrice(order)], function (err, data){
+        if(err){
+            console.log(err)
+            out.error = "sql error";
+            console.log('err')
+
+        }else{
+            out.status = "SUCCESS";
+            console.log('not err')
+
+        }
+        done = true;
+
+    });
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return  out
+
+    /*
+    [
+    {
+      id: 99,
+      upc: 81753825706,
+      name: 'DOM PERIGNON LUMIN 09 L4 3/CS, 750 [263454]',
+      size: 750,
+      qty: 3,
+      price: 0,
+      dist_id: 1
+    },
+    {
+      id: 100,
+      upc: 81753827922,
+      name: 'CLICQUOT RICH ROSE 6/CS, 750 [228224]',
+      size: 750,
+      qty: 6,
+      price: 0,
+      dist_id: 1
+    }]
+
+     */
+
+}
+
+function invite(dist_info, merch_email){
+
+}
+
 app.post('/api/authenticate', (req,res) =>{
     console.log("in authenticate sending", req.session.valid);
     if (req.session.valid){
@@ -449,4 +555,41 @@ app.post('/api/get_items', (req, res) => {
 });
 
 
+app.post('/api/get_orders', (req, res) => {
+    const myInfo = req.session.info;
+    const infoReturn = getInfo(myInfo);
+    res.send(infoReturn)
+});
+app.post('/api/make_order', (req, res) => {
+    res.send(makeOrder(req.session.info, req.body))
+});
+
+app.post('/api/get_orders', (req, res) => {
+    res.send(getOrders(req.session.info))
+});
+
+const temp =  [
+    {
+        id: 99,
+        upc: 81753825706,
+        name: 'DOM PERIGNON LUMIN 09 L4 3/CS, 750 [263454]',
+        size: 750,
+        qty: 3,
+        price: 0,
+        dist_id: 1,
+        num_qty:2
+
+    },
+    {
+        id: 100,
+        upc: 81753827922,
+        name: 'CLICQUOT RICH ROSE 6/CS, 750 [228224]',
+        size: 750,
+        qty: 6,
+        price: 0,
+        dist_id: 1,
+        num_qty:4
+    }]
+console.log("WWAAIIIT")
+console.log(makeOrder({email:"michael_bardakji@brown.edu", type:TYPES[1]}, {body:temp}));
 app.listen(port, () => console.log(`Listening on port ${port}`))
