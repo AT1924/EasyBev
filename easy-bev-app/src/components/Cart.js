@@ -93,16 +93,12 @@ render() {
                             <Cart_Search style={style.cart_search} children={inventory} callback={this.populateCart}/>
                         </Grid>
 
-
-
                     <Grid item>
 
                         <Cart_basket children={this.state.cartListData} />
 
                     </Grid>
                 </Grid>
-
-
 
                 <div id = "cart" style={style.cart}>
 

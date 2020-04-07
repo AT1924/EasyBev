@@ -27,6 +27,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from "@material-ui/core/Divider";
+import {red} from "@material-ui/core/colors";
 
 const styles = theme => ({
     paper: {
@@ -39,13 +40,22 @@ const styles = theme => ({
     root: {
       margin: theme.spacing(5),
     },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+        flexBasis: '33.33%',
+        flexShrink: 0,
+    },
+    secondaryHeading: {
+        fontSize: theme.typography.pxToRem(15),
+        color: theme.palette.text.secondary,
+    },
     divide: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3),
     },
     avatar: {
         margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: 'red',
     },
     form: {
         width: '100%', // Fix IE 11 issue.
@@ -162,6 +172,10 @@ class Profile extends React.Component {
                     <Container component="main" maxWidth='md'>
                         <CssBaseline />
                         <div className={classes.root}>
+                            <Typography component="h1" variant="h5" className={classes.divide}>
+                                Settings
+                            </Typography>
+
                             <ExpansionPanel expanded={panel1} onChange={this.handleOpen('panel1')}>
                                 <ExpansionPanelSummary
                                     expandIcon={<ExpandMoreIcon />}
@@ -327,6 +341,22 @@ class Profile extends React.Component {
                                             defaultValue='Billing Zip'
                                             // value={email}
                                         />
+                                        <TextField
+                                            margin="normal"
+                                            disabled
+                                            id="billexpmonth"
+                                            label="Month of Expiration"
+                                            defaultValue='Expiry Month'
+                                            // value={email}
+                                        />
+                                        <TextField
+                                            margin="normal"
+                                            disabled
+                                            id="billexpmonth"
+                                            label="Year of Expiration"
+                                            defaultValue='Expiry Year'
+                                            // value={email}
+                                        />
 
 
                                         <Button
@@ -349,7 +379,7 @@ class Profile extends React.Component {
                                             Client List
                                         </Typography>
                                         <TableContainer component={Paper}>
-                                            <Table className={classes.table} size="small" aria-label="a dense table">
+                                            <Table className={classes.table} size="medium" aria-label="a dense table" >
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell>Id</TableCell>
