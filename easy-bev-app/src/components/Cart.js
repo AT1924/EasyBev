@@ -90,7 +90,7 @@ render() {
 
 
                         <Grid item >
-                            <Cart_Search style={style.cart_search} children={inventory} callback={this.populateCart}/>
+                            <Cart_Search  children={inventory} callback={this.populateCart}/>
                         </Grid>
 
                     <Grid item>
