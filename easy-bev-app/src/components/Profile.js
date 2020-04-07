@@ -433,7 +433,7 @@ class Profile extends React.Component {
                                             variant="contained"
                                             color="primary"
                                             className={classes.submit}
-                                            onClick={this.changeBill}
+                                            onClick={billing ? this.changeBill : this.updatePay}
                                         >
                                             {billing ? "Edit" : "Submit"}
                                         </Button>

@@ -325,9 +325,9 @@ function getMerchantInfo(info){
 // merchant boolean not null
 // f_id INTEGER not null
 
-function insertPayment(meta, payment){
+function insertPayment(meta, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    const isMerchant = info.type === TYPES[1]
+    // const isMerchant = info.type === TYPES[1]
     let done = false;
     const out = {};
     conn.query('insert into payment(name, digits, security_code, phone, address, country, city, postal_code, exp_month, exp_year, merchant, f_id) values()', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
@@ -339,11 +339,12 @@ function insertPayment(meta, payment){
         done = true;
     });
     deasync.loopWhile(()=>{return !done});
+    return out;
 }
 
-function updatePayment(info, payment){
+function updatePayment(info, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    const isMerchant = info.type === TYPES[1]
+    // const isMerchant = info.type === TYPES[1]
     let done = false;
     const out = {};
     conn.query('update payment set name = ?, digits = ?, security_code = ?, phone= ?, address=?, country=?, city=?, postal_code=?, exp_month=?, exp_year=?, f_id=? where isMerchant = ? and f_id = ?', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
@@ -355,6 +356,7 @@ function updatePayment(info, payment){
         done = true;
     });
     deasync.loopWhile(()=>{return !done});
+    return out;
 }
 
 function addPayment(info, payment){
@@ -628,7 +630,9 @@ app.post('/api/get_orders', (req, res) => {
 });
 
 app.post('/api/add_payment', (req, res) => {
-    res.send(addPayment(req.session.info, req.body))
+    const resp = addPayment(req.session.info, req.body)
+    console.log(resp)
+    res.send(resp)
 });
 
 
