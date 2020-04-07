@@ -94,7 +94,7 @@ class Cart extends React.Component {
                 'Content-Type': 'application/json',
             },
 
-            body: JSON.stringify({body:this.state.cartListData }),
+            body: JSON.stringify(this.state.cartListData),
         });
         const body = await response.json();
         console.log(body);
