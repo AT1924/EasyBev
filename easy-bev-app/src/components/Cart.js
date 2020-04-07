@@ -55,6 +55,7 @@ class Cart extends React.Component {
             currItem: null,
             inventory: [],
             response: '',
+            total: 0,
         };
     }
 
@@ -86,13 +87,14 @@ class Cart extends React.Component {
 
     makeOrder = async e => {
         e.preventDefault();
+        console.log("Sending order");
         const response = await fetch('/api/make_order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
 
-            body: JSON.stringify({order:this.state.cartListData }),
+            body: JSON.stringify({body:this.state.cartListData }),
         });
         const body = await response.json();
         console.log(body);
@@ -168,6 +170,9 @@ render() {
 
                                 <Grid container>
                                     <CartTable children={this.state.cartListData}/>
+                                    <Typography>
+                                        Total : {this.state.total}
+                                    </Typography>
                                 </Grid>
 
                             </CardContent>
