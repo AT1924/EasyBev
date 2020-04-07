@@ -566,28 +566,4 @@ app.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
 
-const order =  [
-    {
-        id: 99,
-        upc: 81753825706,
-        name: 'DOM PERIGNON LUMIN 09 L4 3/CS, 750 [263454]',
-        size: 750,
-        qty: 3,
-        price: 0,
-        dist_id: 1,
-        num_qty:2
-
-    },
-    {
-        id: 100,
-        upc: 81753827922,
-        name: 'CLICQUOT RICH ROSE 6/CS, 750 [228224]',
-        size: 750,
-        qty: 6,
-        price: 0,
-        dist_id: 1,
-        num_qty:4
-    }]
-console.log("WWAAIIIT")
-console.log(makeOrder({email:"michael_bardakji@brown.edu", type:TYPES[1]}, order));
 app.listen(port, () => console.log(`Listening on port ${port}`))
