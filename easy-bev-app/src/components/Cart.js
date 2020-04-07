@@ -119,11 +119,7 @@ class Cart extends React.Component {
     populateCart = (searchData, qty) => {
 
         if (searchData != null) {
-            if (searchData.length === 7) {
-                searchData.push(qty);
-            } else {
-                searchData[7] = qty;
-            }
+            searchData['oqty'] = qty;
             console.log(searchData);
             this.setState(state => {
                 //let values = Object.values(searchData);

@@ -353,10 +353,10 @@ function getInfo(info){
 function getPrice(order) {
     let sum = 0;
     for (let i = 0; i < order.length; i++){
-        const item = order[i]
-        sum += item.price * item.num_qty
+        const item = order[i];
+        sum += item.price * item.oqty;
     }
-    return sum
+    return sum;
 }
 
 function getOrders(info){
@@ -556,12 +556,6 @@ app.post('/api/get_items', (req, res) => {
     res.send(getItems())
 });
 
-
-app.post('/api/get_orders', (req, res) => {
-    const myInfo = req.session.info;
-    const infoReturn = getInfo(myInfo);
-    res.send(infoReturn)
-});
 app.post('/api/make_order', (req, res) => {
     res.send(makeOrder(req.session.info, req.body))
 });

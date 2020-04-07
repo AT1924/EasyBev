@@ -108,8 +108,9 @@ class Cart_Search extends React.Component{
 
     getChoice = (event, value) => {
         if (value !== null) {
+            console.log(value);
             this.setState({
-                currItem: Object.values(value)
+                currItem: value
             }, () => {
                 // This will output an array of objects
                 // given by Autocompelte options property.
@@ -151,19 +152,19 @@ class Cart_Search extends React.Component{
                 <Card className={styles.root} variant="outlined">
                     <CardContent>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item UPC : {this.state.currItem != null ? this.state.currItem[1]:""}
+                            Item UPC : {this.state.currItem != null ? this.state.currItem.upc:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Name : {this.state.currItem != null ? this.state.currItem[2]:""}
+                            Item Name : {this.state.currItem != null ? this.state.currItem.name:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Size : {this.state.currItem != null ? this.state.currItem[3]:""}
+                            Item Size : {this.state.currItem != null ? this.state.currItem.size:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Quantity : {this.state.currItem != null ? this.state.currItem[4]:""}
+                            Item Quantity : {this.state.currItem != null ? this.state.currItem.qty:""}
                         </Typography>
                         <Typography className={styles.title} color="textSecondary" gutterBottom>
-                            Item Price : {this.state.currItem != null ? this.state.currItem[5]:""}
+                            Item Price : {this.state.currItem != null ? this.state.currItem.price:""}
                         </Typography>
                         <FormControl className={styles.margin}>
                             Order Quantity :
