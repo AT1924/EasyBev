@@ -84,7 +84,7 @@ class Cart extends React.Component {
         }
     }
 
-    signIn = async e => {
+    makeOrder = async e => {
         e.preventDefault();
         const response = await fetch('/api/make_order', {
             method: 'POST',
@@ -177,6 +177,7 @@ render() {
                                     variant="outlined"
                                     color="primary"
                                     style={{ textTransform: 'none' }}
+                                    onClick={this.makeOrder}
                                 >
                                     Payment
                                 </Button>

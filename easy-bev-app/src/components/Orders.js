@@ -132,6 +132,33 @@ class Orders extends React.Component{
         this.orderValues = null;
     }
 
+    componentDidMount () {
+        console.log("Component did mount");
+        const api = this.getOrders();
+        console.log('api done');
+    }
+
+    async getOrders() {
+        try {
+            fetch("/api/get_orders", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            }).then( response => response.json())
+                .then(json => {
+                        console.log(json);
+                    }
+                );
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
 
 
     render() {
