@@ -360,6 +360,7 @@ function getPrice(order) {
 }
 
 function getOrders(info){
+    console.log("get ord info", info);
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
     }
@@ -391,6 +392,9 @@ function getOrders(info){
 
 }
 function makeOrder(info, order){
+    console.log("make ord info", info)
+    console.log("make ord order", order)
+
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
     }
