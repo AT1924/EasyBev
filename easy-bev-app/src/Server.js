@@ -20,19 +20,17 @@ const CREATE_PAYMENT =
     id INTEGER PRIMARY KEY AUTOINCREMENT,\
     name text not null,\
     digits INTEGER NOT NULL UNIQUE,\
-    security_code INTEGER  not null\
+    security_code INTEGER  not null,\
     phone TEXT NOT NULL,\
     address TEXT NOT NULL,\
     country TEXT NOT NULL,\
     city TEXT NOT NULL,\
     postal_code TEXT NOT NULL,\
     exp_month NUMERIC NOT NULL,\
-    exp_year NUMERIC NOT NULL\
-    merchant boolean not null\
-    f_id INTEGER not null \
-    constraint check(exp_month > 0)\
-    constraint check(exp_month <= 12)\
-    );'
+    exp_year NUMERIC NOT NULL,\
+    merchant bool not null,\
+    f_id INTEGER not null);';
+
 const CREATE_DISTRIBUTORS =
     'CREATE TABLE Distributors   (\
         id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,\
