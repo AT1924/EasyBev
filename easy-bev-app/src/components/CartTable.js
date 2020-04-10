@@ -40,6 +40,7 @@ class CartTable extends React.Component{
             children : []
         };
 
+
     }
 
     createData(name, price) {
@@ -58,6 +59,7 @@ class CartTable extends React.Component{
                                 <TableCell>Name</TableCell>
                                 <TableCell align="right">Price $</TableCell>
                                 <TableCell align="right">Quantity</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -70,6 +72,14 @@ class CartTable extends React.Component{
                                     </TableCell>
                                     <TableCell align="right">{row.price*row.oqty}</TableCell>
                                     <TableCell align="right">{row.oqty}</TableCell>
+                                    <TableCell align="right">
+                                        <Button
+                                            onClick={this.props.callback.bind(this, row)}
+                                            color="secondary"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                                     ))}
                         </TableBody>
