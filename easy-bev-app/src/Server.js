@@ -433,17 +433,28 @@ function getDistributorInfo(info){
 
 function getInfo(info){
     console.log("get info func received", info);
+    let out  = {};
     if (info && info.type){
         if(info.type === TYPES[0]){
-            return getDistributorInfo(info);
+            out = getDistributorInfo(info);
         }else if (info.type === TYPES[1]){ //merchant
-            return getMerchantInfo(info);
+            out = getMerchantInfo(info);
         }else{
-            return {error:"invalid type"}
+            out = {error:"invalid type"}
         }
     }else{
-        return {error:"invalid session, redirect to login"}
+        out = {error:"invalid session, redirect to login"}
     }
+
+    if (!out.error){
+        if (info.type === TYPES[0]){
+            out.body.merchants = getOrders(info).body.merchants;
+        }else{
+            out.body.orders = getOrders(info).body;
+        }
+    }
+
+    return out
 
 
 }
@@ -460,21 +471,19 @@ function getPrice(order) {
 }
 
 function getMerchantOrders(info){
-    console.log("get ord info", info);
+
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
     }
     const type = info.type;
     if (type !== TYPES[1]){
-        console.log(type)
-        return {error: "non-merchants can not get orders"}
+        console.log(type);
+        return {error: "sever error"}
     }
     let done = false;
     const out = {};
-    const temp = getMerchantInfo(info);
-    const meta = temp.body.merchant;
+    const meta = getMerchantInfo(info).body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    console.log(meta);
     conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
         if(err){
             out.error = "sql error";
@@ -502,18 +511,27 @@ function getDistributorOrders(info){
         return {error: "server error"}
     }
     let done = false;
-    const out = {};
-    const meta = getDistributorInfo(info).body.distributor;
+    const out = {body:{}};
+    let meta = getDistributorInfo(info).body;
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    console.log(meta);
-    conn.query('select * from orders where d_id = ?', [meta.id], function (err, data){
-        if(err){
-            out.error = "sql error";
-        }else{
-            out.body = data.rows
-        }
-        done = true;
-    });
+    const merchants = meta.merchants;
+    out.body.merchants = merchants;
+    let i = 0;
+    for (i=i;i < merchants.length; i++){
+        let tempDone = false;
+        const merchId = merchants[i].id;
+        conn.query('select orders.*, m.name as merchant_name, m.email as merchant_email from orders, merchants as m where orders.d_id = ? and orders.m_id = ? and orders.m_id = m.id', [meta.distributor.id, merchId], function (err, data){
+            if(err){
+                out.error = "sql error";
+            }else{
+                out.body.merchants[i].orders = data.rows
+            }
+            tempDone = true;
+        });
+        deasync.loopWhile(()=>{return !tempDone})
+    }
+    done = i === merchants.length;
+
 
     deasync.loopWhile(function () {
         return !done;
@@ -696,5 +714,12 @@ app.post('/api/add_payment', (req, res) => {
     res.send(resp)
 });
 
-
+console.log("START");
+//console.log(getInfo({email:"m@b.com", type:TYPES[1]}));
+//const dissst = getInfo({email:"michael_bardakji@brown.edu", type:TYPES[0]})
+// console.log(dissst);
+// console.log("merchants")
+// console.log(dissst.body.merchants)
+// console.log("orders")
+// console.log(dissst.body.orders)
 app.listen(port, () => console.log(`Listening on port ${port}`));
