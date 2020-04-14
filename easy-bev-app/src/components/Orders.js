@@ -149,6 +149,7 @@ class Orders extends React.Component{
             }).then( response => response.json())
                 .then(json => {
                         let ord = [];
+                        console.log(json);
                         for (let i = 0; i< json.body.length; i++) {
                             ord.push({id: json.body[i].id, price: json.body[i].price, timestamp: json.body[i].timestamp, items: JSON.parse(json.body[i].order_json)})
                         }

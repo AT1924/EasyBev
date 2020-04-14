@@ -14,6 +14,9 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputBase from "@material-ui/core/InputBase";
+import Radio from "@material-ui/core/Radio";
+import BarcodeScanner from './BarcodeScanner';
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const styles = theme =>({
     root: {
@@ -79,6 +82,8 @@ class Cart_Search extends React.Component{
             inventory: [],
             currItem: null,
             orderq: 1,
+            searchOpt: 'type',
+            error: '',
         };
 
         this.getChoice = this.getChoice.bind(this);
@@ -129,6 +134,35 @@ class Cart_Search extends React.Component{
         this.setState({orderq: event.target.value})
     };
 
+    changeSearch = (event) => {
+        this.setState({searchOpt: event.target.value})
+    }
+
+    checkSearch = () => {
+        if(this.state.searchOpt === 'type') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    callback = (result) => {
+        let convert = parseInt(result);
+        let match = -1;
+        console.log(this.props.children[0]);
+        for (let i = 0; i < this.props.children.length; i++) {
+            if (this.props.children[i].upc === convert) {
+                match = i
+                break;
+            }
+        }
+        if (match === -1) {
+            this.setState({error: "UPC not in system."})
+        } else {
+            this.setState({currItem: this.props.children[match]})
+        }
+
+    }
 
 
 
@@ -140,14 +174,35 @@ class Cart_Search extends React.Component{
         return (
             <React.Fragment>
                 <Grid container id="topContainer" direction="row" justify="space-around" >
-                <Autocomplete
-                    id="search_bar"
-                    options={this.props.children}
-                    getOptionLabel={(option) => option.name}
-                    style={{ width: 400 }}
-                    onChange={this.getChoice}
-                    renderInput={(params) => <TextField {...params} label="Please select item" variant="outlined" />}
-                />
+
+                    {this.checkSearch() ? <Autocomplete
+                            id="search_bar"
+                            options={this.props.children}
+                            getOptionLabel={(option) => option.name}
+                            style={{ width: 400 }}
+                            onChange={this.getChoice}
+                            renderInput={(params) => <TextField {...params} label="Please select item" variant="outlined" />}
+                        />  :
+                        <BarcodeScanner callback={this.callback} ></BarcodeScanner>}
+                    {this.state.error}
+
+
+                    <Radio
+                        checked={this.state.searchOpt === 'type'}
+                        onChange={this.changeSearch}
+                        value="type"
+                        inputProps={{ 'aria-label': 'Type' }}
+                        label="Type to Search"
+                        labelPlacement="bottom"
+                    />
+                    <Radio
+                        checked={this.state.searchOpt === 'scan'}
+                        onChange={this.changeSearch}
+                        value="scan"
+                        inputProps={{ 'aria-label': 'Type' }}
+                        label="Scan to Search"
+                        labelPlacement="bottom"
+                    />
 
                 <Card className={styles.root} variant="outlined">
                     <CardContent>
