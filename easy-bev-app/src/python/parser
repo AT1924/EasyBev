@@ -62,5 +62,5 @@ for row in table:
 
 conn.commit()
 conn.close()
-
+print("succes")
 

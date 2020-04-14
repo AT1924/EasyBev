@@ -311,19 +311,6 @@ function getMerchantInfo(info){
     return out;
 }
 
-// id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     mname text not null,
-//     digits INTEGER NOT NULL UNIQUE,
-//     security_code INTEGER  not null
-// phone TEXT NOT NULL,
-//     address TEXT NOT NULL,
-//     country TEXT NOT NULL,
-//     city TEXT NOT NULL,
-//     postal_code TEXT NOT NULL,
-//     exp_month NUMERIC NOT NULL,
-//     exp_year NUMERIC NOT NULL
-// merchant boolean not null
-// f_id INTEGER not null
 
 function insertPayment(meta, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
@@ -365,7 +352,7 @@ function updatePayment(info, payment, isMerchant){
         conn.end();
         done = true;
 
-    })
+    });
     deasync.loopWhile(()=>{return !done});
     return out;
 }
@@ -472,7 +459,7 @@ function getPrice(order) {
     return sum;
 }
 
-function getOrders(info){
+function getMerchantOrders(info){
     console.log("get ord info", info);
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
@@ -484,14 +471,14 @@ function getOrders(info){
     }
     let done = false;
     const out = {};
-    const meta = getMerchantInfo(info).body.merchant;
+    const temp = getMerchantInfo(info);
+    const meta = temp.body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
     console.log(meta);
     conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
         if(err){
             out.error = "sql error";
         }else{
-            console.log("data is", data)
             out.body = data.rows
         }
         done = true;
@@ -502,7 +489,52 @@ function getOrders(info){
     });
     conn.end();
     return  out
+}
 
+function getDistributorOrders(info){
+    console.log("get ord info", info);
+    if (!info || !info.email){
+        return {error: 'invalid email, reroute to login'}
+    }
+    const type = info.type;
+    if (type !== TYPES[0]){
+        console.log("ERROR: wrong fun called", type);
+        return {error: "server error"}
+    }
+    let done = false;
+    const out = {};
+    const meta = getDistributorInfo(info).body.distributor;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    console.log(meta);
+    conn.query('select * from orders where d_id = ?', [meta.id], function (err, data){
+        if(err){
+            out.error = "sql error";
+        }else{
+            out.body = data.rows
+        }
+        done = true;
+    });
+
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return  out
+}
+
+function getOrders(info){
+    console.log("get orders func received", info);
+    if (info && info.type){
+        if(info.type === TYPES[0]){
+            return getDistributorOrders(info);
+        }else if (info.type === TYPES[1]){ //merchant
+            return getMerchantOrders(info);
+        }else{
+            return {error:"invalid type"}
+        }
+    }else{
+        return {error:"invalid session, redirect to login"}
+    }
 }
 function makeOrder(info, order){
     console.log("make ord info", info)
@@ -584,7 +616,7 @@ app.post('/api/signup', (req, res) => {
     let response = {error:"invalid"};
     if(validateEmail(email)) {
         if (req.session.valid) {
-            console.log("IN!")
+            console.log("ALREADY IN!");
             response.status = "Cookie says already in";
         } else {
             console.log("NOT IN!");
@@ -650,7 +682,6 @@ app.post('/api/get_items', (req, res) => {
     res.send(getItems())
 });
 
-
 app.post('/api/make_order', (req, res) => {
     res.send(makeOrder(req.session.info, req.body))
 });
@@ -661,11 +692,9 @@ app.post('/api/get_orders', (req, res) => {
 
 app.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
-    console.log("resp", resp)
+    console.log("resp", resp);
     res.send(resp)
 });
-
-
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
