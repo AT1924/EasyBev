@@ -129,7 +129,7 @@ class Orders extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
-        this.state = {orders: [], type:'distributors', curItem: 'none'}
+        this.state = {orders: [], type:'distributors', curItem: 'none', clients: []}
     }
 
     componentDidMount () {
@@ -152,13 +152,16 @@ class Orders extends React.Component{
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-                        let ord = [];
-                        console.log(json);
-                        for (let i = 0; i< json.body.length; i++) {
-                            ord.push({id: json.body[i].id, price: json.body[i].price, timestamp: json.body[i].timestamp, items: JSON.parse(json.body[i].order_json)})
+                        console.log(json.body)
+                        if (this.state.type === 'distributors') {
+                            this.setState({clients: json.body.merchants})
+                        } else {
+                            let ord = [];
+                            for (let i = 0; i< json.body.length; i++) {
+                                ord.push({id: json.body[i].id, price: json.body[i].price, timestamp: json.body[i].timestamp, items: JSON.parse(json.body[i].order_json)})
+                            }
+                            this.setState({orders: ord});
                         }
-                        this.setState({orders: ord});
-                        console.log(ord);
                     }
                 );
         } catch(error) {
@@ -167,11 +170,26 @@ class Orders extends React.Component{
     }
 
     changeClient = (event) => {
-        this.setState({curItem: event.target.value})
-        // this.state.orders.map(function(item) {
-        //     console.log(item);
-        //     return null;
-        // })
+        this.setState({curItem: event.target.value});
+
+        let curClient = -1;
+        for (let i = 0; i < this.state.clients.length; i++) {
+            if(event.target.value === this.state.clients[i].name) {
+                curClient = i;
+                break;
+            }
+        }
+        let ord = [];
+        console.log(curClient);
+        if (curClient !== -1) {
+            for (let i = 0; i< this.state.clients[curClient].orders.length; i++) {
+                ord.push({id: this.state.clients[curClient].orders[i].id, price: this.state.clients[curClient].orders[i].price,
+                    timestamp: this.state.clients[curClient].orders[i].timestamp, items: JSON.parse(this.state.clients[curClient].orders[i].order_json)})
+            }
+            this.setState({orders: ord});
+        }
+
+
     }
 
 
@@ -197,8 +215,8 @@ class Orders extends React.Component{
                             }}
                         >
                             <option aria-label="None" value="" />
-                            {this.state.orders.map(function(item) {
-                                return <option value={item.price}>{item.price}</option>;
+                            {this.state.clients.map(function(item) {
+                                return <option value={item.name}>{item.name}</option>;
                             })}
                         </Select>
                     </FormControl>
