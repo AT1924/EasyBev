@@ -472,7 +472,7 @@ function getPrice(order) {
     return sum;
 }
 
-function getOrders(info){
+function getMerchantOrders(info){
     console.log("get ord info", info);
     if (!info || !info.email){
         return {error: 'invalid email, reroute to login'}
@@ -484,7 +484,9 @@ function getOrders(info){
     }
     let done = false;
     const out = {};
-    const meta = getMerchantInfo(info).body.merchant;
+    const temp = getMerchantInfo(info);
+    console.log("temp is", temp)
+    const meta = temp.body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
     console.log(meta);
     conn.query('select * from orders where m_id = ? and d_id = ?', [meta.id, meta.d_id], function (err, data){
@@ -502,7 +504,53 @@ function getOrders(info){
     });
     conn.end();
     return  out
+}
 
+function getDistributorOrders(info){
+    console.log("get ord info", info);
+    if (!info || !info.email){
+        return {error: 'invalid email, reroute to login'}
+    }
+    const type = info.type;
+    if (type !== TYPES[0]){
+        console.log("ERROR: wrong fun called", type);
+        return {error: "server error"}
+    }
+    let done = false;
+    const out = {};
+    const meta = getDistributorInfo(info).body.distributor;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    console.log(meta);
+    conn.query('select * from orders where d_id = ?', [meta.id], function (err, data){
+        if(err){
+            out.error = "sql error";
+        }else{
+            console.log("data is", data)
+            out.body = data.rows
+        }
+        done = true;
+    });
+
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return  out
+}
+
+function getOrders(info){
+    console.log("get orders func received", info);
+    if (info && info.type){
+        if(info.type === TYPES[0]){
+            return getDistributorOrders(info);
+        }else if (info.type === TYPES[1]){ //merchant
+            return getMerchantOrders(info);
+        }else{
+            return {error:"invalid type"}
+        }
+    }else{
+        return {error:"invalid session, redirect to login"}
+    }
 }
 function makeOrder(info, order){
     console.log("make ord info", info)
@@ -661,11 +709,12 @@ app.post('/api/get_orders', (req, res) => {
 
 app.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
-    console.log("resp", resp)
+    console.log("resp", resp);
     res.send(resp)
 });
 
 
-
+console.log(getOrders({email:"m@b.com", type:TYPES[1]}))
+console.log(getOrders({email:"michael_bardakji@brown.edu", type:TYPES[0]}))
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
