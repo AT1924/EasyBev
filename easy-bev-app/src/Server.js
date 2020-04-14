@@ -10,7 +10,7 @@ const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 300000 }}));
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
 
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
