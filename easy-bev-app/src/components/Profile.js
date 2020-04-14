@@ -87,8 +87,8 @@ class Profile extends React.Component {
         console.log('api done');
     }
 
-    createData(id, name, email, state) {
-        return { id, name, email, state};
+    createData(id, name, email, address, city, state, zip) {
+        return { id, name, email, address, city, state, zip};
     }
 
     async getData() {
@@ -111,8 +111,10 @@ class Profile extends React.Component {
                                 state: json.body.distributor.state, zip: json.body.distributor.zip, email: json.body.distributor.email});
                             const newRows = [];
                             for (let i = 0; i < json.body.merchants.length; i++) {
+                                console.log(json.body.merchants);
                                 newRows.push(this.createData(json.body.merchants[i].id, json.body.merchants[i].name,
-                                    json.body.merchants[i].email, json.body.merchants[i].state))
+                                    json.body.merchants[i].email, json.body.merchants[i].address, json.body.merchants[i].city,
+                                    json.body.merchants[i].state, json.body.merchants[i].zip))
                             }
                             this.setState({rows: newRows});
                         } else {
@@ -219,6 +221,7 @@ class Profile extends React.Component {
         const { classes } = this.props;
         const {company, address, state, zip, email, type, rows, panel1, panel2,
             payname, payphone, payaddress, paycountry, paycity, payzip, paycardnum, paycardver, monthexp, yearexp, billing} = this.state;
+        console.log(rows)
 
             return (
                 <React.Fragment>
@@ -456,7 +459,10 @@ class Profile extends React.Component {
                                                         <TableCell>Id</TableCell>
                                                         <TableCell align="right">Company Name</TableCell>
                                                         <TableCell align="right">Email</TableCell>
+                                                        <TableCell align="right">Address</TableCell>
+                                                        <TableCell align="right">City</TableCell>
                                                         <TableCell align="right">State</TableCell>
+                                                        <TableCell align="right">Zip</TableCell>
                                                         {/*<TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
                                                     </TableRow>
                                                 </TableHead>
@@ -468,7 +474,10 @@ class Profile extends React.Component {
                                                             </TableCell>
                                                             <TableCell align="right">{row.name}</TableCell>
                                                             <TableCell align="right">{row.email}</TableCell>
+                                                            <TableCell align="right">{row.address}</TableCell>
+                                                            <TableCell align="right">{row.city}</TableCell>
                                                             <TableCell align="right">{row.state}</TableCell>
+                                                            <TableCell align="right">{row.zip}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>

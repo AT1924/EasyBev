@@ -27,7 +27,7 @@ const SimpleExpansionPanel  = (props) => {
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
-                    <Typography>{props.children.id} : {props.children.timestamp} : $ {props.children.price} </Typography>
+                    <Typography>ID : {props.children.id} Order Date : {props.children.timestamp} Total Price :  $ {props.children.price} </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Typography>
@@ -170,11 +170,11 @@ class Orders extends React.Component{
                 <CssBaseline/>
                 <Nav/>
 
-                <Container style={{marginTop: "100px", height: "100vh"}} maxWidth="md" component="main">
-                    <h2>Orders</h2>
+                <Container style={{marginTop: "50px", height: "100vh"}} maxWidth="md" component="main">
+                    <h1>Orders</h1>
                     <Grid container spacing={5} alignItems="center" justify="flex-start">
 
-                        <Grid item style={{width: "600px"}}>
+                        <Grid item style={{width: "1000px"}}>
                             <ul>
 
                                 {this.state.orders.map(function(item) {
