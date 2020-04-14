@@ -1,6 +1,6 @@
 import Dynamsoft from "../Dynamsoft";
 import React from 'react';
-import BarcodeScanner from './BarcodeScanner';
+
 import Button from "@material-ui/core/Button";
 import Cart_Search from './Cart_Search';
 import Nav from "./Nav";
@@ -15,6 +15,7 @@ import Typography from "@material-ui/core/Typography";
 import CartTable from "./CartTable";
 import CardActions from "@material-ui/core/CardActions";
 import Card from "@material-ui/core/Card";
+import Radio from '@material-ui/core/Radio';
 
 const inventory = [
     { upc: 8256607 , name: 'AMERICAN ANTHEM VODKA 10/12PKS, 50ML', size: 50, qty: 10, price: 100.00},
@@ -56,6 +57,7 @@ class Cart extends React.Component {
             inventory: [],
             response: '',
             total: 0,
+
         };
 
     }
@@ -140,6 +142,8 @@ class Cart extends React.Component {
 
     };
 
+
+
     deleteItem = (i) => {
         console.log("here",i);
         //index = a.findIndex(x => x.prop2 ==="yutu");
@@ -161,10 +165,9 @@ render() {
                 <Nav/>
                 <div id="cart">
                 <Grid id="contained" container spacing={1} direction="column" justify="space-between">
-
-
                         <Grid item >
                             <Cart_Search  children={this.state.inventory} callback={this.populateCart}/>
+
                         </Grid>
 
                     <Grid item>
