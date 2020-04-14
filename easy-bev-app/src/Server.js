@@ -311,19 +311,6 @@ function getMerchantInfo(info){
     return out;
 }
 
-// id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     mname text not null,
-//     digits INTEGER NOT NULL UNIQUE,
-//     security_code INTEGER  not null
-// phone TEXT NOT NULL,
-//     address TEXT NOT NULL,
-//     country TEXT NOT NULL,
-//     city TEXT NOT NULL,
-//     postal_code TEXT NOT NULL,
-//     exp_month NUMERIC NOT NULL,
-//     exp_year NUMERIC NOT NULL
-// merchant boolean not null
-// f_id INTEGER not null
 
 function insertPayment(meta, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
@@ -365,7 +352,7 @@ function updatePayment(info, payment, isMerchant){
         conn.end();
         done = true;
 
-    })
+    });
     deasync.loopWhile(()=>{return !done});
     return out;
 }
@@ -485,7 +472,6 @@ function getMerchantOrders(info){
     let done = false;
     const out = {};
     const temp = getMerchantInfo(info);
-    console.log("temp is", temp)
     const meta = temp.body.merchant;
     const conn = db.createConnection('sqlite3://easy-bev.db');
     console.log(meta);
@@ -493,7 +479,6 @@ function getMerchantOrders(info){
         if(err){
             out.error = "sql error";
         }else{
-            console.log("data is", data)
             out.body = data.rows
         }
         done = true;
@@ -525,7 +510,6 @@ function getDistributorOrders(info){
         if(err){
             out.error = "sql error";
         }else{
-            console.log("data is", data)
             out.body = data.rows
         }
         done = true;
@@ -632,7 +616,7 @@ app.post('/api/signup', (req, res) => {
     let response = {error:"invalid"};
     if(validateEmail(email)) {
         if (req.session.valid) {
-            console.log("IN!")
+            console.log("ALREADY IN!");
             response.status = "Cookie says already in";
         } else {
             console.log("NOT IN!");
@@ -698,7 +682,6 @@ app.post('/api/get_items', (req, res) => {
     res.send(getItems())
 });
 
-
 app.post('/api/make_order', (req, res) => {
     res.send(makeOrder(req.session.info, req.body))
 });
@@ -713,8 +696,5 @@ app.post('/api/add_payment', (req, res) => {
     res.send(resp)
 });
 
-
-console.log(getOrders({email:"m@b.com", type:TYPES[1]}))
-console.log(getOrders({email:"michael_bardakji@brown.edu", type:TYPES[0]}))
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
