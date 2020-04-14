@@ -126,6 +126,7 @@ class Cart_Search extends React.Component{
 
 
     getChoiceSecond =  (value) => {
+        this.setState({orderq:1});
         this.props.callback(this.state.currItem, this.state.orderq);
 
     };
