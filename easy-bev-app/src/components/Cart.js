@@ -57,6 +57,7 @@ class Cart extends React.Component {
             response: '',
             total: 0,
         };
+
     }
 
     componentDidMount() {
@@ -128,7 +129,7 @@ class Cart extends React.Component {
                 state.cartListData.push(searchData);
                 return state
             });
-            console.log(searchData);
+
             this.setState({total: this.state.total + searchData.price * searchData.oqty})
 
             // here use search data to get all the information regarding the item
@@ -139,6 +140,18 @@ class Cart extends React.Component {
 
     };
 
+    deleteItem = (i) => {
+        console.log("here",i);
+        //index = a.findIndex(x => x.prop2 ==="yutu");
+        let index = this.state.cartListData.findIndex(x => x.name === i.name);
+        console.log(index);
+        this.setState(state => {
+            state.cartListData.splice(index, 1);
+            return state
+        });
+        console.log("ending",this.state.cartListData);
+    };
+
 
 render() {
 
@@ -146,7 +159,7 @@ render() {
             <React.Fragment>
                 <CssBaseline />
                 <Nav/>
-
+                <div id="cart">
                 <Grid id="contained" container spacing={1} direction="column" justify="space-between">
 
 
@@ -167,7 +180,7 @@ render() {
                                 </Typography>
 
                                 <Grid container>
-                                    <CartTable children={this.state.cartListData}/>
+                                    <CartTable children={this.state.cartListData} callback={this.deleteItem}/>
                                     <Typography>
                                         Total : {this.state.total}
                                     </Typography>
@@ -190,8 +203,10 @@ render() {
 
                     </Grid>
                 </Grid>
+                </div>
 
-                <div id = "cart" style={style.cart}>
+
+                {/*<div id = "cart" style={style.cart}>*/}
 
 
 
@@ -201,26 +216,26 @@ render() {
 
 
                     {/*{ !this.state.bShowScanner ? (*/}
-                    {/*    <Button onClick={this.showScanner} variant="contained">Default</Button>*/}
+                        {/*<Button onClick={this.showScanner} variant="contained">Default</Button>*/}
 
 
-                    {/*    ) : (*/}
-                    {/*    <div style={style.cameraViewContainer}>*/}
-                    {/*        <button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
+                        {/*) : (*/}
+                        {/*<div style={style.cameraViewContainer}>*/}
+                            {/*<button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
 
-                    {/*        <BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
-                    {/*    </div>*/}
+                            {/*<BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
+                        {/*</div>*/}
                     {/*) }*/}
 
                     {/*<div className="div-message" style={style.div_message} ref={this.refDivMessage}>*/}
-                    {/*    { this.state.messages.map((message, index) =>*/}
-                    {/*        <p key={ this.state.messageKeyBase + index }>*/}
-                    {/*            { message }*/}
-                    {/*        </p>*/}
-                    {/*    ) }*/}
+                        {/*{ this.state.messages.map((message, index) =>*/}
+                            {/*<p key={ this.state.messageKeyBase + index }>*/}
+                                {/*{ message }*/}
+                            {/*</p>*/}
+                        {/*) }*/}
                     {/*</div>*/}
 
-                </div>
+                {/*</div>*/}
             </React.Fragment>
         );
     }

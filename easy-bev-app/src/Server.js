@@ -18,7 +18,7 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
 const CREATE_PAYMENT =
     'CREATE TABLE payment (\
     id INTEGER PRIMARY KEY AUTOINCREMENT,\
-    name text not null,\
+    mname text not null,\
     digits INTEGER NOT NULL UNIQUE,\
     security_code INTEGER  not null,\
     phone TEXT NOT NULL,\
@@ -28,7 +28,7 @@ const CREATE_PAYMENT =
     postal_code TEXT NOT NULL,\
     exp_month NUMERIC NOT NULL,\
     exp_year NUMERIC NOT NULL,\
-    merchant bool not null,\
+    merchant boolean not null,\
     f_id INTEGER not null);';
 
 const CREATE_DISTRIBUTORS =
@@ -312,7 +312,7 @@ function getMerchantInfo(info){
 }
 
 // id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     name text not null,
+//     mname text not null,
 //     digits INTEGER NOT NULL UNIQUE,
 //     security_code INTEGER  not null
 // phone TEXT NOT NULL,
@@ -327,16 +327,22 @@ function getMerchantInfo(info){
 
 function insertPayment(meta, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    // const isMerchant = info.type === TYPES[1]
     let done = false;
     const out = {};
-    conn.query('insert into payment(name, digits, security_code, phone, address, country, city, postal_code, exp_month, exp_year, merchant, f_id) values()', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
+    console.log("insert")
+    console.log(payment)
+    console.log("meta", meta)
+    const param = [payment.name, payment.digits, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.x_month, payment.x_year, isMerchant, meta.id]
+    console.log(param)
+    conn.query('insert into payment(mname, digits, security_code, phone, address, country, city, postal_code, exp_month, exp_year, merchant, f_id) values(?,?,?,?,?,?,?,?,?,?,?,?)', param, function (err, data){
+      console.log("finished q ", err);
         if (err){
             out.error = "sql error"+ err
         }else{
             out.status = "SUCCESS";
         }
         done = true;
+        conn.end();
     });
     deasync.loopWhile(()=>{return !done});
     return out;
@@ -344,36 +350,60 @@ function insertPayment(meta, payment, isMerchant){
 
 function updatePayment(info, payment, isMerchant){
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    // const isMerchant = info.type === TYPES[1]
     let done = false;
     const out = {};
-    conn.query('update payment set name = ?, digits = ?, security_code = ?, phone= ?, address=?, country=?, city=?, postal_code=?, exp_month=?, exp_year=?, f_id=? where isMerchant = ? and f_id = ?', [payment.name, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.exp_month, payment.exp_year, isMerchant, meta.id], function (err, data){
+    const param = [payment.name, payment.digits, payment.security_code, payment.phone, payment.address, payment.country, payment.city, payment.postal_code, payment.x_month, payment.x_year, isMerchant, info.id];
+    console.log("info is", info);
+    console.log("param is", param);
+    conn.query('update payment set mname = ?, digits = ?, security_code = ?, phone= ?, address=?, country=?, city=?, postal_code=?, exp_month=?, exp_year=? where merchant = ? and f_id = ?', param, function (err, data){
+        console.log("query done")
         if (err){
             out.error = "sql error"+ err
         }else{
             out.status = "SUCCESS";
         }
+        conn.end();
         done = true;
-    });
+
+    })
     deasync.loopWhile(()=>{return !done});
     return out;
 }
 
 function addPayment(info, payment){
+    let done1 = false;
+    let out = {};
     if (validateEmail(info.email)) {
-        const meta = getInfo(info);
+        let meta = getInfo(info);
         const conn = db.createConnection('sqlite3://easy-bev.db');
-        const isMerchant = info.type === TYPES[1]
+        const isMerchant = info.type === TYPES[1];
+        if (isMerchant){
+            meta = meta.body.merchant
+        }else{
+            meta = meta.body.distributor
+        }
+
         conn.query('select * from payment where merchant = ? and f_id = ?', [isMerchant, meta.id], function (err, data) {
             if (data.rowCount === 0) {
-                return insertPayment(meta, payment, isMerchant)
+                out = insertPayment(meta, payment, isMerchant)
             } else if (!err) {
-                return updatePayment(meta, payment, isMerchant)
+                out = updatePayment(meta, payment, isMerchant)
             } else {
-                return {error: "sql error" + err}
+                out = {error: "sql error" + err}
             }
+            done1 = true;
         });
+
+    }else{
+        out = {error:"invalid session, reroute to signup"}
+        done1 = true;
+
     }
+
+    deasync.loopWhile(()=>{
+        return !done1;
+    });
+    return out;
 }
 
 function getDistributorInfo(info){
@@ -631,7 +661,7 @@ app.post('/api/get_orders', (req, res) => {
 
 app.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
-    console.log(resp)
+    console.log("resp", resp)
     res.send(resp)
 });
 
