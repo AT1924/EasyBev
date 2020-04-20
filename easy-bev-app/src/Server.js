@@ -12,32 +12,23 @@ const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
-
+const emailToSocker = {}
 io.on('connection', (socket) => {
+    console.log("NEW CONNECTION", socket.handshake.query, "END")
     socket.on('messageChannel', (data) => {
         console.log("received", data);
         handleMessage(data, socket)
     });
-    setInterval(function() {
-        console.log("exec")
-        // method to be executed;
-        data = "suuup";
-        toEmail = "m@b.com";
-        fromEmail = "server email";
-        fromType = "server";
-        toType = "merchant";
-        socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
-    }, 5000);
-
 });
 
 function handleMessage(message, socket){
-    const fromType = message.fromType;
-    const fromEmail = message.fromEmail;
-    const toType = message.toType;
-    const toEmail = message.toEmail;
-    const data = message.data;
-    socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    // const fromType = message.fromType;
+    // const fromEmail = message.fromEmail;
+    // const toType = message.toType;
+    // const toEmail = message.toEmail;
+    // const data = message.data;
+    // socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    socket.emit("messageChannel", message);
 
 }
 

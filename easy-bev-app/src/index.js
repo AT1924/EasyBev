@@ -57,7 +57,8 @@ class App extends React.Component {
                 <Route path="/signup" component={SignUp} />
                 <Route path="/message" component={Message}/>
                 <Route path="/temp" component={BarcodeScanner}/>
-                <Route path="/chat" component={Chatroom}/>
+                <Route path="/chat1" component={() => {return <Chatroom fromType = "merchant" fromEmail = "email1"/>}}/>
+                <Route path="/chat2" component={() => {return <Chatroom fromType = "merchant" fromEmail = "email2"/>}}/>
 
 
 
