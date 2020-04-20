@@ -1,5 +1,6 @@
 import Cart from "./components/Cart";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Chatroom from "./components/Chatroom";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import feed from "./components/feed";
@@ -13,7 +14,6 @@ import BarcodeScanner from "./components/BarcodeScanner";
 import './style/index.css'
 import {func} from "prop-types";
 const defaultTheme = createMuiTheme();
-
 
 
 
@@ -57,6 +57,9 @@ class App extends React.Component {
                 <Route path="/signup" component={SignUp} />
                 <Route path="/message" component={Message}/>
                 <Route path="/temp" component={BarcodeScanner}/>
+                <Route path="/chat" component={Chatroom}/>
+
+
 
 
         </Router>
