@@ -126,6 +126,7 @@ class Cart_Search extends React.Component{
 
 
     getChoiceSecond =  (value) => {
+        this.setState({orderq:1});
         this.props.callback(this.state.currItem, this.state.orderq);
 
     };
@@ -152,7 +153,7 @@ class Cart_Search extends React.Component{
         console.log(this.props.children[0]);
         for (let i = 0; i < this.props.children.length; i++) {
             if (this.props.children[i].upc === convert) {
-                match = i
+                match = i;
                 break;
             }
         }

@@ -110,7 +110,7 @@ class Cart extends React.Component {
         }
         else if (!(body.error)){
             this.setState({ cartListData: [],
-            response: "Order Successful"});
+            response: "Order Successful", total: 0});
         }
         else {
             console.log(body);

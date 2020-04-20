@@ -78,6 +78,7 @@ class SignUp extends React.Component {
         }
         else if (!(body.error)){
             localStorage.setItem('login', "true");
+            localStorage.setItem('typeUser', this.state.type);
             this.setState({ signin: true });
         }
         else {
