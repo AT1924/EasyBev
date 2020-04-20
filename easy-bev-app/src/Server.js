@@ -16,17 +16,18 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
 io.on('connection', (socket) => {
     socket.on('messageChannel', (data) => {
         console.log("received", data);
-        handleMessage(data)
+        handleMessage(data, socket)
     });
     setInterval(function() {
+        console.log("exec")
         // method to be executed;
         data = "suuup";
-        toEmail = "mm@b.com";
+        toEmail = "m@b.com";
         fromEmail = "server email";
         fromType = "server";
         toType = "merchant";
         socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
-    }, 20000);
+    }, 5000);
 
 });
 
