@@ -14,16 +14,12 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CartTable from "./CartTable";
 import CardActions from "@material-ui/core/CardActions";
+import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
+import {Helmet} from "react-helmet";
 import Card from "@material-ui/core/Card";
 import Radio from '@material-ui/core/Radio';
 
-const inventory = [
-    { upc: 8256607 , name: 'AMERICAN ANTHEM VODKA 10/12PKS, 50ML', size: 50, qty: 10, price: 100.00},
-    { upc: 8257606, name: 'CIROC VS, LTR', size: 1000, qty: 12, price: 100.00},
-    { upc: 8262802, name: 'BULLEIT RYE, 200', size: 200, qty: 48, price: 100.00},
-    { upc: 8776509, name: 'SEAGRAMS SEVEN CROWN 12/CS, 375', size: 375, qty: 12, price: 100.00},
-    { upc: 8260901, name: 'CIROC BLACK RASPBERRY 4/15PK, 50ML', size: 50, qty:4, price: 100.00},
-];
+
 
 const styles = theme =>({
     root: {
@@ -146,7 +142,7 @@ class Cart extends React.Component {
 
     deleteItem = (i) => {
         console.log("here",i);
-        //index = a.findIndex(x => x.prop2 ==="yutu");
+
         let index = this.state.cartListData.findIndex(x => x.name === i.name);
         console.log(index);
         this.setState(state => {
@@ -159,88 +155,151 @@ class Cart extends React.Component {
 
 render() {
 
-        return (
-            <React.Fragment>
-                <CssBaseline />
-                <Nav/>
-                <div id="cart">
-                <Grid id="contained" container spacing={1} direction="column" justify="space-between">
-                        <Grid item >
-                            <Cart_Search  children={this.state.inventory} callback={this.populateCart}/>
+       if (isMobile){
+           return (
 
-                        </Grid>
+               <React.Fragment>
+                   <Helmet>
+                       <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
 
-                    <Grid item>
+                   </Helmet>
 
-                        {/*<Cart_basket children={this.state.cartListData} />*/}
-                        <Card className={styles.root} variant="outlined">
-                            <CardContent>
-                                <Typography className={styles.title} variant="h5" component="h2">
-                                    This is Your Cart
-                                </Typography>
-                                <Typography className={styles.pos} color="textSecondary">
-                                    Your items are listed below
-                                </Typography>
+                   <CssBaseline/>
+                   <Nav/>
+                   <div id="cartMobile" style={styleMobile.cartMobile}>
+                       <Grid id="contained" container spacing={1} direction="column" justify="space-between">
+                           <Grid item>
+                               <Cart_Search children={this.state.inventory} callback={this.populateCart}/>
 
-                                <Grid container>
-                                    <CartTable children={this.state.cartListData} callback={this.deleteItem}/>
-                                    <Typography>
-                                        Total : {this.state.total}
-                                    </Typography>
-                                </Grid>
+                           </Grid>
 
-                            </CardContent>
+                           <Grid item>
 
-                            <CardActions>
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    style={{ textTransform: 'none' }}
-                                    onClick={this.makeOrder}
-                                >
-                                    Payment
-                                </Button>
-                            </CardActions>
-                            {this.state.response}
-                        </Card>
-
-                    </Grid>
-                </Grid>
-                </div>
+                               {/*<Cart_basket children={this.state.cartListData} />*/}
+                               <Card className={styles.root} variant="outlined" style={styleMobile.cartTableMobile}>
+                                   <CardContent>
+                                       <Typography className={styles.title} variant="h5" component="h2">
+                                           This is Your Cart
+                                       </Typography>
+                                       <Typography className={styles.pos} color="textSecondary">
+                                           Your items are listed below
+                                       </Typography>
 
 
-                {/*<div id = "cart" style={style.cart}>*/}
-
-
+                                           <CartTable children={this.state.cartListData} callback={this.deleteItem}/>
+                                           <Grid container direction="row" justify="space-between">
+                                           <Grid item>
+                                           <Typography>
+                                               Total : {this.state.total}
+                                           </Typography>
+                                           </Grid>
+                                           <Grid item>
+                                           <CardActions>
+                                               <Button
+                                                   variant="outlined"
+                                                   color="primary"
+                                                   style={{textTransform: 'none'}}
+                                                   onClick={this.makeOrder}
+                                               >
+                                                   Payment
+                                               </Button>
+                                           </CardActions>
+                                           </Grid>
+                                           </Grid>
 
 
 
+                                   </CardContent>
 
 
+                                   {this.state.response}
+                               </Card>
 
-                    {/*{ !this.state.bShowScanner ? (*/}
-                        {/*<Button onClick={this.showScanner} variant="contained">Default</Button>*/}
+                           </Grid>
+                       </Grid>
+                   </div>
+               </React.Fragment>
+           );
+
+       }
+       else {
+           return (
+               <React.Fragment>
+                   <CssBaseline/>
+                   <Nav/>
+                   <div id="cart">
+                       <Grid id="contained" container spacing={1} direction="column" justify="space-between">
+                           <Grid item>
+                               <Cart_Search children={this.state.inventory} callback={this.populateCart}/>
+
+                           </Grid>
+
+                           <Grid item>
+
+                               {/*<Cart_basket children={this.state.cartListData} />*/}
+                               <Card className={styles.root} variant="outlined">
+                                   <CardContent>
+                                       <Typography className={styles.title} variant="h5" component="h2">
+                                           This is Your Cart
+                                       </Typography>
+                                       <Typography className={styles.pos} color="textSecondary">
+                                           Your items are listed below
+                                       </Typography>
+
+                                       <Grid container>
+                                           <CartTable children={this.state.cartListData} callback={this.deleteItem}/>
+                                           <Typography>
+                                               Total : {this.state.total}
+                                           </Typography>
+                                       </Grid>
+
+                                   </CardContent>
+
+                                   <CardActions>
+                                       <Button
+                                           variant="outlined"
+                                           color="primary"
+                                           style={{textTransform: 'none'}}
+                                           onClick={this.makeOrder}
+                                       >
+                                           Payment
+                                       </Button>
+                                   </CardActions>
+                                   {this.state.response}
+                               </Card>
+
+                           </Grid>
+                       </Grid>
+                   </div>
 
 
-                        {/*) : (*/}
-                        {/*<div style={style.cameraViewContainer}>*/}
-                            {/*<button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
+                   {/*<div id = "cart" style={style.cart}>*/}
 
-                            {/*<BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
-                        {/*</div>*/}
-                    {/*) }*/}
 
-                    {/*<div className="div-message" style={style.div_message} ref={this.refDivMessage}>*/}
-                        {/*{ this.state.messages.map((message, index) =>*/}
-                            {/*<p key={ this.state.messageKeyBase + index }>*/}
-                                {/*{ message }*/}
-                            {/*</p>*/}
-                        {/*) }*/}
-                    {/*</div>*/}
+                   {/*{ !this.state.bShowScanner ? (*/}
+                   {/*<Button onClick={this.showScanner} variant="contained">Default</Button>*/}
 
-                {/*</div>*/}
-            </React.Fragment>
-        );
+
+                   {/*) : (*/}
+                   {/*<div style={style.cameraViewContainer}>*/}
+                   {/*<button id = "scan" onClick={this.hideScanner}>Cancel</button>*/}
+
+                   {/*<BarcodeScanner appendMessage={this.appendMessage}></BarcodeScanner>*/}
+                   {/*</div>*/}
+                   {/*) }*/}
+
+                   {/*<div className="div-message" style={style.div_message} ref={this.refDivMessage}>*/}
+                   {/*{ this.state.messages.map((message, index) =>*/}
+                   {/*<p key={ this.state.messageKeyBase + index }>*/}
+                   {/*{ message }*/}
+                   {/*</p>*/}
+                   {/*) }*/}
+                   {/*</div>*/}
+
+                   {/*</div>*/}
+               </React.Fragment>
+           );
+       }
     }
     appendMessage = str => {
         this.setState(state=>{
@@ -289,6 +348,19 @@ render() {
         });
     }
 }
+
+
+const styleMobile = {
+    cartMobile: {
+        minHeight: "100vh",
+    },
+    cartTableMobile: {
+        maxWidth: "100vw",
+        marginTop: "25px",
+    },
+
+
+};
 
 const style = {
     contained: {
