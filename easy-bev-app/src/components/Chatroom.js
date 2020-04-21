@@ -2,12 +2,12 @@ import React from 'react';
 const io = require('socket.io-client')
 
 
-const socket = io.connect('http://localhost:8080', {query: 'email=myEmail&&type=myType'});//include identifying info
 
 export default class Chatroom extends React.Component {
 
     constructor(props, context) {
         super(props, context);
+
         this.state = {
             fromEmail: this.props.fromEmail,
             fromType:this.props.fromType,

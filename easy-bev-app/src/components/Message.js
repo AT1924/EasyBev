@@ -46,7 +46,6 @@ const styles = theme => ({
 
 });
 
-const socket = io.connect('http://localhost:8080', {query: 'email=myEmail&&type=myType'});//include identifying info
 
 class Message extends React.Component {
     constructor(props) {
