@@ -71,7 +71,7 @@ const adds = [["2 for 1", 'All beer and wine is available in the offer!', 'Expir
 const Ad  = (props) => {
 
     const classes = useStyles();
-    console.log(props.children[0]);
+    console.log("children props", props.children);
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
@@ -85,14 +85,23 @@ const Ad  = (props) => {
                         <Grid item xs container direction="column" spacing={2}>
                             <Grid item xs>
                                 <Typography gutterBottom variant="subtitle1">
-                                    {props.children[0]}
+                                    Title: {props.children.title}
                                 </Typography>
                                 <Typography variant="body2" gutterBottom>
-                                    {props.children[1]}
+                                    Description: {props.children.description}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
-                                    {props.children[2]}
+                                    Price: {props.children.price}
                                 </Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    Expiry Date: {props.children.expiry}
+                                </Typography>
+                                {
+                                    props.children.promotionItems.map((row) => (
+                                        <Typography variant="body2" color="textSecondary">
+                                            Promo Item: {row.name}
+                                        </Typography>
+                                    ))}
                             </Grid>
                             <Grid item>
                                 <Typography variant="body2" style={{ cursor: 'pointer' }}>
@@ -160,13 +169,76 @@ const styles = theme => ({
     },
 });
 
+const sleep = require('util').promisify(setTimeout);
 
 class Feed extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
-        this.state = {open: false}
+        this.state = {open: false};
+        this.state.promotions = [];
     }
+
+    componentDidMount() {
+        this.getPromotions()
+        setInterval( this.getPromotions, 30000 );
+
+        //this.getPromotions();
+        this.setState({fromType:localStorage.getItem("typeUser") });
+    }
+
+    async getItems() {
+        try {
+            fetch("/api/get_items", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            }).then( response => response.json())
+                .then(json => {
+
+                        //console.log(json);
+                        //this.setState({inventory: json.body.items});
+                    }
+                );
+        } catch(error) {
+            console.error(error);
+        }
+        console.log("WAITING");
+
+
+    }
+
+
+    async getPromotions() {
+        try {
+            fetch("/api/get_feeds", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            }).then( response => response.json())
+                .then(json => {
+
+                        // title, description promotion price, expirydate, items
+                        this.setState({promotions: json.body});
+                    }
+                );
+        } catch(error) {
+            console.error(error);
+        }
+
+    }
+
+
 
     handleOpen = () => {
         if (this.state.open) {
@@ -226,7 +298,8 @@ class Feed extends React.Component{
                     <Grid container spacing={5} alignItems="center">
                         <Grid item>
                             <ul>
-                                {adds.map(function(item) {
+                                {this.state.promotions.map(function(item) {
+                                    console.log("promotion item", item);
                                     return<li><Ad children={item}/></li>;
                                 })}
 

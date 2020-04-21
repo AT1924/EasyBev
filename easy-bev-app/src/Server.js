@@ -929,7 +929,7 @@ function getFeed(info){
         deasync.loopWhile(()=>{return !done})
     }
 
-    return feeds;
+    return {body:feeds};
 
 }
 
@@ -1044,7 +1044,10 @@ app.post('/api/new_feed', (req, res) => {
 });
 
 app.post('/api/get_feeds', (req, res) => {
-    res.send(getFeed(req.session.info))
+    console.log("GET FEED CALLED")
+    const out = getFeed(req.session.info);
+    console.log("RETURNING", out)
+    res.send(out)
 });
 
 
@@ -1059,3 +1062,4 @@ console.log("START");
 // console.log("orders")
 // console.log(dissst.body.orders)
 server.listen(port, () => console.log(`Listening on port ${port}`));
+
