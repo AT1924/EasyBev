@@ -12,6 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import Input from '@material-ui/core/Input';
 import ListItemText from "@material-ui/core/ListItemText";
 const io = require('socket.io-client')
 
@@ -220,8 +221,11 @@ class Message extends React.Component {
                                                 {/*    fullWidth*/}
                                                 {/*    onChange={this.handleChange('message')}*/}
                                                 {/*/>*/}
-                                                <input
+                                                <Input
                                                     id="message"
+                                                    variant="outlined"
+                                                    style={{width: '20vw'}}
+                                                    fullWidth
                                                     onChange={this.handleChange('message')}
                                                     placeholder="Type a message."
                                                     value={this.state.message}
