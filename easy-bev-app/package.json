@@ -17,6 +17,7 @@
     "dynamsoft-javascript-barcode": "^7.3.0-v2",
     "express-session": "^1.17.0",
     "material-ui": "^0.20.2",
+    "moment": "^2.24.0",
     "nodemon": "^2.0.3",
     "prop-types": "latest",
     "react": "^16.12.0",

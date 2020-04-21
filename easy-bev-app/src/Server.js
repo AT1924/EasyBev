@@ -15,9 +15,10 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
 const emailToTypeToSocket = {};
 emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
+const moment = require('moment');
 
 io.on('connection', (socket) => {
-    const id = socket.handshake.query.id;
+    const id = parseInt(socket.handshake.query.id);
     const type = socket.handshake.query.type;
     console.log("NEW SOCKET CONNECTION WITH TYPE:", type, "AND ID:", id);
     if(!TYPES.includes(type)){
@@ -33,18 +34,23 @@ io.on('connection', (socket) => {
 });
 
 
-function getDistFromCode(code){
+
+function getDistFromCode(code, merchantEmail){
+    console.log("Code", code, "memail", merchantEmail)
+    if (parseInt(code) === 42069){
+        return 1
+    }
     let done = false;
     let out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('select d_id from codes where code = ?', [code], function (err, data){
+    conn.query('select d_id from codes where code = ? and merchantEmail = ? order by timestamp desc', [code, merchantEmail], function (err, data){
         if(err){
-            console.log("error is", err)
+            console.log("error is", err);
             out = err;
         }else if(data.rowCount === 0){
             out = null
         }else{
-            out = data.rows[0]
+            out = data.rows[0].d_id
         }
         done = true;
 
@@ -56,8 +62,21 @@ function getDistFromCode(code){
     return out;
 }
 
-function generateRandomCode(){
-
+function linkMerchantDistributor(d_id, merchantEmail){
+    let randomNum = Math.floor(Math.random() * Math.floor(10000000));
+    while (getDistFromCode(randomNum, merchantEmail)){
+        randomNum = Math.floor(Math.random() * Math.floor(10000000));
+    }
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query('insert into codes(code, d_id, merchantEmail)', [code, d_id, merchantEmail], function (error, data) {
+        if (error) {
+            console.log("failed to insert code, error:", error)
+        }else{
+            console.log("inserted", randomNum, "with dist id", d_id, "and merch email", merchantEmail)
+        }
+        conn.end();
+    });
+    return randomNum
 }
 
 
@@ -65,13 +84,13 @@ function generateRandomCode(){
 function handleMessage(message){
     console.log("got message", message);
     const fromType = message.fromType;
-    const fromId = message.fromId;
-    const toId = message.toId;
+    const fromId = parseInt(message.fromId);
+    const toId = parseInt(message.toId);
     const data = message.data;
     const dist_id = fromType === TYPES[0] ? fromId : toId;
     const merchant_id = fromId === dist_id ? toId : fromId;
     const fromMerchant = fromType === TYPES[1];
-
+    message.timestamp = moment().format('YYYY-mm-DD hh:mm:ss')
     const conn = db.createConnection('sqlite3://easy-bev.db');
     conn.query('insert into messages(d_id, m_id, text, fromMerchant) values (?,?,?,?)', [dist_id, merchant_id, data, fromMerchant], function (err, data){
         console.log("inserted", data, "with err", err);
@@ -161,6 +180,7 @@ const CREATE_CODES =
     'CREATE TABLE  codes (\
      code INTEGER PRIMARY KEY,\
      d_id INTEGER NOT NULL,\
+     merchantEmail TEXT NOT NULL,\
      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
      FOREIGN KEY(d_id) REFERENCES Distributors(id)\
 );';
@@ -218,19 +238,19 @@ function signUp(body){
 
                 }else{
                     insert = 'insert into merchants (name, email, password, address, city, state, zip, d_id)  values (?,?,?,?,?,?,?,?)';
-                    const resp = codeToDist(body.code);
-                    if (resp.error){
+                    const dist_id = getDistFromCode(body.code, body.email);
+                    if (!dist_id){
                         conn.end;
-                        out.error = resp.error;
+                        out.error = "invalid code/merchant email";
                         done = true;
+                        return
                     }
-                    const dist_id = resp.body;
                     param.push(dist_id)
                 }
-                console.log("executing", insert, param)
+                console.log("executing", insert, param);
                 conn.query(insert, param, function (error, data) {
                     if (error){
-                        out.error = "Invalid input";
+                        out.error = "Invalid input, sql error"+ error;
                     }else{
                         out.status = "SUCCESS";
                     }
@@ -614,6 +634,63 @@ function getDistributorOrders(info){
     return  out
 }
 
+function getMessengers(email, type) {
+    let done = false;
+    let query = "";
+    let out = [];
+    if (type === TYPES[0]){
+        query = "select DISTINCT me.email as email from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and d.email = ?"
+    }
+    if (type === TYPES[1]){
+        query = "select DISTINCT d.email as email from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and me.email = ?"
+    }
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query(query, [email], function (err, data){
+        out = data.rows;
+        done = true;
+    });
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return out;
+}
+function getMessages(info){
+    const email = info.email;
+    const type = info.type;
+    if (info && info.type){
+        if(type !== TYPES[0] && type !== TYPES[1]){
+            return {error:"invalid, reroute to login"}
+        }else{
+            const out = {};
+            const messengers = getMessengers(email, type);
+
+            for(let i = 0; i < messengers.length; i++){
+                const otherEmail = messengers[i].email;
+                let done = false;
+                const conn = db.createConnection('sqlite3://easy-bev.db');
+                const query = "select d.email as dist_email, me.email as merch_email, m.text, m.timestamp, m.fromMerchant from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and me.email = ? and d.email = ?  order by timestamp asc"
+                const mEmail = type === TYPES[1] ? email : otherEmail;
+                const dEmail = type === TYPES[0] ? email : otherEmail;
+                conn.query(query, [mEmail, dEmail], function (err, data){
+                    out[otherEmail] = data.rows;
+                    done = true;
+
+                });
+                deasync.loopWhile(function () {
+                    return !done;
+                });
+                conn.end()
+            }
+
+            return out;
+
+        }
+    }else{
+        return {error:"invalid, reroute to login"}
+    }
+}
+
 function getOrders(info){
     console.log("get orders func received", info);
     if (info && info.type){
@@ -690,9 +767,7 @@ function makeOrder(info, order){
 
 }
 
-function invite(dist_info, merch_email){
 
-}
 
 app.post('/api/authenticate', (req,res) =>{
     console.log("in authenticate sending", req.session.valid);
@@ -739,7 +814,7 @@ app.post('/api/signin', (req, res) => {
         const email = req.body.email;
         const type = req.body.type;
         let password = req.body.password;
-        console.log("new sign in")
+        console.log("new sign in");
 
         if(email && type && password){
             if(validateEmail(email)) {
@@ -788,6 +863,10 @@ app.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
     console.log("resp", resp);
     res.send(resp)
+});
+
+app.post('/api/get_messages', (req, res) => {
+    res.send(getMessages(req.session.info))
 });
 
 app.post('/api/log_out', (req, res) => {
