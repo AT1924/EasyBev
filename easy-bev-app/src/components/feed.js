@@ -7,10 +7,13 @@ import Nav from "./Nav";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import ButtonBase from '@material-ui/core/ButtonBase';
 import image1 from './logo.png';
+import Modal from "@material-ui/core/Modal";
+import {Helmet} from "react-helmet";
 
-const useStyles = makeStyles((theme) => ({
+let useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         margin: 15,
@@ -19,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         margin: 'auto',
-        maxWidth: 1000,
-        width: 800,
+        maxWidth: '1000px',
+        width: '800px',
     },
     image: {
         width: 128,
@@ -34,11 +37,39 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+if (isMobile){
+    useStyles = makeStyles((theme) => ({
+        root: {
+            flexGrow: 1,
+            margin: 15,
+            width: '100%',
+        },
+        paper: {
+            padding: theme.spacing(2),
+            margin: 'auto',
+            maxWidth: '100vw',
+            width: '80vw',
+        },
+        image: {
+            width: 128,
+            height: 128,
+        },
+        img: {
+            margin: 'auto',
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '100%',
+        },
+    }));
+}
+
+
 const adds = [["2 for 1", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $100'],
                ["Buy 1 get 1 50% off!", 'All beer and wine is available in the offer!', 'Expires: 3/02/21', 'Up to $500'],
             ["5 for 2", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $1000']];
 
 const Ad  = (props) => {
+
     const classes = useStyles();
     console.log(props.children[0]);
     return (
@@ -134,14 +165,62 @@ class Feed extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
+        this.state = {open: false}
     }
+
+    handleOpen = () => {
+        if (this.state.open) {
+            return
+        } else {
+            this.setState({open: true})
+        }
+    }
+
+    handleClose = () => {
+        if (this.state.open) {
+            this.setState({open: false})
+        } else {
+            return
+        }
+    }
+
 
     render() {
 
         return (
             <React.Fragment>
+
+                <Helmet>
+                    <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+                </Helmet>
+
                 <CssBaseline/>
                 <Nav/>
+                <button type="button" onClick={this.handleOpen}>
+                    Open Modal
+                </button>
+                <Modal
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                >
+                    <div style={{
+                        position: 'absolute',
+                        width: 400,
+                        backgroundColor: 'white',
+                        border: '2px solid #000',
+                        boxShadow: 5,
+                        top: "40%",
+                        left: "40%",
+                    }}>
+                        <h2 id="simple-modal-title">Text in a modal</h2>
+                        <p id="simple-modal-description">
+                            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                        </p>
+                    </div>
+                </Modal>
 
                 <Container maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">

@@ -18,6 +18,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Paper from "@material-ui/core/Paper";
 import Redirect from "react-router-dom/es/Redirect";
+import {Helmet} from "react-helmet";
 
 function Copyright() {
     return (
@@ -121,6 +122,11 @@ class SignUp extends React.Component {
 
         } else {
             return (
+                <React.Fragment>
+                    <Helmet>
+                        <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+                    </Helmet>
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
                     <div className={classes.paper}>
@@ -351,6 +357,7 @@ class SignUp extends React.Component {
                         <Copyright/>
                     </Box>
                 </Container>
+                </React.Fragment>
             );
         }
     }
