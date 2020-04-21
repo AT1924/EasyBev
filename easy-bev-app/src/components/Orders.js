@@ -152,7 +152,10 @@ class Orders extends React.Component{
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-                        console.log(json.body)
+                        console.log(json)
+                        if ('error' in json) {
+                            return;
+                        }
                         if (this.state.type === 'distributors') {
                             this.setState({clients: json.body.merchants})
                         } else {
