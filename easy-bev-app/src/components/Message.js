@@ -90,19 +90,20 @@ class Message extends React.Component {
                             }
                             this.setState({contacts: contacts, fromId: json.body.distributor.id});
 
+
+
                         } else {
                             this.setState({contacts: [[json.body.merchant.distributor_email, json.body.merchant.d_id]], fromId: json.body.merchant.id});
-                            console.log("got merchant info");
-                            const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
-                            socket.on('messageChannel', (data) => {
-                                console.log("received", data, "and state is", this.state)
-                                if (data.toId === this.state.fromId && data.toType === this.state.fromType){
-                                    this.receiveMessage(data);
-                                }
-                            });
-                            this.setState({socket: socket});
                             console.log('got merchant info')
                         }
+                    const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
+                    socket.on('messageChannel', (data) => {
+                        console.log("received", data, "and state is", this.state)
+                        if (data.toId === this.state.fromId && data.toType === this.state.fromType){
+                            this.receiveMessage(data);
+                        }
+                    });
+                    this.setState({socket: socket});
                     }
                 );
         } catch(error) {
@@ -128,6 +129,7 @@ class Message extends React.Component {
         this.state.socket.emit("messageChannel", { fromType: this.state.fromType,
             fromId:this.state.fromId, toId: this.state.toId, data:this.state.message });
         this.setState({message: ''})
+        this.setState({messages: []})
     }
 
     handleChange = name => (event) => {
@@ -169,30 +171,34 @@ class Message extends React.Component {
                                     <Paper className={classes.messages}>
                                         {this.state.selected > -1 ?
                                             <Paper className={classes.paper}>
-                                                {/*{this.state.messages.map((value, index) => {*/}
-                                                {/*    return (*/}
-                                                {/*        <Grid container wrap="nowrap" spacing={2}>*/}
-                                                {/*            <Grid item>*/}
-                                                {/*                <Avatar>W</Avatar>*/}
-                                                {/*            </Grid>*/}
-                                                {/*            <Grid item xs zeroMinWidth>*/}
-                                                {/*                <Typography noWrap>hello</Typography>*/}
-                                                {/*            </Grid>*/}
-                                                {/*        </Grid>*/}
-                                                {/*    );*/}
-                                                {/*})}*/}
-                                                <Grid container wrap="nowrap" spacing={2} direction='column'>
-                                                    <Grid container justfiy='flex-start'>
-                                                        <Grid item>
-                                                            <Typography variant="caption" display="block" color='primary'>
-                                                                Bob Sanchez
-                                                            </Typography>
+                                                {this.state.messages.map((value, index) => {
+                                                    return (
+                                                        <Grid container wrap="nowrap" spacing={2} direction='column'>
+                                                            <Grid container justfiy='flex-start'>
+                                                                <Grid item>
+                                                                    <Typography variant="caption" display="block" color='primary'>
+                                                                        Bob Sanchez
+                                                                    </Typography>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Grid item xs >
+                                                                <Typography > hi </Typography>
+                                                            </Grid>
                                                         </Grid>
-                                                    </Grid>
-                                                    <Grid item xs >
-                                                        <Typography > hi </Typography>
-                                                    </Grid>
-                                                </Grid>
+                                                    );
+                                                })}
+                                                {/*<Grid container wrap="nowrap" spacing={2} direction='column'>*/}
+                                                {/*    <Grid container justfiy='flex-start'>*/}
+                                                {/*        <Grid item>*/}
+                                                {/*            <Typography variant="caption" display="block" color='primary'>*/}
+                                                {/*                Bob Sanchez*/}
+                                                {/*            </Typography>*/}
+                                                {/*        </Grid>*/}
+                                                {/*    </Grid>*/}
+                                                {/*    <Grid item xs >*/}
+                                                {/*        <Typography > hi </Typography>*/}
+                                                {/*    </Grid>*/}
+                                                {/*</Grid>*/}
                                             </Paper>
                                             : <div></div>}
                                     </Paper>
