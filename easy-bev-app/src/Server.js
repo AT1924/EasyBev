@@ -372,7 +372,6 @@ function create_table(sql) {
     let done = false;
     const conn = db.createConnection('sqlite3://easy-bev.db')
     conn.query(sql, function (err) {
-        console.log(err)
         done = true;
         conn.end();
     });
@@ -890,15 +889,46 @@ function merchEmailToDistId(email){
 
 
 function getFeed(info){
+
     if(!info.type){
         return {error:"reroute to login"}
     }
     let d_id;
     if (info.type === TYPES[1]){
-        //d_id =
+        d_id = merchEmailToDistId(info.email);
     }else{
         d_id = distEmailToId(info.email);
     }
+
+
+    let done = false;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    let out = "";
+    let feeds = []
+    conn.query('select * from feed where d_id = ?', d_id, function (err, data) {
+        if (err) {
+            console.log("SQL ERR", err)
+        }
+        feeds = data.rows;
+        conn.end();
+        done = true;
+    });
+    deasync.loopWhile(()=>{
+        return !done;
+    });
+
+    for (let i = 0; i < feeds.length; i++) {
+        done = false;
+        const f_id = feeds[i].id;
+        const conn = db.createConnection('sqlite3://easy-bev.db');
+        conn.query('select i.*, fi.qty as oqty from feed_items as fi, items as i where fi.i_id = i.id and fi.f_id = ?', f_id, function (err, data) {
+            feeds[i].promotionItems = data.rows
+            done = true;
+        });
+        deasync.loopWhile(()=>{return !done})
+    }
+
+    return feeds;
 
 }
 
@@ -1013,34 +1043,7 @@ app.post('/api/new_feed', (req, res) => {
 });
 
 app.post('/api/get_feeds', (req, res) => {
-    res.send({body:[{
-        title: 'wawawiwa',
-        description: 'desc',
-        price: '112',
-        expiry: '03/27/1998',
-        promotionItems: [
-            {
-                id: 14,
-                upc: 81753815554,
-                name: 'HENNESSY BLACK HOLIDAY GB 2019, 750 [261194]',
-                size: 750,
-                qty: 12,
-                price: 376.75,
-                dist_id: 1,
-                oqty: 1
-            },
-            {
-                id: 25,
-                upc: 81753827618,
-                name: 'CLICQUOT ROSE MESSAGE VAP 6/C, 750 [228184]',
-                size: 750,
-                qty: 6,
-                price: 295,
-                dist_id: 1,
-                oqty: 2
-            }
-        ]
-    }]})
+    res.send(getFeed(req.session.info))
 });
 
 
@@ -1055,3 +1058,4 @@ console.log("START");
 // console.log("orders")
 // console.log(dissst.body.orders)
 server.listen(port, () => console.log(`Listening on port ${port}`));
+console.log(getFeed({email:"m@dist.com",type:TYPES[0]}))
