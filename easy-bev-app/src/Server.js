@@ -633,6 +633,63 @@ function getDistributorOrders(info){
     return  out
 }
 
+function getMessengers(email, type) {
+    let done = false;
+    let query = "";
+    let out = [];
+    if (type === TYPES[0]){
+        query = "select DISTINCT me.email as email from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and d.email = ?"
+    }
+    if (type === TYPES[1]){
+        query = "select DISTINCT d.email as email from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and me.email = ?"
+    }
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query(query, [email], function (err, data){
+        out = data.rows;
+        done = true;
+    });
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return out;
+}
+function getMessages(info){
+    const email = info.email;
+    const type = info.type;
+    if (info && info.type){
+        if(type !== TYPES[0] && type !== TYPES[1]){
+            return {error:"invalid, reroute to login"}
+        }else{
+            const out = {};
+            const messengers = getMessengers(email, type);
+
+            for(let i = 0; i < messengers.length; i++){
+                const otherEmail = messengers[i].email;
+                let done = false;
+                const conn = db.createConnection('sqlite3://easy-bev.db');
+                const query = "select d.email as dist_email, me.email as merch_email, m.text, m.timestamp, m.fromMerchant from messages as m, Distributors as d, Merchants as me  where m.m_id = me.id and d.id = m.d_id and me.email = ? and d.email = ?  order by timestamp asc"
+                const mEmail = type === TYPES[1] ? email : otherEmail;
+                const dEmail = type === TYPES[0] ? email : otherEmail;
+                conn.query(query, [mEmail, dEmail], function (err, data){
+                    out[otherEmail] = data.rows;
+                    done = true;
+
+                });
+                deasync.loopWhile(function () {
+                    return !done;
+                });
+                conn.end()
+            }
+
+            return out;
+
+        }
+    }else{
+        return {error:"invalid, reroute to login"}
+    }
+}
+
 function getOrders(info){
     console.log("get orders func received", info);
     if (info && info.type){
@@ -709,9 +766,7 @@ function makeOrder(info, order){
 
 }
 
-function invite(dist_info, merch_email){
 
-}
 
 app.post('/api/authenticate', (req,res) =>{
     console.log("in authenticate sending", req.session.valid);
@@ -758,7 +813,7 @@ app.post('/api/signin', (req, res) => {
         const email = req.body.email;
         const type = req.body.type;
         let password = req.body.password;
-        console.log("new sign in")
+        console.log("new sign in");
 
         if(email && type && password){
             if(validateEmail(email)) {
@@ -809,6 +864,10 @@ app.post('/api/add_payment', (req, res) => {
     res.send(resp)
 });
 
+app.post('/api/get_messages', (req, res) => {
+    res.send(getMessages(req.session.info))
+});
+
 app.post('/api/log_out', (req, res) => {
     req.session.destroy();
     res.send({succes:"logged out"})
@@ -823,3 +882,4 @@ console.log("START");
 // console.log("orders")
 // console.log(dissst.body.orders)
 server.listen(port, () => console.log(`Listening on port ${port}`));
+console.log(getMessages({email:"m@dist.com", type:TYPES[0]}))
