@@ -57,6 +57,7 @@ class Message extends React.Component {
     constructor(props) {
         super(props);
         this.state = { message: "",
+            email: '',
             fromId: "",
             fromType: "",
             toId: "",
@@ -82,19 +83,19 @@ class Message extends React.Component {
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-                        console.log(json);
+                        // console.log(json);
                         if ('distributor' in json.body) {
                             let contacts = []
                             for (let i = 0; i < json.body.merchants.length; i++) {
                                 contacts.push([json.body.merchants[i].email, json.body.merchants[i].id])
                             }
-                            this.setState({contacts: contacts, fromId: json.body.distributor.id});
-
-
+                            this.setState({contacts: contacts, fromId: json.body.distributor.id, email: json.body.distributor.email});
 
                         } else {
-                            this.setState({contacts: [[json.body.merchant.distributor_email, json.body.merchant.d_id]], fromId: json.body.merchant.id});
-                            console.log('got merchant info')
+                            this.setState({contacts: [[json.body.merchant.distributor_email, json.body.merchant.d_id]],
+                                fromId: json.body.merchant.id,
+                                email: json.body.merchant.email});
+                            // console.log('got merchant info')
                         }
                     const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
                     socket.on('messageChannel', (data) => {
@@ -120,9 +121,9 @@ class Message extends React.Component {
     }
 
     receiveMessage(message){
-        console.log("received", message.data);
+        console.log("recieving!!");
         this.setState(prevState => ({
-            messages: [...prevState.messages, [this.state.data, this.state.toId]]
+            messages: [...prevState.messages, [message.data.data, this.state.selected[0]]]
         }))
     }
 
@@ -132,7 +133,7 @@ class Message extends React.Component {
         this.state.socket.emit("messageChannel", { fromType: this.state.fromType,
             fromId:this.state.fromId, toId: this.state.toId, data:this.state.message });
         this.setState(prevState => ({
-            messages: [...prevState.messages, [this.state.message, this.state.fromId]]
+            messages: [...prevState.messages, [this.state.message, this.state.email]]
         }));
         this.setState({message: ''});
     }
@@ -141,14 +142,14 @@ class Message extends React.Component {
         this.setState({ [name]: event.target.value });
     };
 
-    handleListItemClick = (value, index) => {
-        this.setState({selected: index, toId: value});
+    handleListItemClick = (value) => {
+        this.setState({selected: value, toId: value});
     };
 
 
     render() {
         const { classes } = this.props;
-        console.log(this.state);
+        // console.log(this.state);
         return (
             <React.Fragment>
                 <CssBaseline />
@@ -159,11 +160,11 @@ class Message extends React.Component {
                         <Grid item xs={6}>
                             <Paper className={classes.option}>
                                 <List className={classes.root}>
-                                    {this.state.contacts.map((value, index) => {
+                                    {this.state.contacts.map((value) => {
                                         return (
-                                            <ListItem selected={this.state.selected == index} key={index} role={undefined} dense button
-                                                      onClick={(event) => this.handleListItemClick(value[1], index)}>
-                                                <ListItemText id={index} primary={value[0]} />
+                                            <ListItem selected={this.state.selected[1] == value[1]} key={value[1]} role={undefined} dense button
+                                                      onClick={(event) => this.handleListItemClick(value)}>
+                                                <ListItemText id={value[1]} primary={value[0]} />
                                             </ListItem>
                                         );
                                     })}
@@ -174,36 +175,24 @@ class Message extends React.Component {
                             <Grid container >
                                 <Grid item xs={12}>
                                     <Paper className={classes.messages}>
-                                        {this.state.selected > -1 ?
+                                        {this.state.selected[1] > -1 ?
                                             <Paper className={classes.paper}>
-                                                {this.state.messages.map((value, index) => {
+                                                {this.state.messages.map((value) => {
                                                     return (
                                                         <Grid container wrap="nowrap" spacing={2} direction='column'>
                                                             <Grid container justfiy='flex-start'>
                                                                 <Grid item>
                                                                     <Typography variant="caption" display="block" color='primary'>
-                                                                        Bob Sanchez
+                                                                        {value[1]}
                                                                     </Typography>
                                                                 </Grid>
                                                             </Grid>
                                                             <Grid item xs >
-                                                                <Typography > hi </Typography>
+                                                                <Typography > {value[0]} </Typography>
                                                             </Grid>
                                                         </Grid>
                                                     );
                                                 })}
-                                                {/*<Grid container wrap="nowrap" spacing={2} direction='column'>*/}
-                                                {/*    <Grid container justfiy='flex-start'>*/}
-                                                {/*        <Grid item>*/}
-                                                {/*            <Typography variant="caption" display="block" color='primary'>*/}
-                                                {/*                Bob Sanchez*/}
-                                                {/*            </Typography>*/}
-                                                {/*        </Grid>*/}
-                                                {/*    </Grid>*/}
-                                                {/*    <Grid item xs >*/}
-                                                {/*        <Typography > hi </Typography>*/}
-                                                {/*    </Grid>*/}
-                                                {/*</Grid>*/}
                                             </Paper>
                                             : <div></div>}
                                     </Paper>
@@ -212,14 +201,6 @@ class Message extends React.Component {
                                     <Paper className={classes.textBox}>
                                         <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
                                             <Grid item>
-                                                {/*<TextField*/}
-                                                {/*    id='message'*/}
-                                                {/*    name='message'*/}
-                                                {/*    variant="outlined"*/}
-                                                {/*    style={{ marginRight: '20vw' }}*/}
-                                                {/*    fullWidth*/}
-                                                {/*    onChange={this.handleChange('message')}*/}
-                                                {/*/>*/}
                                                 <input
                                                     id="message"
                                                     onChange={this.handleChange('message')}
