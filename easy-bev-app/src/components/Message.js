@@ -120,16 +120,34 @@ class Message extends React.Component {
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Paper className={classes.textBox}>
-                                        <Grid container >
-                                            <Grid item xs={6}>
-                                                <button> Send </button>
+                                        <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
+                                            <Grid item>
+                                                <TextField
+                                                    id="message"
+                                                    name="message"
+                                                    variant="outlined"
+                                                    style={{ marginRight: '20vw' }}
+
+                                                    fullWidth
+
+                                                    onChange={this.handleChange('message')}
+
+                                                />
+
+
+                                                {/*<TextField id="message"*/}
+                                                           {/*name="message"*/}
+                                                           {/*variant="outlined"*/}
+                                                           {/*fullWidth*/}
+                                                           {/*onChange={this.handleChange('message')}/>*/}
                                             </Grid>
-                                            <Grid item xs={6}>
-                                                <TextField id="message"
-                                                           name="message"
-                                                           variant="outlined"
-                                                           onChange={this.handleChange('message')}/>
+
+                                            <Grid item >
+                                                <Button variant="outlined" color="primary" size="large" style={{ marginLeft: '1vw' }}>
+                                                    Send
+                                                </Button>
                                             </Grid>
+
                                         </Grid>
                                     </Paper>
                                 </Grid>
