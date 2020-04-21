@@ -18,11 +18,17 @@ import TableRow from '@material-ui/core/TableRow';
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import {Helmet} from "react-helmet";
 
 const SimpleExpansionPanel  = (props) => {
 
 
     return (
+        <React.Fragment>
+        <Helmet>
+            <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+        </Helmet>
         <div >
             <ExpansionPanel>
                 <ExpansionPanelSummary
@@ -68,6 +74,7 @@ const SimpleExpansionPanel  = (props) => {
 
 
         </div>
+        </React.Fragment>
     );
 }
 

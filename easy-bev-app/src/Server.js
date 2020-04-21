@@ -5,13 +5,32 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const app = express();
 const deasync = require('deasync');
-
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
+const emailToSocker = {}
+io.on('connection', (socket) => {
+    console.log("NEW CONNECTION", socket.handshake.query, "END")
+    socket.on('messageChannel', (data) => {
+        console.log("received", data);
+        handleMessage(data, socket)
+    });
+});
 
+function handleMessage(message, socket){
+    // const fromType = message.fromType;
+    // const fromEmail = message.fromEmail;
+    // const toType = message.toType;
+    // const toEmail = message.toEmail;
+    // const data = message.data;
+    // socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    socket.emit("messageChannel", message);
+
+}
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
 //     //                 type:this.state.type, email: this.state.email, password: this.state.password }
@@ -250,10 +269,6 @@ function create_table (sql) {
     let done = false;
     const conn = db.createConnection('sqlite3://easy-bev.db')
     conn.query(sql, function (err) {
-        if (err) {
-            console.log(sql);
-            console.log(err);
-        }
         done = true;
         conn.end();
     });
@@ -722,4 +737,4 @@ console.log("START");
 // console.log(dissst.body.merchants)
 // console.log("orders")
 // console.log(dissst.body.orders)
-app.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(port, () => console.log(`Listening on port ${port}`));
