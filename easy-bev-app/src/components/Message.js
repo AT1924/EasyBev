@@ -12,6 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import Input from '@material-ui/core/Input';
 import ListItemText from "@material-ui/core/ListItemText";
 const io = require('socket.io-client')
 
@@ -201,8 +202,22 @@ class Message extends React.Component {
                                     <Paper className={classes.textBox}>
                                         <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
                                             <Grid item>
-                                                <input
+
+                                                {/*<input*/}
+
+                                                {/*<TextField*/}
+                                                {/*    id='message'*/}
+                                                {/*    name='message'*/}
+                                                {/*    variant="outlined"*/}
+                                                {/*    style={{ marginRight: '20vw' }}*/}
+                                                {/*    fullWidth*/}
+                                                {/*    onChange={this.handleChange('message')}*/}
+                                                {/*/>*/}
+                                                <Input
                                                     id="message"
+                                                    variant="outlined"
+                                                    style={{width: '20vw'}}
+                                                    fullWidth
                                                     onChange={this.handleChange('message')}
                                                     placeholder="Type a message."
                                                     value={this.state.message}
