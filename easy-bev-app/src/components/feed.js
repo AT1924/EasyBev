@@ -180,8 +180,9 @@ class Feed extends React.Component{
     }
 
     componentDidMount() {
+        this.getPromotions = this.getPromotions.bind(this);
         this.getPromotions()
-        setInterval( this.getPromotions, 30000 );
+        setInterval( this.getPromotions, 10000 );
 
         //this.getPromotions();
         this.setState({fromType:localStorage.getItem("typeUser") });
@@ -296,6 +297,7 @@ class Feed extends React.Component{
 
                 <Container maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
+                        <h2>Promotions</h2>
                         <Grid item>
                             <ul>
                                 {this.state.promotions.map(function(item) {
