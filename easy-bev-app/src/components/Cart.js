@@ -18,6 +18,12 @@ import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detec
 import {Helmet} from "react-helmet";
 import Card from "@material-ui/core/Card";
 import Radio from '@material-ui/core/Radio';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
 
 
 
@@ -45,12 +51,19 @@ class Cart extends React.Component {
         this.reader = null;
         this.refDivMessage = React.createRef();
         this.state = {
+            open: false,
             messageKeyBase: 0,
             messages: [],
             bShowScanner: false,
             cartListData: [],
             currItem: null,
             inventory: [],
+            Title: null,
+            Description: null,
+            PromotionPrice: 0,
+            Month : null,
+            Day : null,
+            Year : null,
             response: '',
             total: 0,
 
@@ -60,6 +73,7 @@ class Cart extends React.Component {
 
     componentDidMount() {
         this.getItems();
+        this.setState({fromType:localStorage.getItem("typeUser") });
     }
 
     async getItems() {
@@ -86,30 +100,62 @@ class Cart extends React.Component {
 
     makeOrder = async e => {
         e.preventDefault();
-        console.log(this.state.cartListData);
-        console.log("Sending order");
-        const response = await fetch('/api/make_order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        if (this.state.fromType === "merchants") {
 
-            body: JSON.stringify(this.state.cartListData),
-        });
-        const body = await response.json();
-        console.log(body);
-        if (body.error) {
-            console.log(body);
-            this.setState({ errorMsg: body.error});
 
-            return false;
-        }
-        else if (!(body.error)){
-            this.setState({ cartListData: [],
-            response: "Order Successful", total: 0});
-        }
-        else {
+            console.log(this.state.cartListData);
+            console.log("Sending order");
+            const response = await fetch('/api/make_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+
+                body: JSON.stringify(this.state.cartListData),
+            });
+            const body = await response.json();
             console.log(body);
+            if (body.error) {
+                console.log(body);
+                this.setState({errorMsg: body.error});
+
+                return false;
+            } else if (!(body.error)) {
+                this.setState({
+                    cartListData: [],
+                    response: "Order Successful", total: 0
+                });
+            } else {
+                console.log(body);
+            }
+        } else {
+            // call this.handleclose
+            let expiryDate = this.state.Month + "/" + this.state.Day + "/" + this.state.Year;
+            const response = await fetch('/api/new_feed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+
+
+                body: JSON.stringify({title: this.state.Title, description: this.state.Description, price: this.state.PromotionPrice, expiry: expiryDate ,promotionItems: this.state.cartListData, }),
+            });
+            const body = await response.json();
+            this.handleClose();
+            console.log(body);
+            if (body.error) {
+                console.log(body);
+                this.setState({errorMsg: body.error});
+
+                return false;
+            } else if (!(body.error)) {
+                this.setState({
+                    cartListData: [],
+                    response: "Promotion Upload Successful", total: 0
+                });
+            } else {
+                console.log(body);
+            }
         }
 
         return false;
@@ -150,6 +196,28 @@ class Cart extends React.Component {
             return state
         });
         console.log("ending",this.state.cartListData);
+    };
+
+
+    handleOpen = () => {
+        if (this.state.open) {
+            return
+        } else {
+            this.setState({open: true})
+        }
+    }
+
+    handleClose = () => {
+        if (this.state.open) {
+            this.setState({open: false})
+        } else {
+            return
+        }
+    }
+
+
+    handleChange = name => (event) => {
+        this.setState({ [name]: event.target.value });
     };
 
 
@@ -256,14 +324,98 @@ render() {
                                    </CardContent>
 
                                    <CardActions>
-                                       <Button
+                                       {this.state.fromType === "merchants" ?                                        <Button
                                            variant="outlined"
                                            color="primary"
                                            style={{textTransform: 'none'}}
                                            onClick={this.makeOrder}
                                        >
                                            Payment
-                                       </Button>
+                                       </Button> :
+                                           <div>
+                                           <Button variant="outlined" color="primary" onClick={this.handleOpen}>
+                                               Add Promotion
+                                           </Button>
+                                           <Dialog
+                                           open={this.state.open}
+                                           onClose={this.handleClose}
+                                           aria-labelledby="alert-dialog-title"
+                                           aria-describedby="alert-dialog-description"
+                                           >
+                                           <DialogTitle id="alert-dialog-title">{"Add Your Promotion Here"}</DialogTitle>
+                                           <DialogContent>
+
+
+
+
+                                           <Grid container direction="column">
+
+
+                                           <Grid container direction="row" >
+
+                                           <Grid item>
+                                           <TextField style={{width: "24vw"}} id='Title' name='Title' label='Title' onChange={this.handleChange('Title')}/>
+                                           </Grid>
+
+                                           </Grid>
+                                               
+                                               
+
+                                           <Grid container direction="row" >
+
+
+                                           <Grid item>
+                                           <TextField style={{width: "24vw"}} id='Description' name='Description' label='Description' onChange={this.handleChange('Description')} />
+                                           </Grid>
+                                               
+                                               
+
+                                           </Grid>
+
+                                           <Grid container direction="row" >
+
+                                               <Grid item>
+                                                   <TextField style={{width: "24vw"}} id='PromotionPrice' name='PromotionPrice' label='Promotion Price' onChange={this.handleChange('PromotionPrice')}/>
+                                               </Grid>
+
+                                           </Grid>
+
+                                           <Grid container direction="row" spacing={1}>
+                                           <Grid item>
+                                           <Typography style={{width: "10vw"}}>Expiry:</Typography>
+                                           </Grid>
+
+                                           <Grid item>
+                                           <TextField style={{width: "10vw"}} id='Month' name='Month' label='Month' onChange={this.handleChange('Month')} />
+                                           </Grid>
+                                           <Grid item>
+                                           <TextField style={{width: "10vw"}} id='Day' name='Day' label='Day' onChange={this.handleChange('Day')} />
+                                           </Grid>
+                                           <Grid item>
+                                           <TextField style={{width: "10vw"}} id='Year' name='Year' label='Year' onChange={this.handleChange('Year')} />
+                                           </Grid>
+                                           </Grid>
+                                           </Grid>
+
+
+
+                                           </DialogContent>
+                                           <DialogActions>
+                                           <Button onClick={this.handleClose} color="primary">
+                                           Disagree
+                                           </Button>
+                                           <Button onClick={this.makeOrder} color="primary" autoFocus>
+                                           Agree
+                                           </Button>
+                                           </DialogActions>
+
+                                           </Dialog>
+                                           </div>
+
+                                       }
+
+
+
                                    </CardActions>
                                    {this.state.response}
                                </Card>
