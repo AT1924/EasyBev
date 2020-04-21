@@ -50,6 +50,7 @@ const styles = theme => ({
 });
 
 //include identifying info
+const socket = io.connect('http://localhost:8080', {query: 'id=poop&&type=whatever'});
 
 class Message extends React.Component {
     constructor(props) {
@@ -125,6 +126,7 @@ class Message extends React.Component {
         console.log("sending");
         this.state.socket.emit("messageChannel", { fromType: this.state.fromType,
             fromId:this.state.fromId, toId: this.state.toId, data:this.state.message });
+        this.setState({message: ''})
     }
 
     handleChange = name => (event) => {
@@ -178,12 +180,16 @@ class Message extends React.Component {
                                                 {/*        </Grid>*/}
                                                 {/*    );*/}
                                                 {/*})}*/}
-                                                <Grid container wrap="nowrap" spacing={2}>
-                                                    <Grid item>
-                                                        <Avatar>W</Avatar>
+                                                <Grid container wrap="nowrap" spacing={2} direction='column'>
+                                                    <Grid container justfiy='flex-start'>
+                                                        <Grid item>
+                                                            <Typography variant="caption" display="block" color='primary'>
+                                                                Bob Sanchez
+                                                            </Typography>
+                                                        </Grid>
                                                     </Grid>
-                                                    <Grid item xs zeroMinWidth>
-                                                        <Typography noWrap>hello</Typography>
+                                                    <Grid item xs >
+                                                        <Typography > hi </Typography>
                                                     </Grid>
                                                 </Grid>
                                             </Paper>
@@ -205,17 +211,10 @@ class Message extends React.Component {
                                                     onChange={this.handleChange('message')}
 
                                                 />
-
-
-                                                {/*<TextField id="message"*/}
-                                                           {/*name="message"*/}
-                                                           {/*variant="outlined"*/}
-                                                           {/*fullWidth*/}
-                                                           {/*onChange={this.handleChange('message')}/>*/}
                                             </Grid>
 
                                             <Grid item >
-                                                <Button variant="outlined" color="primary" size="large" style={{ marginLeft: '1vw' }}>
+                                                <Button variant="outlined" color="primary" size="large" style={{ marginLeft: '1vw' }} onClick={this.sendMessage}>
                                                     Send
                                                 </Button>
                                             </Grid>
