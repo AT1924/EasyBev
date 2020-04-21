@@ -1,6 +1,5 @@
 import Cart from "./components/Cart";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Chatroom from "./components/Chatroom";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import feed from "./components/feed";
