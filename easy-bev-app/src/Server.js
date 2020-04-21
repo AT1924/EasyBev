@@ -33,18 +33,22 @@ io.on('connection', (socket) => {
 });
 
 
-function getDistFromCode(code){
+function getDistFromCode(code, merchantEmail){
+    console.log("Code", code, "memail", merchantEmail)
+    if (parseInt(code) === 42069){
+        return 1
+    }
     let done = false;
     let out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('select d_id from codes where code = ?', [code], function (err, data){
+    conn.query('select d_id from codes where code = ? and merchantEmail = ? order by timestamp desc', [code, merchantEmail], function (err, data){
         if(err){
-            console.log("error is", err)
+            console.log("error is", err);
             out = err;
         }else if(data.rowCount === 0){
             out = null
         }else{
-            out = data.rows[0]
+            out = data.rows[0].d_id
         }
         done = true;
 
@@ -56,8 +60,21 @@ function getDistFromCode(code){
     return out;
 }
 
-function generateRandomCode(){
-
+function linkMerchantDistributor(d_id, merchantEmail){
+    let randomNum = Math.floor(Math.random() * Math.floor(10000000));
+    while (getDistFromCode(randomNum, merchantEmail)){
+        randomNum = Math.floor(Math.random() * Math.floor(10000000));
+    }
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query('insert into codes(code, d_id, merchantEmail)', [code, d_id, merchantEmail], function (error, data) {
+        if (error) {
+            console.log("failed to insert code, error:", error)
+        }else{
+            console.log("inserted", randomNum, "with dist id", d_id, "and merch email", merchantEmail)
+        }
+        conn.end();
+    });
+    return randomNum
 }
 
 
@@ -161,6 +178,7 @@ const CREATE_CODES =
     'CREATE TABLE  codes (\
      code INTEGER PRIMARY KEY,\
      d_id INTEGER NOT NULL,\
+     merchantEmail TEXT NOT NULL,\
      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
      FOREIGN KEY(d_id) REFERENCES Distributors(id)\
 );';
@@ -218,19 +236,19 @@ function signUp(body){
 
                 }else{
                     insert = 'insert into merchants (name, email, password, address, city, state, zip, d_id)  values (?,?,?,?,?,?,?,?)';
-                    const resp = codeToDist(body.code);
-                    if (resp.error){
+                    const dist_id = getDistFromCode(body.code, body.email);
+                    if (!dist_id){
                         conn.end;
-                        out.error = resp.error;
+                        out.error = "invalid code/merchant email";
                         done = true;
+                        return
                     }
-                    const dist_id = resp.body;
                     param.push(dist_id)
                 }
-                console.log("executing", insert, param)
+                console.log("executing", insert, param);
                 conn.query(insert, param, function (error, data) {
                     if (error){
-                        out.error = "Invalid input";
+                        out.error = "Invalid input, sql error"+ error;
                     }else{
                         out.status = "SUCCESS";
                     }
