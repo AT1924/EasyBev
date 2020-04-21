@@ -85,7 +85,7 @@ function handleMessage(message){
     const fromType = message.fromType;
     const fromId = parseInt(message.fromId);
     const toId = parseInt(message.toId);
-    const data = message.data;
+    const data = message.data[0];
     const dist_id = fromType === TYPES[0] ? fromId : toId;
     const merchant_id = fromId === dist_id ? toId : fromId;
     const fromMerchant = fromType === TYPES[1];

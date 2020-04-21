@@ -51,10 +51,11 @@ class App extends React.Component {
                 <PrivateRoute path='/profile' component={Profile} />
                 <PrivateRoute path='/cart' component={Cart} />
                 <PrivateRoute path='/orders' component={Orders} />
+                <PrivateRoute path='/message' component={Message} />
                 {/*<Route path="/cart" component={Cart} />*/}
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
-                <Route path="/message" component={Message}/>
+
 
 
 
