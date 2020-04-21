@@ -119,7 +119,9 @@ class Message extends React.Component {
                     socket.on('messageChannel', (data) => {
                         console.log("received", data, "and state is", this.state)
                         if (data.toId === this.state.fromId && data.fromType !== this.state.fromType){
-                            this.receiveMessage(data);
+                            this.receiveMessage(data, false);
+                        } else if (data.fromId === this.state.fromId && data.fromType === this.state.fromType) {
+                            this.receiveMessage(data, true);
                         }
                     });
                     this.setState({socket: socket});
@@ -150,9 +152,10 @@ class Message extends React.Component {
                         let convo = [];
                         for (let i = 0; i<value.length; i++) {
                             if(value[i].fromMerchant === 1) {
-                                convo.push([value[i].text, value[i].merch_email])
+                                console.log(value[i]);
+                                convo.push([value[i].text, value[i].merch_email, value[i].timestamp])
                             } else {
-                                convo.push([value[i].text, value[i].dist_email])
+                                convo.push([value[i].text, value[i].dist_email, value[i].timestamp])
                             }
                         }
                         convos[key] = convo;
@@ -180,21 +183,20 @@ class Message extends React.Component {
 
     }
 
-    receiveMessage(message){
+    receiveMessage(message, isent){
         let from = message.data[1];
-        if (from === this.state.selected[0]) {
+        if (from === this.state.selected[0] || isent) {
             this.setState(prevState => ({
-                messages: [...prevState.messages, [message.data[0], this.state.selected[0]]]
-            }))
-
+                messages: [...prevState.messages, [message.data[0], from, message.timestamp]]
+            }));
 
             let convosCopy = JSON.parse(JSON.stringify(this.state.convos));
             convosCopy[this.state.selected[0]] = this.state.messages;
             this.setState({convos:convosCopy});
 
-        } else {
+        }  else {
             let temp = [...this.state.convos[from]];
-            temp.push([message.data[0], from]);
+            temp.push([message.data[0], from, message.timestamp]);
             let convosCopy = JSON.parse(JSON.stringify(this.state.convos));
             convosCopy[from] = temp;
             this.setState({convos:convosCopy});
@@ -210,13 +212,13 @@ class Message extends React.Component {
         // this.setState(prevState => ({
         //     messages: [...prevState.messages, [this.state.message, this.state.email]]
         // }));
-        let messagesCopy = [...this.state.messages];
-        messagesCopy.push([this.state.message, this.state.email]);
-        this.setState({messages: messagesCopy});
-
-        let convosCopy = JSON.parse(JSON.stringify(this.state.convos));
-        convosCopy[this.state.selected[0]] = messagesCopy;
-        this.setState({convos:convosCopy});
+        // let messagesCopy = [...this.state.messages];
+        // messagesCopy.push([this.state.message, this.state.email]);
+        // this.setState({messages: messagesCopy});
+        //
+        // let convosCopy = JSON.parse(JSON.stringify(this.state.convos));
+        // convosCopy[this.state.selected[0]] = messagesCopy;
+        // this.setState({convos:convosCopy});
         this.setState({message: ''});
 
     }

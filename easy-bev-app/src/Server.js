@@ -1059,4 +1059,3 @@ console.log("START");
 // console.log("orders")
 // console.log(dissst.body.orders)
 server.listen(port, () => console.log(`Listening on port ${port}`));
-console.log(getFeed({email:"m@dist.com",type:TYPES[0]}))
