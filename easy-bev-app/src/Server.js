@@ -33,6 +33,34 @@ io.on('connection', (socket) => {
 });
 
 
+function getDistFromCode(code){
+    let done = false;
+    let out = {};
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query('select d_id from codes where code = ?', [code], function (err, data){
+        if(err){
+            console.log("error is", err)
+            out = err;
+        }else if(data.rowCount === 0){
+            out = null
+        }else{
+            out = data.rows[0]
+        }
+        done = true;
+
+    });
+    deasync.loopWhile(function () {
+        return !done;
+    });
+    conn.end();
+    return out;
+}
+
+function generateRandomCode(){
+
+}
+
+
 
 function handleMessage(message){
     console.log("got message", message);
@@ -50,10 +78,12 @@ function handleMessage(message){
     });
     const toType = fromType === TYPES[0] ? TYPES[1] : TYPES[0];
     const toSocket = emailToTypeToSocket[toType][toId];
-    console.log("forwarding message", message, "to", toType, toId, "with socket", !!toSocket);
-
-    toSocket.emit("messageChannel", message);
-
+    if (toSocket){
+        console.log("forwarding message", message, "to", toType, toId, "with socket", !!toSocket);
+        toSocket.emit("messageChannel", message);
+    }else{
+        console.log("CAN NOT forward message", message, "to", toType, toId, "with socket", !!toSocket);
+    }
 }
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
