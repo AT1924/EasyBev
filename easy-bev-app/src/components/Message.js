@@ -63,7 +63,7 @@ class Message extends React.Component {
             fromType: "",
             toId: "",
             contacts: [],
-            selected: -1,
+            selected: [-1, -1],
             socket: '',
             messages: [],
         };
@@ -144,7 +144,7 @@ class Message extends React.Component {
     };
 
     handleListItemClick = (value) => {
-        this.setState({selected: value, toId: value});
+        this.setState({selected: value, toId: value[1]});
     };
 
 
@@ -226,7 +226,7 @@ class Message extends React.Component {
                                             </Grid>
 
                                             <Grid item >
-                                                <Button variant="outlined" color="primary" size="large" style={{ marginLeft: '1vw' }} onClick={this.sendMessage}>
+                                                <Button variant="outlined" color="primary" disabled={this.state.selected[1] === -1} size="large" style={{ marginLeft: '1vw' }} onClick={this.sendMessage}>
                                                     Send
                                                 </Button>
                                             </Grid>
