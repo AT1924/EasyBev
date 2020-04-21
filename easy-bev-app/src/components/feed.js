@@ -7,11 +7,13 @@ import Nav from "./Nav";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
+import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import ButtonBase from '@material-ui/core/ButtonBase';
 import image1 from './logo.png';
 import Modal from "@material-ui/core/Modal";
+import {Helmet} from "react-helmet";
 
-const useStyles = makeStyles((theme) => ({
+let useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         margin: 15,
@@ -20,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         margin: 'auto',
-        maxWidth: 1000,
-        width: 800,
+        maxWidth: '1000px',
+        width: '800px',
     },
     image: {
         width: 128,
@@ -35,11 +37,39 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+if (isMobile){
+    useStyles = makeStyles((theme) => ({
+        root: {
+            flexGrow: 1,
+            margin: 15,
+            width: '100%',
+        },
+        paper: {
+            padding: theme.spacing(2),
+            margin: 'auto',
+            maxWidth: '100vw',
+            width: '80vw',
+        },
+        image: {
+            width: 128,
+            height: 128,
+        },
+        img: {
+            margin: 'auto',
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '100%',
+        },
+    }));
+}
+
+
 const adds = [["2 for 1", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $100'],
                ["Buy 1 get 1 50% off!", 'All beer and wine is available in the offer!', 'Expires: 3/02/21', 'Up to $500'],
             ["5 for 2", 'All beer and wine is available in the offer!', 'Expires: 10/42/21', 'Up to $1000']];
 
 const Ad  = (props) => {
+
     const classes = useStyles();
     console.log(props.children[0]);
     return (
@@ -159,6 +189,12 @@ class Feed extends React.Component{
 
         return (
             <React.Fragment>
+
+                <Helmet>
+                    <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+                </Helmet>
+
                 <CssBaseline/>
                 <Nav/>
                 <button type="button" onClick={this.handleOpen}>
