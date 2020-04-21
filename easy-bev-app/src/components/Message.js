@@ -21,6 +21,14 @@ const styles = theme => ({
     root: {
         flexGrow: 1,
     },
+    root2: {
+        width: '100%',
+        height: '100%',
+        maxWidth: 360,
+        backgroundColor: theme.palette.background.paper,
+        position: 'relative',
+        overflow: 'auto',
+    },
     messages: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(5),
@@ -101,7 +109,7 @@ class Message extends React.Component {
                     const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
                     socket.on('messageChannel', (data) => {
                         console.log("received", data, "and state is", this.state)
-                        if (data.toId === this.state.fromId && data.toType === this.state.fromType){
+                        if (data.toId === this.state.fromId && data.fromType !== this.state.fromType){
                             this.receiveMessage(data);
                         }
                     });
@@ -122,9 +130,8 @@ class Message extends React.Component {
     }
 
     receiveMessage(message){
-        console.log("recieving!!");
         this.setState(prevState => ({
-            messages: [...prevState.messages, [message.data.data, this.state.selected[0]]]
+            messages: [...prevState.messages, [message.data, this.state.selected[0]]]
         }))
     }
 
@@ -176,25 +183,48 @@ class Message extends React.Component {
                             <Grid container >
                                 <Grid item xs={12}>
                                     <Paper className={classes.messages}>
+                                        {/*{this.state.selected[1] > -1 ?*/}
+                                        {/*    <Paper className={classes.paper}>*/}
+                                        {/*        {this.state.messages.map((value) => {*/}
+                                        {/*            return (*/}
+                                        {/*                <Grid container wrap="nowrap" spacing={2} direction='column'>*/}
+                                        {/*                    <Grid container justfiy='flex-start'>*/}
+                                        {/*                        <Grid item>*/}
+                                        {/*                            <Typography variant="caption" display="block" color='primary'>*/}
+                                        {/*                                {value[1]}*/}
+                                        {/*                            </Typography>*/}
+                                        {/*                        </Grid>*/}
+                                        {/*                    </Grid>*/}
+                                        {/*                    <Grid item xs >*/}
+                                        {/*                        <Typography > {value[0]} </Typography>*/}
+                                        {/*                    </Grid>*/}
+                                        {/*                </Grid>*/}
+                                        {/*            );*/}
+                                        {/*        })}*/}
+                                        {/*    </Paper>*/}
+                                        {/*    : <div></div>}*/}
                                         {this.state.selected[1] > -1 ?
-                                            <Paper className={classes.paper}>
+                                                <List className={classes.root2} >
                                                 {this.state.messages.map((value) => {
                                                     return (
-                                                        <Grid container wrap="nowrap" spacing={2} direction='column'>
-                                                            <Grid container justfiy='flex-start'>
-                                                                <Grid item>
-                                                                    <Typography variant="caption" display="block" color='primary'>
-                                                                        {value[1]}
-                                                                    </Typography>
+                                                        <ListItem key={value[1]}>
+                                                            <Grid container wrap="nowrap" spacing={2} direction='column'>
+                                                                <Grid container justfiy='flex-start'>
+                                                                    <Grid item>
+                                                                        <Typography variant="caption" display="block" color='primary'>
+                                                                            {value[1]}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                </Grid>
+                                                                <Grid item xs >
+                                                                    <Typography > {value[0]} </Typography>
                                                                 </Grid>
                                                             </Grid>
-                                                            <Grid item xs >
-                                                                <Typography > {value[0]} </Typography>
-                                                            </Grid>
-                                                        </Grid>
+                                                        </ListItem>
+
                                                     );
                                                 })}
-                                            </Paper>
+                                            </List>
                                             : <div></div>}
                                     </Paper>
                                 </Grid>
