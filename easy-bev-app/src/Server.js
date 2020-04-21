@@ -831,7 +831,6 @@ function addFeed(info, feed) {
     //expiry date mm/dd/yyyy
     //promotionItems
     const d_id = distEmailToId(info.email);
-    let done = false;
     const out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
     let feed_id = -1;
@@ -868,10 +867,40 @@ function addFeed(info, feed) {
     }
 
     return out;
-
-
 }
 
+function merchEmailToDistId(email){
+    let done = false;
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    let out = "";
+    conn.query('select d_id from merchants where email = ?', email, function (err, data) {
+        if (err) {
+            console.log("SQL ERR", err)
+        }
+        out = data.rows[0].d_id;
+        done = true;
+    });
+
+    deasync.loopWhile(()=>{
+        return !done;
+    });
+
+    return out;
+}
+
+
+function getFeed(info){
+    if(!info.type){
+        return {error:"reroute to login"}
+    }
+    let d_id;
+    if (info.type === TYPES[1]){
+        //d_id =
+    }else{
+        d_id = distEmailToId(info.email);
+    }
+
+}
 
 app.post('/api/authenticate', (req, res) => {
     console.log("in authenticate sending", req.session.valid);
@@ -984,7 +1013,6 @@ app.post('/api/new_feed', (req, res) => {
 });
 
 app.post('/api/get_feeds', (req, res) => {
-    req.session.destroy();
     res.send({body:[{
         title: 'wawawiwa',
         description: 'desc',
