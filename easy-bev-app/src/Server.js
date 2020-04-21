@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
         console.log("email, type", id, type);
         socket.on('messageChannel', (data) => {
             console.log("handling", data);
-            handleMessage(data)
+            handleMessage(data, socket)
         });
     }
 });
@@ -79,7 +79,7 @@ function linkMerchantDistributor(d_id, merchantEmail) {
 }
 
 
-function handleMessage(message) {
+function handleMessage(message, fromSocket) {
     console.log("got message", message);
     const fromType = message.fromType;
     const fromId = parseInt(message.fromId);
@@ -101,6 +101,7 @@ function handleMessage(message) {
     } else {
         console.log("CAN NOT forward message", message, "to", toType, toId, "with socket", !!toSocket);
     }
+    fromSocket.emit("messageChannel", message);
 }
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
