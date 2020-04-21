@@ -12,28 +12,54 @@ const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
-const emailToSocker = {}
+const emailToTypeToSocket = {};
+emailToTypeToSocket[TYPES[0]] = {};
+emailToTypeToSocket[TYPES[1]] = {};
+
 io.on('connection', (socket) => {
-    console.log("NEW CONNECTION", socket.handshake.query, "END")
-    socket.on('messageChannel', (data) => {
-        console.log("received", data);
-        handleMessage(data, socket)
-    });
+    // const email = socket.handshake.query.email;
+    // const type = socket.handshake.query.type;
+    // if(!TYPES.includes(type)){
+    //     console.log("ERROR: Socket received invalid type", type)
+    // }
+    // emailToTypeToSocket[type][email] = socket;
+    // console.log("email, type", email, type);
+    // socket.on('messageChannel', (data) => {
+    //     console.log("received", data);
+    //     handleMessage(data, socket)
+    // });
 });
 
 function handleMessage(message, socket){
-    // const fromType = message.fromType;
-    // const fromEmail = message.fromEmail;
-    // const toType = message.toType;
-    // const toEmail = message.toEmail;
-    // const data = message.data;
-    // socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    const fromType = message.fromType;
+    const fromEmail = message.fromEmail;
+    const toType = message.toType;
+    const toEmail = message.toEmail;
+    const data = message.data;
+    socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    const conn = db.createConnection('sqlite3://easy-bev.db');
+    conn.query('select password from ' + type+ ' where email = ?', [email], function (err, data){
+        console.log(data);
+
+        if (err || data.rowCount !== 1){
+            console.log("error is", err)
+
+            out.error = err ? "SQL error" : "invalid credentials";
+        }else{
+            console.log("HERE2")
+            out.body = data.rows[0].password;
+        }
+        done = true;
+
+    });
     socket.emit("messageChannel", message);
 
 }
 
 //company: this.state.company, address: this.state.address, state: this.state.state, zip: this.state.zip,
 //     //                 type:this.state.type, email: this.state.email, password: this.state.password }
+
+
 const CREATE_PAYMENT =
     'CREATE TABLE payment (\
     id INTEGER PRIMARY KEY AUTOINCREMENT,\
@@ -307,7 +333,7 @@ function getMerchantInfo(info){
 
     if (validateEmail(info.email)){
         const conn = db.createConnection('sqlite3://easy-bev.db')
-        conn.query('select * from Merchants where email = ?', [info.email], function (error, data) {
+        conn.query('select m.*, d.email as distributor_email from Merchants as m, Distributors as d where m.email = ? and m.d_id = d.id', [info.email], function (error, data) {
             if (error || data.rowCount !== 1) {
                 out.error = data.rowCount === 0 ? "no such email found" : "multiple same emails found";
             } else {
@@ -680,6 +706,8 @@ app.post('/api/signin', (req, res) => {
         const email = req.body.email;
         const type = req.body.type;
         let password = req.body.password;
+        console.log("new sign in")
+
         if(email && type && password){
             if(validateEmail(email)) {
                 response = signIn(email, password, type);
@@ -727,6 +755,11 @@ app.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
     console.log("resp", resp);
     res.send(resp)
+});
+
+app.post('/api/log_out', (req, res) => {
+    req.session.destroy();
+    res.send({succes:"logged out"})
 });
 
 console.log("START");
