@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import image1 from './logo.png';
+import Modal from "@material-ui/core/Modal";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -134,7 +135,25 @@ class Feed extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
+        this.state = {open: false}
     }
+
+    handleOpen = () => {
+        if (this.state.open) {
+            return
+        } else {
+            this.setState({open: true})
+        }
+    }
+
+    handleClose = () => {
+        if (this.state.open) {
+            this.setState({open: false})
+        } else {
+            return
+        }
+    }
+
 
     render() {
 
@@ -142,6 +161,30 @@ class Feed extends React.Component{
             <React.Fragment>
                 <CssBaseline/>
                 <Nav/>
+                <button type="button" onClick={this.handleOpen}>
+                    Open Modal
+                </button>
+                <Modal
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                >
+                    <div style={{
+                        position: 'absolute',
+                        width: 400,
+                        backgroundColor: 'white',
+                        border: '2px solid #000',
+                        boxShadow: 5,
+                        top: "40%",
+                        left: "40%",
+                    }}>
+                        <h2 id="simple-modal-title">Text in a modal</h2>
+                        <p id="simple-modal-description">
+                            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                        </p>
+                    </div>
+                </Modal>
 
                 <Container maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
