@@ -51,11 +51,37 @@ class Nav extends React.Component{
         this.setState({ anchorEl: null });
     };
 
+    async logout() {
+        try {
+            fetch("/api/log_out", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+
+                //make sure to serialize your JSON body
+                body: JSON.stringify({})
+            }).then( response => response.json())
+                .then(json => {
+                       console.log(json);
+                        this.setState({ redirect: true, redirectLoc: '/' });
+                }
+                );
+        } catch(error) {
+            console.error(error);
+        }
+    }
+
     redirect = name => (event) => {
         if (name === "/") {
             localStorage.setItem('login', "false");
+            this.logout();
+            console.log('logguted out')
+        } else {
+            this.setState({ redirect: true, redirectLoc: [name] });
         }
-        this.setState({ redirect: true, redirectLoc: [name] });
+
     };
 
     render() {
