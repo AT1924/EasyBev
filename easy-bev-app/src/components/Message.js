@@ -121,15 +121,20 @@ class Message extends React.Component {
 
     receiveMessage(message){
         console.log("received", message.data);
-        //display on screen
+        this.setState(prevState => ({
+            messages: [...prevState.messages, [this.state.data, this.state.toId]]
+        }))
     }
 
     sendMessage = () => {
         console.log("sending");
+        this.setState({message: ''});
         this.state.socket.emit("messageChannel", { fromType: this.state.fromType,
             fromId:this.state.fromId, toId: this.state.toId, data:this.state.message });
-        this.setState({message: ''})
-        this.setState({messages: []})
+        this.setState(prevState => ({
+            messages: [...prevState.messages, [this.state.message, this.state.fromId]]
+        }));
+        this.setState({message: ''});
     }
 
     handleChange = name => (event) => {
@@ -207,16 +212,20 @@ class Message extends React.Component {
                                     <Paper className={classes.textBox}>
                                         <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
                                             <Grid item>
-                                                <TextField
+                                                {/*<TextField*/}
+                                                {/*    id='message'*/}
+                                                {/*    name='message'*/}
+                                                {/*    variant="outlined"*/}
+                                                {/*    style={{ marginRight: '20vw' }}*/}
+                                                {/*    fullWidth*/}
+                                                {/*    onChange={this.handleChange('message')}*/}
+                                                {/*/>*/}
+                                                <input
                                                     id="message"
-                                                    name="message"
-                                                    variant="outlined"
-                                                    style={{ marginRight: '20vw' }}
-
-                                                    fullWidth
-
                                                     onChange={this.handleChange('message')}
-
+                                                    placeholder="Type a message."
+                                                    value={this.state.message}
+                                                    type="text"
                                                 />
                                             </Grid>
 
