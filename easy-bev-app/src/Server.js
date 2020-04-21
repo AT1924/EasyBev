@@ -15,6 +15,7 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 900000 }}));
 const emailToTypeToSocket = {};
 emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
+const moment = require('moment');
 
 io.on('connection', (socket) => {
     const id = parseInt(socket.handshake.query.id);
@@ -89,7 +90,7 @@ function handleMessage(message){
     const dist_id = fromType === TYPES[0] ? fromId : toId;
     const merchant_id = fromId === dist_id ? toId : fromId;
     const fromMerchant = fromType === TYPES[1];
-
+    message.timestamp = moment().format('YYYY-mm-DD hh:mm:ss')
     const conn = db.createConnection('sqlite3://easy-bev.db');
     conn.query('insert into messages(d_id, m_id, text, fromMerchant) values (?,?,?,?)', [dist_id, merchant_id, data, fromMerchant], function (err, data){
         console.log("inserted", data, "with err", err);
@@ -882,4 +883,3 @@ console.log("START");
 // console.log("orders")
 // console.log(dissst.body.orders)
 server.listen(port, () => console.log(`Listening on port ${port}`));
-console.log(getMessages({email:"m@dist.com", type:TYPES[0]}))
