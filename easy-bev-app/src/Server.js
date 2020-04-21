@@ -17,7 +17,7 @@ emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
 
 io.on('connection', (socket) => {
-    const id = socket.handshake.query.id;
+    const id = parseInt(socket.handshake.query.id);
     const type = socket.handshake.query.type;
     console.log("NEW SOCKET CONNECTION WITH TYPE:", type, "AND ID:", id);
     if(!TYPES.includes(type)){
@@ -31,6 +31,7 @@ io.on('connection', (socket) => {
         });
     }
 });
+
 
 
 function getDistFromCode(code, merchantEmail){
@@ -82,8 +83,8 @@ function linkMerchantDistributor(d_id, merchantEmail){
 function handleMessage(message){
     console.log("got message", message);
     const fromType = message.fromType;
-    const fromId = message.fromId;
-    const toId = message.toId;
+    const fromId = parseInt(message.fromId);
+    const toId = parseInt(message.toId);
     const data = message.data;
     const dist_id = fromType === TYPES[0] ? fromId : toId;
     const merchant_id = fromId === dist_id ? toId : fromId;
