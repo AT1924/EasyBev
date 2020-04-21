@@ -17,42 +17,42 @@ emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
 
 io.on('connection', (socket) => {
-    // const email = socket.handshake.query.email;
-    // const type = socket.handshake.query.type;
-    // if(!TYPES.includes(type)){
-    //     console.log("ERROR: Socket received invalid type", type)
-    // }
-    // emailToTypeToSocket[type][email] = socket;
-    // console.log("email, type", email, type);
-    // socket.on('messageChannel', (data) => {
-    //     console.log("received", data);
-    //     handleMessage(data, socket)
-    // });
+    const id = socket.handshake.query.id;
+    const type = socket.handshake.query.type;
+    console.log("NEW SOCKET CONNECTION WITH TYPE:", type, "AND ID:", id);
+    if(!TYPES.includes(type)){
+        console.log("ERROR: Socket received invalid type", type)
+    }else{
+        emailToTypeToSocket[type][id] = socket;
+        console.log("email, type", id, type);
+        socket.on('messageChannel', (data) => {
+            console.log("handling", data);
+            handleMessage(data)
+        });
+    }
 });
 
-function handleMessage(message, socket){
+
+
+function handleMessage(message){
+    console.log("got message", message);
     const fromType = message.fromType;
-    const fromEmail = message.fromEmail;
-    const toType = message.toType;
-    const toEmail = message.toEmail;
-    const data = message.data;
-    socket.emit("messageChannel", { fromType: fromType, fromEmail:fromEmail, toType:toType, toEmail:toEmail, data:data });
+    const fromId = message.fromId;
+    const toId = message.toId;
+    const data = message.message;
+    const dist_id = fromType === TYPES[0] ? fromId : toId;
+    const merchant_id = fromId === dist_id ? toId : fromId;
+    const fromMerchant = fromType === TYPES[1];
+
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('select password from ' + type+ ' where email = ?', [email], function (err, data){
-        console.log(data);
-
-        if (err || data.rowCount !== 1){
-            console.log("error is", err)
-
-            out.error = err ? "SQL error" : "invalid credentials";
-        }else{
-            console.log("HERE2")
-            out.body = data.rows[0].password;
-        }
-        done = true;
-
+    conn.query('insert into messages(d_id, m_id, text, fromMerchant) values (?,?,?,?)', [dist_id, merchant_id, data, fromMerchant], function (err, data){
+        console.log("inserted", data, "with err", err);
     });
-    socket.emit("messageChannel", message);
+    const toType = fromType === TYPES[0] ? TYPES[1] : TYPES[0];
+    const toSocket = emailToTypeToSocket[toType][toId];
+    console.log("forwarding message", message, "to", toType, toId, "with socket", !!toSocket);
+
+    toSocket.emit("messageChannel", message);
 
 }
 
@@ -118,10 +118,13 @@ const CREATE_ORDERS =
 const CREATE_MESSAGES =
     'CREATE TABLE  messages (\
      id INTEGER PRIMARY KEY AUTOINCREMENT,\
-     from_id INTEGER NOT NULL,\
-     to_id INTEGER NOT NULL,\
+     d_id INTEGER NOT NULL,\
+     m_id INTEGER NOT NULL,\
      text TEXT NOT NULL, \
-      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP\
+     fromMerchant boolean NOT NULL,\
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+      FOREIGN KEY(m_id) references MERCHANTS(id),\
+      FOREIGN KEY(d_id) references DISTRIBUTORS(id)\
       );';
 
 const CREATE_CODES =
