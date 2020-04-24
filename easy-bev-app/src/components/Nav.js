@@ -41,7 +41,8 @@ const styles = theme => ({
 });
 
 class Nav extends React.Component{
-    state = {anchorEl : null, redirect: false, redirectLoc: "",};
+    state = {anchorEl : null, redirect: false, redirectLoc: "", fromType: localStorage.getItem("typeUser"),};
+
 
     handleClick = event => {
         this.setState({ anchorEl: event.currentTarget });
@@ -89,6 +90,7 @@ class Nav extends React.Component{
         // the rest is the same...
         if (this.state.redirect) {
             return (
+
                 <Redirect to={this.state.redirectLoc[0]}/>
             )
         }
@@ -99,16 +101,21 @@ class Nav extends React.Component{
                     <AppBar position="fixed" color="default" elevation={0} className={classes.bottomBar}>
                         <Toolbar className={classes.toolbar}>
                             <nav>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
-                                    Cart
-                                </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+
+                                <Link variant="button" color="textPrimary" href="/feed" className={classes.link}>
                                     Feed
                                 </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+
+                                {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                    Cart
+                                </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
+                                    Promotions
+                                </Link>                           }
+
+                                <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
                                     Messaging
                                 </Link>
-                                <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                <Link variant="button" color="textPrimary" href="/orders" className={classes.link}>
                                     Orders
                                 </Link>
                             </nav>
@@ -140,12 +147,15 @@ class Nav extends React.Component{
                                 EasyBev
                             </Typography>
                             <nav>
-                                <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
-                                    Cart
-                                </Link>
+
                                 <Link variant="button" color="textPrimary" href="/feed" className={classes.link}>
                                     Feed
                                 </Link>
+                                {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
+                                    Cart
+                                </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
+                                    Promotions
+                                </Link>                           }
                                 <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
                                     Messaging
                                 </Link>
