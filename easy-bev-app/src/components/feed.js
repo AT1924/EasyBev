@@ -5,13 +5,17 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Nav from "./Nav";
 import withStyles from "@material-ui/core/styles/withStyles";
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles, MuiThemeProvider} from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import ButtonBase from '@material-ui/core/ButtonBase';
 import image1 from './logo.png';
 import Modal from "@material-ui/core/Modal";
+import grey from '@material-ui/core/colors/grey';
 import {Helmet} from "react-helmet";
+
+const titleColor = grey[700];
 
 let useStyles = makeStyles((theme) => ({
     root: {
@@ -171,12 +175,23 @@ const styles = theme => ({
 
 const sleep = require('util').promisify(setTimeout);
 
+const blues = createMuiTheme({
+    palette: {
+        primary: { main: '#616161' },
+        secondary: { main: '#2979ff' },
+        contrastText: '#fff'
+    }
+})
+
+
+
 class Feed extends React.Component{
     constructor() {
         super();
         this.orderValues = null;
         this.state = {open: false};
         this.state.promotions = [];
+
     }
 
     componentDidMount() {
@@ -267,37 +282,18 @@ class Feed extends React.Component{
                     <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
 
                 </Helmet>
+                <MuiThemeProvider theme={blues}/>
 
                 <CssBaseline/>
                 <Nav/>
-                <button type="button" onClick={this.handleOpen}>
-                    Open Modal
-                </button>
-                <Modal
-                    open={this.state.open}
-                    onClose={this.handleClose}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
-                >
-                    <div style={{
-                        position: 'absolute',
-                        width: 400,
-                        backgroundColor: 'white',
-                        border: '2px solid #000',
-                        boxShadow: 5,
-                        top: "40%",
-                        left: "40%",
-                    }}>
-                        <h2 id="simple-modal-title">Text in a modal</h2>
-                        <p id="simple-modal-description">
-                            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                        </p>
-                    </div>
-                </Modal>
+
+
 
                 <Container maxWidth="md" component="main">
                     <Grid container spacing={5} alignItems="center">
-                        <h2>Promotions</h2>
+                        <Typography align="center"  variant="h4" style={{marginTop: '5vh', marginLeft:'2vw'}}>
+                            Promotions
+                        </Typography>
                         <Grid item>
                             <ul>
                                 {this.state.promotions.map(function(item) {

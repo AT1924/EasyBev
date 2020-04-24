@@ -25,10 +25,7 @@ const SimpleExpansionPanel  = (props) => {
 
     return (
         <React.Fragment>
-        <Helmet>
-            <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
 
-        </Helmet>
         <div >
             <ExpansionPanel>
                 <ExpansionPanelSummary
@@ -127,9 +124,7 @@ const styles = theme => ({
 });
 
 
-// MICHAEL: FOR /orders I want a list of information, order quantity and UPC value to display
-// in the order list on the front-end. GET request for all orders for the current signed in
-// user.
+
 
 
 class Orders extends React.Component{
@@ -209,6 +204,10 @@ class Orders extends React.Component{
             <React.Fragment>
                 <CssBaseline/>
                 <Nav/>
+                <Helmet>
+                    <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+                </Helmet>
 
                 <Container style={{marginTop: "50px", height: "100vh"}} maxWidth="md" component="main">
                     <h1>Orders</h1>

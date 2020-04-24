@@ -106,7 +106,7 @@ class Nav extends React.Component{
                                     Feed
                                 </Link>
 
-                                {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="#" className={classes.link}>
+                                {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Promotions
@@ -129,9 +129,8 @@ class Nav extends React.Component{
                                 open={Boolean(this.state.anchorEl)}
                                 onClose={this.handleClose}
                             >
-                                <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                                <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                                <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                                <MenuItem onClick={this.redirect("/profile")}>My account</MenuItem>
+                                <MenuItem onClick={this.redirect("/")}>Logout</MenuItem>
                             </Menu>
                         </Toolbar>
                     </AppBar>
