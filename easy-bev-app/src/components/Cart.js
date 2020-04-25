@@ -262,18 +262,104 @@ render() {
                                            </Typography>
                                            </Grid>
                                            <Grid item>
-                                           <CardActions>
-                                               <Button
-                                                   variant="outlined"
-                                                   color="primary"
-                                                   style={{textTransform: 'none'}}
-                                                   onClick={this.makeOrder}
-                                               >
-                                                   Payment
-                                               </Button>
-                                           </CardActions>
+                                               <CardActions>
+                                                   {this.state.fromType === "merchants" ?                                        <Button
+                                                           variant="outlined"
+                                                           color="primary"
+                                                           style={{textTransform: 'none'}}
+                                                           onClick={this.makeOrder}
+                                                       >
+                                                           Payment
+                                                       </Button> :
+                                                       <div>
+                                                           <Button variant="outlined" color="primary" onClick={this.handleOpen}>
+                                                               Add Promotion
+                                                           </Button>
+                                                           <Dialog
+                                                               open={this.state.open}
+                                                               onClose={this.handleClose}
+                                                               aria-labelledby="alert-dialog-title"
+                                                               aria-describedby="alert-dialog-description"
+                                                           >
+                                                               <DialogTitle id="alert-dialog-title">{"Add Your Promotion Here"}</DialogTitle>
+                                                               <DialogContent>
+
+
+
+
+                                                                   <Grid container direction="column">
+
+
+                                                                       <Grid container direction="row" >
+
+                                                                           <Grid item>
+                                                                               <TextField style={{width: "35vw"}} id='Title' name='Title' label='Title' onChange={this.handleChange('Title')}/>
+                                                                           </Grid>
+
+                                                                       </Grid>
+
+
+
+                                                                       <Grid container direction="row" >
+
+
+                                                                           <Grid item>
+                                                                               <TextField style={{width: "35vw"}} id='Description' name='Description' label='Description' onChange={this.handleChange('Description')} />
+                                                                           </Grid>
+
+
+
+                                                                       </Grid>
+
+                                                                       <Grid container direction="row" >
+
+                                                                           <Grid item>
+                                                                               <TextField style={{width: "35vw"}} id='PromotionPrice' name='PromotionPrice' label='Price' onChange={this.handleChange('PromotionPrice')}/>
+                                                                           </Grid>
+
+                                                                       </Grid>
+
+                                                                       <Grid container direction="column">
+                                                                           <Grid item>
+                                                                           <Typography style={{width: "10vw"}}>Expiration:</Typography>
+                                                                           </Grid>
+                                                                           <Grid container direction="row" justify="flex-end" spacing={2}>
+                                                                           <Grid item >
+                                                                               <TextField style={{width: "10vw"}} id='Month' name='Month' label='Month' onChange={this.handleChange('Month')} />
+                                                                           </Grid>
+                                                                           <Grid item>
+                                                                               <TextField style={{width: "10vw"}} id='Day' name='Day' label='Day' onChange={this.handleChange('Day')} />
+                                                                           </Grid>
+                                                                           <Grid item>
+                                                                               <TextField style={{width: "10vw"}} id='Year' name='Year' label='Year' onChange={this.handleChange('Year')} />
+                                                                           </Grid>
+                                                                           </Grid>
+                                                                       </Grid>
+                                                                   </Grid>
+
+
+
+                                                               </DialogContent>
+                                                               <DialogActions>
+                                                                   <Button onClick={this.handleClose} color="primary">
+                                                                       Disagree
+                                                                   </Button>
+                                                                   <Button onClick={this.makeOrder} color="primary" autoFocus>
+                                                                       Agree
+                                                                   </Button>
+                                                               </DialogActions>
+
+                                                           </Dialog>
+                                                       </div>
+
+                                                   }
+
+
+
+                                               </CardActions>
                                            </Grid>
                                            </Grid>
+                                       <div style={{height: "25px"}}></div>
 
 
 
