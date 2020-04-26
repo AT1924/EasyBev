@@ -13,7 +13,7 @@ const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({secret: 'keyboard cat', cookie: {maxAge: 900000}}));
+app.use(session({secret: 'keyboard cat', cookie: {maxAge: 4*900000}}));
 const emailToTypeToSocket = {};
 emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
@@ -71,9 +71,9 @@ function sendEmail(fromEmail, fromPassword, toEmail, subject, body){
 
 function getDistFromCode(code, merchantEmail) {
     console.log("Code", code, "memail", merchantEmail)
-    if (parseInt(code) === 111111) {
-        return 1
-    }
+    // if (parseInt(code) === 111111) {
+    //     return 1
+    // }
     let done = false;
     let out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
@@ -1113,6 +1113,7 @@ app.post('/api/invite_merchant', (req, res) => {
     const out = linkMerchantDistributor(req.session.info, req.body);
     res.send(out)
 });
+
 
 console.log("START");
 //console.log(getInfo({email:"m@b.com", type:TYPES[1]}));
