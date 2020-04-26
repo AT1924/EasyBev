@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
 
 function getDistFromCode(code, merchantEmail) {
     console.log("Code", code, "memail", merchantEmail)
-    if (parseInt(code) === 42069) {
+    if (parseInt(code) === 111111) {
         return 1
     }
     let done = false;

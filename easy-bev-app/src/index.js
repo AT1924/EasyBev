@@ -55,6 +55,9 @@ class App extends React.Component {
                 {/*<Route path="/cart" component={Cart} />*/}
                 <Route path="/login" component={SignIn} />
                 <Route path="/signup" component={SignUp} />
+                <Route path="/temp" component={BarcodeScanner} />
+
+
 
 
 

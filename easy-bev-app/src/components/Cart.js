@@ -50,6 +50,8 @@ class Cart extends React.Component {
         super(props);
         this.reader = null;
         this.refDivMessage = React.createRef();
+        const cart_search_state = this.props.location.passedState;
+
         this.state = {
             open: false,
             messageKeyBase: 0,
@@ -66,6 +68,7 @@ class Cart extends React.Component {
             Year : null,
             response: '',
             total: 0,
+            cart_search_state:cart_search_state,
 
         };
 
@@ -237,7 +240,7 @@ render() {
                    <div id="cartMobile" style={styleMobile.cartMobile}>
                        <Grid id="contained" container spacing={1} direction="column" justify="space-between">
                            <Grid item>
-                               <Cart_Search children={this.state.inventory} callback={this.populateCart}/>
+                               <Cart_Search passedState = {this.state.cart_search_state} children={this.state.inventory} callback={this.populateCart}/>
 
                            </Grid>
 
@@ -298,7 +301,7 @@ render() {
                    <div id="cart">
                        <Grid id="contained" container spacing={1} direction="column" justify="space-between">
                            <Grid item>
-                               <Cart_Search children={this.state.inventory} callback={this.populateCart}/>
+                               <Cart_Search passedState = {this.state.cart_search_state}  children={this.state.inventory} callback={this.populateCart}/>
 
                            </Grid>
 
