@@ -18,6 +18,7 @@ import Radio from "@material-ui/core/Radio";
 import BarcodeScanner from './BarcodeScanner';
 import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { Route,Redirect, Link, BrowserRouter as Router } from 'react-router-dom'
 
 const styles = theme =>({
     root: {
@@ -112,7 +113,18 @@ class Cart_Search extends React.Component{
             error: '',
         };
 
+        if (this.props.passedState){
+            console.log("cart search received passed state", this.props.passedState);
+            this.setState(this.props.passedState.passedState);
+            const oldState = this.state;
+            oldState.newRes = this.props.passedState.results;
+            this.setState(oldState);
+
+        }
         this.getChoice = this.getChoice.bind(this);
+        console.log("starting cart search with state")
+        console.log(this.state)
+
 
     }
 
@@ -196,14 +208,120 @@ class Cart_Search extends React.Component{
 
 
     render() {
-        //const info = this.getItems();
+        const info = this.getItems();
         //console.log(info);
-        if (isMobile){
-            return (
-                <React.Fragment>
-                    <Grid container id="topContainer" direction="column" justify="space-around">
+        if (this.state.searchOpt === "scan"){
+            console.log("SCAN with state", this.state)
+            return (<Redirect to={{
+                pathname: '/temp',
+                state: this.state
+            }} />)
+        }else{
+            if (isMobile){
+                return (
+                    <React.Fragment>
+                        <Grid container id="topContainer" direction="column" justify="space-around">
 
-                        <Grid container direction= "row" justify="center" alignItems="center">
+                            <Grid container direction= "row" justify="center" alignItems="center">
+                                <Radio
+                                    checked={this.state.searchOpt === 'type'}
+                                    onChange={this.changeSearch}
+                                    value="type"
+                                    inputProps={{'aria-label': 'Type'}}
+                                    label="Type to Search"
+                                    labelPlacement="bottom"
+                                />
+                                <Radio
+                                    checked={this.state.searchOpt === 'scan'}
+                                    onChange={this.changeSearch}
+                                    value="scan"
+                                    inputProps={{'aria-label': 'Type'}}
+                                    label="Scan to Search"
+                                    labelPlacement="bottom"
+                                />
+                            </Grid>
+
+                            {this.checkSearch() ? <Autocomplete
+                                    id="search_bar"
+                                    options={this.props.children}
+                                    getOptionLabel={(option) => option.name}
+                                    style={{width: "100vw"}}
+                                    onChange={this.getChoice}
+                                    renderInput={(params) => <TextField {...params} label="Please select item"
+                                                                        variant="outlined"/>}
+                                /> :
+                                <BarcodeScanner callback={this.callback}></BarcodeScanner>}
+                            {this.state.error}
+
+
+
+                            <Card className={styles.root} variant="outlined">
+                                <CardContent>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        UPC : {this.state.currItem != null ? this.state.currItem.upc : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Description : {this.state.currItem != null ? this.state.currItem.name : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Unit Volume : {this.state.currItem != null ? this.state.currItem.size : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Quantity/Unit : {this.state.currItem != null ? this.state.currItem.qty : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Unit Price : {this.state.currItem != null ? this.state.currItem.price : ""}
+                                    </Typography>
+                                    <FormControl className={styles.margin}>
+                                        Order Quantity :
+                                        <Select
+                                            labelId="demo-customized-select-label"
+                                            id="demo-customized-select"
+                                            value={this.state.orderq}
+                                            onChange={this.changeQ()}
+                                            input={<BootstrapInput/>}
+                                        >
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+                                            <MenuItem value={6}>6</MenuItem>
+                                            <MenuItem value={7}>7</MenuItem>
+                                            <MenuItem value={8}>8</MenuItem>
+                                            <MenuItem value={9}>9</MenuItem>
+                                            <MenuItem value={10}>10</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </CardContent>
+                                <CardActions>
+                                    <Button variant="outlined" onClick={this.getChoiceSecond} size="small">Submit To
+                                        Cart</Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+
+
+                    </React.Fragment>
+                );
+            } else {
+                return (
+                    <React.Fragment>
+                        <Grid container id="topContainer" direction="row" justify="space-around">
+
+                            {this.checkSearch() ? <Autocomplete
+                                    id="search_bar"
+                                    options={this.props.children}
+                                    getOptionLabel={(option) => option.name}
+                                    style={{width: 400}}
+                                    onChange={this.getChoice}
+                                    renderInput={(params) => <TextField {...params} label="Please select item"
+                                                                        variant="outlined"/>}
+                                /> :
+                                <BarcodeScanner callback={this.callback}></BarcodeScanner>}
+                            {this.state.error}
+
+
                             <Radio
                                 checked={this.state.searchOpt === 'type'}
                                 onChange={this.changeSearch}
@@ -220,156 +338,59 @@ class Cart_Search extends React.Component{
                                 label="Scan to Search"
                                 labelPlacement="bottom"
                             />
+
+                            <Card className={styles.root} variant="outlined">
+                                <CardContent>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        UPC : {this.state.currItem != null ? this.state.currItem.upc : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Description : {this.state.currItem != null ? this.state.currItem.name : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Unit Volume : {this.state.currItem != null ? this.state.currItem.size : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Quantity/Unit : {this.state.currItem != null ? this.state.currItem.qty : ""}
+                                    </Typography>
+                                    <Typography className={styles.title} color="textSecondary" gutterBottom>
+                                        Unit Price : {this.state.currItem != null ? this.state.currItem.price : ""}
+                                    </Typography>
+                                    <FormControl className={styles.margin}>
+                                        Order Quantity :
+                                        <Select
+                                            labelId="demo-customized-select-label"
+                                            id="demo-customized-select"
+                                            value={this.state.orderq}
+                                            onChange={this.changeQ()}
+                                            input={<BootstrapInput/>}
+                                        >
+                                            <MenuItem value={1}>1</MenuItem>
+                                            <MenuItem value={2}>2</MenuItem>
+                                            <MenuItem value={3}>3</MenuItem>
+                                            <MenuItem value={4}>4</MenuItem>
+                                            <MenuItem value={5}>5</MenuItem>
+                                            <MenuItem value={6}>6</MenuItem>
+                                            <MenuItem value={7}>7</MenuItem>
+                                            <MenuItem value={8}>8</MenuItem>
+                                            <MenuItem value={9}>9</MenuItem>
+                                            <MenuItem value={10}>10</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </CardContent>
+                                <CardActions>
+                                    <Button variant="outlined" onClick={this.getChoiceSecond} size="small">Submit To
+                                        Cart</Button>
+                                </CardActions>
+                            </Card>
                         </Grid>
 
-                        {this.checkSearch() ? <Autocomplete
-                                id="search_bar"
-                                options={this.props.children}
-                                getOptionLabel={(option) => option.name}
-                                style={{width: "100vw"}}
-                                onChange={this.getChoice}
-                                renderInput={(params) => <TextField {...params} label="Please select item"
-                                                                    variant="outlined"/>}
-                            /> :
-                            <BarcodeScanner callback={this.callback}></BarcodeScanner>}
-                        {this.state.error}
 
-
-
-                        <Card className={styles.root} variant="outlined">
-                            <CardContent>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    UPC : {this.state.currItem != null ? this.state.currItem.upc : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Description : {this.state.currItem != null ? this.state.currItem.name : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Unit Volume : {this.state.currItem != null ? this.state.currItem.size : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Quantity/Unit : {this.state.currItem != null ? this.state.currItem.qty : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Unit Price : {this.state.currItem != null ? this.state.currItem.price : ""}
-                                </Typography>
-                                <FormControl className={styles.margin}>
-                                    Order Quantity :
-                                    <Select
-                                        labelId="demo-customized-select-label"
-                                        id="demo-customized-select"
-                                        value={this.state.orderq}
-                                        onChange={this.changeQ()}
-                                        input={<BootstrapInput/>}
-                                    >
-                                        <MenuItem value={1}>1</MenuItem>
-                                        <MenuItem value={2}>2</MenuItem>
-                                        <MenuItem value={3}>3</MenuItem>
-                                        <MenuItem value={4}>4</MenuItem>
-                                        <MenuItem value={5}>5</MenuItem>
-                                        <MenuItem value={6}>6</MenuItem>
-                                        <MenuItem value={7}>7</MenuItem>
-                                        <MenuItem value={8}>8</MenuItem>
-                                        <MenuItem value={9}>9</MenuItem>
-                                        <MenuItem value={10}>10</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </CardContent>
-                            <CardActions>
-                                <Button variant="outlined" onClick={this.getChoiceSecond} size="small">Submit To
-                                    Cart</Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-
-
-                </React.Fragment>
-            );
-        } else {
-            return (
-                <React.Fragment>
-                    <Grid container id="topContainer" direction="row" justify="space-around">
-
-                        {this.checkSearch() ? <Autocomplete
-                                id="search_bar"
-                                options={this.props.children}
-                                getOptionLabel={(option) => option.name}
-                                style={{width: 400}}
-                                onChange={this.getChoice}
-                                renderInput={(params) => <TextField {...params} label="Please select item"
-                                                                    variant="outlined"/>}
-                            /> :
-                            <BarcodeScanner callback={this.callback}></BarcodeScanner>}
-                        {this.state.error}
-
-
-                        <Radio
-                            checked={this.state.searchOpt === 'type'}
-                            onChange={this.changeSearch}
-                            value="type"
-                            inputProps={{'aria-label': 'Type'}}
-                            label="Type to Search"
-                            labelPlacement="bottom"
-                        />
-                        <Radio
-                            checked={this.state.searchOpt === 'scan'}
-                            onChange={this.changeSearch}
-                            value="scan"
-                            inputProps={{'aria-label': 'Type'}}
-                            label="Scan to Search"
-                            labelPlacement="bottom"
-                        />
-
-                        <Card className={styles.root} variant="outlined">
-                            <CardContent>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    UPC : {this.state.currItem != null ? this.state.currItem.upc : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Description : {this.state.currItem != null ? this.state.currItem.name : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Unit Volume : {this.state.currItem != null ? this.state.currItem.size : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Quantity/Unit : {this.state.currItem != null ? this.state.currItem.qty : ""}
-                                </Typography>
-                                <Typography className={styles.title} color="textSecondary" gutterBottom>
-                                    Unit Price : {this.state.currItem != null ? this.state.currItem.price : ""}
-                                </Typography>
-                                <FormControl className={styles.margin}>
-                                    Order Quantity :
-                                    <Select
-                                        labelId="demo-customized-select-label"
-                                        id="demo-customized-select"
-                                        value={this.state.orderq}
-                                        onChange={this.changeQ()}
-                                        input={<BootstrapInput/>}
-                                    >
-                                        <MenuItem value={1}>1</MenuItem>
-                                        <MenuItem value={2}>2</MenuItem>
-                                        <MenuItem value={3}>3</MenuItem>
-                                        <MenuItem value={4}>4</MenuItem>
-                                        <MenuItem value={5}>5</MenuItem>
-                                        <MenuItem value={6}>6</MenuItem>
-                                        <MenuItem value={7}>7</MenuItem>
-                                        <MenuItem value={8}>8</MenuItem>
-                                        <MenuItem value={9}>9</MenuItem>
-                                        <MenuItem value={10}>10</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </CardContent>
-                            <CardActions>
-                                <Button variant="outlined" onClick={this.getChoiceSecond} size="small">Submit To
-                                    Cart</Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-
-
-                </React.Fragment>
-            );
+                    </React.Fragment>
+                );
+            }
         }
+
     }
 }
 
