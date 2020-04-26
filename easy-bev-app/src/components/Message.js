@@ -169,7 +169,7 @@ class Message extends React.Component {
                                 email: json.body.merchant.email});
                             // console.log('got merchant info')
                         }
-                    const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
+                    const socket = io.connect('http://'+document.location.hostname+':8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
                     socket.on('messageChannel', (data) => {
                         console.log("received", data, "and state is", this.state)
                         if (data.toId === this.state.fromId && data.fromType !== this.state.fromType){

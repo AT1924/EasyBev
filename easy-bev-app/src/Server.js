@@ -950,7 +950,7 @@ function merchEmailToDistId(email){
 
 function getFeed(info){
 
-    if(!info.type){
+    if(!info || !info.type){
         return {error:"reroute to login"}
     }
     let d_id;
