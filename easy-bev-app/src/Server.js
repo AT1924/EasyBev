@@ -7,6 +7,8 @@ const app = express();
 const deasync = require('deasync');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const nodemailer = require('nodemailer');
+
 const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
 app.use(bodyParser.json());
@@ -33,6 +35,39 @@ io.on('connection', (socket) => {
     }
 });
 
+
+function sendEmail(fromEmail, fromPassword, toEmail, subject, body){
+    let done = false;
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: fromEmail,
+            pass: fromPassword
+        }
+    });
+
+    const mailOptions = {
+        from: fromEmail,
+        to: toEmail,
+        subject: subject,
+        text: body
+    };
+    let error = "";
+    transporter.sendMail(mailOptions, function(err, info){
+        if (err) {
+            console.log(err);
+            error = err
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+        done = true
+    });
+    if (error){
+        return {error:error}
+    }
+    return {status:"SUCCESS"}
+
+}
 
 function getDistFromCode(code, merchantEmail) {
     console.log("Code", code, "memail", merchantEmail)
@@ -61,23 +96,48 @@ function getDistFromCode(code, merchantEmail) {
     return out;
 }
 
-function linkMerchantDistributor(d_id, merchantEmail) {
+function linkMerchantDistributor(d_info, body) {
+    const merchantEmail = body.email;
+    const d_email = d_info.email;
+    const d_type = d_info.type;
+    if (!d_email || !d_type){
+        return {error:"must sign in first"}
+    }
+    if (TYPES[0] !== d_type){
+        return {error:"Merchant can not invite anyone"}
+    }
+    const d_id = distEmailToId(d_email);
     let randomNum = Math.floor(Math.random() * Math.floor(10000000));
     while (getDistFromCode(randomNum, merchantEmail)) {
         randomNum = Math.floor(Math.random() * Math.floor(10000000));
     }
+    let done = false;
+    let error = "";
     const conn = db.createConnection('sqlite3://easy-bev.db');
-    conn.query('insert into codes(code, d_id, merchantEmail)', [code, d_id, merchantEmail], function (error, data) {
-        if (error) {
+    conn.query('insert into codes(code, d_id, merchantEmail) values(?,?,?)', [randomNum, d_id, merchantEmail], function (err, data) {
+        if (err) {
             console.log("failed to insert code, error:", error)
+            error = err
         } else {
             console.log("inserted", randomNum, "with dist id", d_id, "and merch email", merchantEmail)
         }
         conn.end();
+        done = true
     });
-    return randomNum
-}
+    deasync.loopWhile(()=>{return !done});
+    if (!error){
+        const out = sendEmail("easybevcompany@gmail.com", "123456qwertY!", merchantEmail, "Easy Bev Code:"+ randomNum,"You were invited by"+d_email + " use the code "+randomNum+" to join");
+        if (out.error){
+            return out
+        }
+        return {status: "SUCCESS"}
 
+    }else{
+        return {error:error}
+    }
+
+
+}
 
 function handleMessage(message, fromSocket) {
     console.log("got message", message);
@@ -210,7 +270,6 @@ const QUERIES = [CREATE_DISTRIBUTORS, CREATE_MESSAGES, CREATE_MERCHANTS, CREATE_
 const db = require('any-db');
 const saltRounds = 10;
 create_tables();
-
 function getPassword(email, type) {
     let done = false;
     const out = {};
@@ -1050,8 +1109,10 @@ app.post('/api/get_feeds', (req, res) => {
     res.send(out)
 });
 
-
-
+app.post('/api/invite_merchant', (req, res) => {
+    const out = linkMerchantDistributor(req.session.info, req.body);
+    res.send(out)
+});
 
 console.log("START");
 //console.log(getInfo({email:"m@b.com", type:TYPES[1]}));
