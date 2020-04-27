@@ -843,19 +843,23 @@ class Profile extends React.Component {
                                     <Typography component="h1" variant="h5" className={classes.divide}>
                                         Client List
                                     </Typography>
-                                    {/*<Grid container direction="row">*/}
-                                    <Button onClick={this.addClient} variant="contained" color="primary" component="span"   aria-label="menu">
-                                        Add
-                                    </Button>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        id="merchantEmail"
-                                        label="Merchant Email"
-                                        name="merchantEmail"
-                                        onChange={this.handleChange('merchantEmail')}
-                                    />
-                                    {/*</Grid>*/}
+                                    <Grid container direction="row" alignItems="flex-end" spacing={1} >
+                                        <Grid item>
+                                            <Button onClick={this.addClient} variant="contained" color="primary" component="span" style={{height: '10vh'}}  aria-label="menu">
+                                                Add
+                                            </Button>
+                                        </Grid>
+                                        <Grid item>
+                                            <TextField
+                                                variant="outlined"
+                                                margin="normal"
+                                                id="merchantEmail"
+                                                label="Merchant Email"
+                                                name="merchantEmail"
+                                                onChange={this.handleChange('merchantEmail')}
+                                            />
+                                        </Grid>
+                                    </Grid>
 
 
                                     <Typography style={{margin: 25, color: '#B3B3B3B3'}}>
