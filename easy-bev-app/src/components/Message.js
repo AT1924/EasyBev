@@ -17,8 +17,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import useStayScrolled from 'react-stay-scrolled';
 import {Helmet} from "react-helmet";
-const io = require('socket.io-client')
-
+// const io = require('socket.io-client');
+const io = require('socket.io-client');
 
 let styles = theme => ({
     root: {
@@ -138,6 +138,7 @@ class Message extends React.Component {
             convos: {},
             messages: [],
         };
+        console.log("domain is" + document.location.hostname)
         // this.sendMessage = this.sendMessage.bind(this)
 
     }
@@ -170,7 +171,9 @@ class Message extends React.Component {
                                 email: json.body.merchant.email});
                             // console.log('got merchant info')
                         }
-                    const socket = io.connect('http://'+document.location.hostname+':8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
+                    //const socket = require('socket.io-client')('https://'+document.location.hostname+':8080', { secure:true, rejectUnauthorized: false,requestCert: false, agent:false})
+                    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+                    const socket = io.connect('https://'+document.location.hostname+':3000', {secure:true, rejectUnauthorized: false, query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
                     socket.on('messageChannel', (data) => {
                         console.log("received", data, "and state is", this.state)
                         if (data.toId === this.state.fromId && data.fromType !== this.state.fromType){

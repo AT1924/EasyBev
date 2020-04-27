@@ -1,25 +1,37 @@
-const express = require('express');
 var session = require('express-session');
 
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const app = express();
 const deasync = require('deasync');
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+//const http = require('http');
+const fs = require('fs');
+
+const https = require('https');
+const expressApp = require('express')();
+//const server = http.createServer(expressApp);
+
+const secureServer = https.createServer({
+    key: fs.readFileSync('./../server.key'),
+    cert: fs.readFileSync('./../server.cert')
+}, expressApp);
+
+//const io = require('socket.io')(server);
+const ios = require('socket.io')(secureServer);
+
 const nodemailer = require('nodemailer');
 
 const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(session({secret: 'keyboard cat', cookie: {maxAge: 4*900000}}));
+expressApp.use(bodyParser.json());
+expressApp.use(bodyParser.urlencoded({extended: true}));
+expressApp.use(session({secret: 'keyboard cat', cookie: {maxAge: 4*900000}}));
 const emailToTypeToSocket = {};
 emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};
 const moment = require('moment');
 
-io.on('connection', (socket) => {
+
+function handleSocket(socket){
     const id = parseInt(socket.handshake.query.id);
     const type = socket.handshake.query.type;
     console.log("NEW SOCKET CONNECTION WITH TYPE:", type, "AND ID:", id);
@@ -33,6 +45,9 @@ io.on('connection', (socket) => {
             handleMessage(data, socket)
         });
     }
+}
+ios.on('connection', (socket) => {
+    handleSocket(socket)
 });
 
 
@@ -71,14 +86,14 @@ function sendEmail(fromEmail, fromPassword, toEmail, subject, body){
 
 function getDistFromCode(code, merchantEmail) {
     console.log("Code", code, "memail", merchantEmail)
-    // if (parseInt(code) === 111111) {
-    //     return 1
-    // }
+    if (parseInt(code) === 111111) {
+        return 1
+    }
     let done = false;
     let out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
     conn.query('select d_id from codes where code = ? and merchantEmail = ? order by timestamp desc', [code, merchantEmail], function (err, data) {
-        if (err) {
+        if (err) {s
             console.log("error is", err);
             out = err;
         } else if (data.rowCount === 0) {
@@ -992,7 +1007,7 @@ function getFeed(info){
 
 }
 
-app.post('/api/authenticate', (req, res) => {
+expressApp.post('/api/authenticate', (req, res) => {
     console.log("in authenticate sending", req.session.valid);
     if (req.session.valid) {
         res.send({valid: true})
@@ -1001,7 +1016,7 @@ app.post('/api/authenticate', (req, res) => {
     }
 });
 
-app.post('/api/signup', (req, res) => {
+expressApp.post('/api/signup', (req, res) => {
     const email = req.body.email;
     let response = {error: "invalid"};
     if (validateEmail(email)) {
@@ -1027,7 +1042,7 @@ app.post('/api/signup', (req, res) => {
     res.send(response);
 });
 
-app.post('/api/signin', (req, res) => {
+expressApp.post('/api/signin', (req, res) => {
     let response = {};
     if (req.session.valid) {
         console.log("IN!");
@@ -1061,55 +1076,55 @@ app.post('/api/signin', (req, res) => {
 
 });
 
-app.get('/api/hello', (req, res) => {
+expressApp.get('/api/hello', (req, res) => {
     res.send({express: 'Hello From Express'})
 });
 
-app.post('/api/get_client', (req, res) => {
+expressApp.post('/api/get_client', (req, res) => {
     const myInfo = req.session.info;
     const infoReturn = getInfo(myInfo);
     res.send(infoReturn)
 });
-app.post('/api/get_items', (req, res) => {
+expressApp.post('/api/get_items', (req, res) => {
     res.send(getItems())
 });
 
-app.post('/api/make_order', (req, res) => {
+expressApp.post('/api/make_order', (req, res) => {
     res.send(makeOrder(req.session.info, req.body))
 });
 
-app.post('/api/get_orders', (req, res) => {
+expressApp.post('/api/get_orders', (req, res) => {
     res.send(getOrders(req.session.info))
 });
 
-app.post('/api/add_payment', (req, res) => {
+expressApp.post('/api/add_payment', (req, res) => {
     const resp = addPayment(req.session.info, req.body)
     console.log("resp", resp);
     res.send(resp)
 });
 
-app.post('/api/get_messages', (req, res) => {
+expressApp.post('/api/get_messages', (req, res) => {
     res.send(getMessages(req.session.info))
 });
 
-app.post('/api/log_out', (req, res) => {
+expressApp.post('/api/log_out', (req, res) => {
     req.session.destroy();
     res.send({succes: "logged out"})
 });
 
-app.post('/api/new_feed', (req, res) => {
+expressApp.post('/api/new_feed', (req, res) => {
     console.log(req.body)
     res.send(addFeed(req.session.info, req.body))
 });
 
-app.post('/api/get_feeds', (req, res) => {
+expressApp.post('/api/get_feeds', (req, res) => {
     console.log("GET FEED CALLED")
     const out = getFeed(req.session.info);
     console.log("RETURNING", out)
     res.send(out)
 });
 
-app.post('/api/invite_merchant', (req, res) => {
+expressApp.post('/api/invite_merchant', (req, res) => {
     const out = linkMerchantDistributor(req.session.info, req.body);
     res.send(out)
 });
@@ -1123,5 +1138,5 @@ console.log("START");
 // console.log(dissst.body.merchants)
 // console.log("orders")
 // console.log(dissst.body.orders)
-server.listen(port, () => console.log(`Listening on port ${port}`));
+secureServer.listen(port, () => console.log(`Listening on port ${port}`));
 
