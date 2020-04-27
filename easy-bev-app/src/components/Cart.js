@@ -360,16 +360,19 @@ render() {
 
 
                                                </CardActions>
+
                                            </Grid>
                                            </Grid>
-                                       <div style={{height: "25px"}}></div>
+
+                                       {this.state.response}
+                                       <div style={{height: "10vh"}}></div>
 
 
 
                                    </CardContent>
 
 
-                                   {this.state.response}
+
                                </Card>
 
                            </Grid>
