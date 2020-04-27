@@ -28,6 +28,10 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from "@material-ui/core/Divider";
 import {red} from "@material-ui/core/colors";
+import InputBase from "@material-ui/core/InputBase";
+import IconButton from "@material-ui/core/IconButton";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 const styles = theme => ({
     paper: {
@@ -64,6 +68,23 @@ const styles = theme => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    addClient: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: 400,
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    iconButton: {
+        padding: 10,
+    },
+    divider: {
+        height: 28,
+        margin: 4,
+    },
 });
 
 class Profile extends React.Component {
@@ -76,7 +97,7 @@ class Profile extends React.Component {
             payname: '', payphone: '', payaddress: '', paycountry: '',
             paycity: '', payzip: '', paycardnum: '', paycardver: '',
             monthexp: '', yearexp: '', billing: true,
-            response: '',
+            response: '', emailMessage: '', merchantEmail: '',
         };
 
     }
@@ -128,37 +149,103 @@ class Profile extends React.Component {
         }
     }
 
+    // async addClient(email) {
+    //     if(email.includes('@')) {
+    //         this.setState({emailMessage: ""});
+    //         try {
+    //             fetch("/api/invite_merchant", {
+    //                 method: "post",
+    //                 headers: {
+    //                     'Accept': 'application/json',
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //
+    //                 //make sure to serialize your JSON body
+    //                 body: JSON.stringify({email: this.state.merchantEmail})
+    //             }).then( response => response.json())
+    //                 .then(json => {
+    //                         console.log(json);
+    //                     }
+    //                 );
+    //         } catch(error) {
+    //             console.error(error);
+    //         }
+    //     } else {
+    //         this.setState({emailMessage: "Enter Valid Email"});
+    //     }
+    //
+    // }
+
+    addClient = async e => {
+        console.log("hello");
+        e.preventDefault();
+        if (this.state.merchantEmail.includes("@")) {
+            console.log("adding Client");
+            this.setState({emailMessage: ""});
+            const response = await fetch("/api/invite_merchant", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+
+                body: JSON.stringify({
+                    email: this.state.merchantEmail,
+                }),
+            });
+            const body = await response.json();
+            console.log(body);
+            if (body.error) {
+                console.log(body);
+                this.setState({errorMsg: body.error});
+                return false;
+            } else if (!(body.error)) {
+                console.log('success')
+            } else {
+                console.log(body);
+            }
+        } else {
+            if (this.state.merchantEmail.length > 0) {
+                this.setState({emailMessage: "Enter Valid Email"})
+            }
+
+        }
+
+    };
+
     updatePay = async e => {
         e.preventDefault();
-        console.log("Updating payment");
-        const response = await fetch('/api/add_payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        if (this.state.merchantEmail.include("@")) {
+            console.log("adding Client");
+            const response = await fetch('/api/add_payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
-            body: JSON.stringify({
-                name: this.state.payname, phone: this.state.payphone,
-                address: this.state.payaddress, country: this.state.paycountry,
-                city: this.state.paycity, postal_code: this.state.payzip,
-                digits: this.state.paycardnum, security_code: this.state.paycardver,
-                x_month: this.state.monthexp, x_year: this.state.yearexp
-            }),
-        });
-        const body = await response.json();
-        console.log(body);
-        if (body.error) {
-            console.log(body);
-            this.setState({errorMsg: body.error});
-            return false;
-        } else if (!(body.error)) {
-            this.setState({
-                cartListData: [],
-                response: "Order Successful"
+                body: JSON.stringify({
+                    name: this.state.payname, phone: this.state.payphone,
+                    address: this.state.payaddress, country: this.state.paycountry,
+                    city: this.state.paycity, postal_code: this.state.payzip,
+                    digits: this.state.paycardnum, security_code: this.state.paycardver,
+                    x_month: this.state.monthexp, x_year: this.state.yearexp
+                }),
             });
-        } else {
+            const body = await response.json();
             console.log(body);
+            if (body.error) {
+                console.log(body);
+                this.setState({errorMsg: body.error});
+                return false;
+            } else if (!(body.error)) {
+                this.setState({
+                    cartListData: [],
+                    response: "Order Successful"
+                });
+            } else {
+                console.log(body);
+            }
         }
+
     };
 
     handleOpen = (name) => (event, isExpanding) => {
@@ -219,9 +306,9 @@ class Profile extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const {company, address, state, zip, email, type, rows, panel1, panel2,
+        const {emailMessage, company, address, state, zip, email, type, rows, panel1, panel2,
             payname, payphone, payaddress, paycountry, paycity, payzip, paycardnum, paycardver, monthexp, yearexp, billing} = this.state;
-        console.log(rows)
+
 
             return (
                 <React.Fragment>
@@ -451,6 +538,23 @@ class Profile extends React.Component {
                                 {this.check() ? <Container>
                                         <Typography component="h1" variant="h5" className={classes.divide}>
                                             Client List
+                                        </Typography>
+
+                                        <Button onClick={this.addClient} variant="contained" color="primary" component="span"  aria-label="menu">
+                                            Add
+                                        </Button>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            id="merchantEmail"
+                                            label="Merchant Email"
+                                            name="merchantEmail"
+                                            onChange={this.handleChange('merchantEmail')}
+                                        />
+
+
+                                        <Typography style={{margin: 25, color: '#B3B3B3B3'}}>
+                                            {emailMessage}
                                         </Typography>
                                         <TableContainer component={Paper}>
                                             <Table className={classes.table} size="medium" aria-label="a dense table" >
