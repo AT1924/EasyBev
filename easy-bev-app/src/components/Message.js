@@ -14,11 +14,13 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Input from '@material-ui/core/Input';
 import ListItemText from "@material-ui/core/ListItemText";
+import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
 import useStayScrolled from 'react-stay-scrolled';
+import {Helmet} from "react-helmet";
 const io = require('socket.io-client')
 
 
-const styles = theme => ({
+let styles = theme => ({
     root: {
         flexGrow: 1,
     },
@@ -53,6 +55,7 @@ const styles = theme => ({
     textBox: {
         padding: theme.spacing(2),
         marginRight: theme.spacing(5),
+
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
@@ -64,6 +67,57 @@ const styles = theme => ({
     }
 
 });
+
+if (isMobile){
+    styles = theme => ({
+        root: {
+            flexGrow: 1,
+        },
+        root2: {
+            width: '100%',
+            height: '100%',
+            maxWidth: 360,
+            backgroundColor: theme.palette.background.paper,
+            position: 'relative',
+            overflow: 'auto',
+        },
+        messages: {
+            padding: theme.spacing(2),
+            marginTop: theme.spacing(5),
+            marginLeft: theme.spacing(5),
+            marginRight: theme.spacing(5),
+            height: '60vh',
+            textAlign: 'center',
+            color: theme.palette.text.secondary,
+        },
+        paper: {
+            maxWidth: 400,
+            margin: `${theme.spacing(1)}px auto`,
+            padding: theme.spacing(2),
+        },
+        option: {
+            padding: theme.spacing(2),
+
+            marginLeft: theme.spacing(5),
+            marginRight: theme.spacing(5),
+            textAlign: 'center',
+            color: theme.palette.text.secondary,
+        },
+        textBox: {
+            padding: theme.spacing(2),
+            marginRight: theme.spacing(5),
+            textAlign: 'center',
+            color: theme.palette.text.secondary,
+        },
+        message: {
+            // margin: `${theme.spacing(1)}px auto`,
+            padding: theme.spacing(2),
+            width: '100%',
+
+        }
+
+    });
+}
 
 //
 // //include identifying info
@@ -115,7 +169,7 @@ class Message extends React.Component {
                                 email: json.body.merchant.email});
                             // console.log('got merchant info')
                         }
-                    const socket = io.connect('http://localhost:8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
+                    const socket = io.connect('http://'+document.location.hostname+':8080', {query: 'id=' + this.state.fromId + '&&type=' + this.state.fromType});
                     socket.on('messageChannel', (data) => {
                         console.log("received", data, "and state is", this.state)
                         if (data.toId === this.state.fromId && data.fromType !== this.state.fromType){
@@ -235,99 +289,206 @@ class Message extends React.Component {
 
     render() {
         const { classes } = this.props;
-        // console.log(this.state.convos);
-        return (
-            <React.Fragment>
-                <CssBaseline />
-                <Nav/>
+         console.log("logging convo", this.state.convos);
 
-                <div className={classes.root}>
-                    <Grid container >
-                        <Grid item xs={6}>
-                            <Paper className={classes.option}>
-                                <List className={classes.root}>
-                                    {this.state.contacts.map((value) => {
-                                        return (
-                                            <ListItem selected={this.state.selected[1] == value[1]} key={value[1]} role={undefined} dense button
-                                                      onClick={(event) => this.handleListItemClick(value)}>
-                                                <ListItemText id={value[1]} primary={value[0]} />
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Grid container >
-                                <Grid item xs={12}>
-                                    <Paper className={classes.messages}>
-                                        {this.state.selected[1] > -1 ?
-                                            <List className={classes.root2} >
-                                                {this.state.messages.map((value) => {
-                                                    return (
-                                                        <ListItem  >
-                                                            <Paper className={classes.message}>
-                                                                <Grid container wrap="nowrap" spacing={2} direction='column'>
-                                                                    <Grid container justfiy='flex-start'>
-                                                                        <Grid item xs={6}>
-                                                                            <Typography variant="caption" display="block" color={value[1] === this.state.email ? 'primary' : 'secondary'}>
-                                                                                {value[1]}
-                                                                            </Typography>
+        if (isMobile){
+            return (
+                <React.Fragment>
+
+                    <Helmet>
+                        <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+
+                    </Helmet>
+
+                    <CssBaseline />
+                    <Nav/>
+
+                    <div className={classes.root}>
+                        <Grid container direction="column" justify="center">
+
+                            <Grid item xs={12} >
+                                <Paper className={classes.option}>
+                                    <List className={classes.root}>
+                                        {this.state.contacts.map((value) => {
+                                            return (
+                                                <ListItem selected={this.state.selected[1] == value[1]} key={value[1]} role={undefined} dense button
+                                                          onClick={(event) => this.handleListItemClick(value)}>
+                                                    <ListItemText id={value[1]} primary={value[0]} />
+                                                </ListItem>
+                                            );
+                                        })}
+                                    </List>
+                                </Paper>
+                            </Grid>
+
+
+                            <Grid item xs={12}>
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        <Paper className={classes.messages}>
+                                            {this.state.selected[1] > -1 ?
+                                                <List className={classes.root2} >
+                                                    {this.state.messages.map((value) => {
+                                                        return (
+                                                            <ListItem  >
+                                                                <Paper className={classes.message}>
+                                                                    <Grid container wrap="nowrap" spacing={2} direction='column'>
+                                                                        <Grid container justify='flex-start'>
+                                                                            <Grid item xs={6}>
+                                                                                <Typography variant="caption" display="block" color={value[1] === this.state.email ? 'primary' : 'secondary'}>
+                                                                                    {value[1]}
+                                                                                </Typography>
+                                                                            </Grid>
+                                                                            <Grid item xs={6}>
+                                                                                <Typography variant="caption" display="block" color='textSecondary'>
+                                                                                    {'Delivered ' + value[2]}
+                                                                                </Typography>
+                                                                            </Grid>
                                                                         </Grid>
-                                                                        <Grid item xs={6}>
-                                                                            <Typography variant="caption" display="block" color='textSecondary'>
-                                                                                {'Delivered ' + value[2]}
-                                                                            </Typography>
+                                                                        <Grid item xs >
+                                                                            <Typography > {value[0]} </Typography>
                                                                         </Grid>
                                                                     </Grid>
-                                                                    <Grid item xs >
-                                                                        <Typography > {value[0]} </Typography>
-                                                                    </Grid>
-                                                                </Grid>
-                                                            </Paper>
-                                                        </ListItem>
-                                                    );
-                                                })}
-                                            </List>
-                                            : <div></div>}
+                                                                </Paper>
+                                                            </ListItem>
+                                                        );
+                                                    })}
+                                                </List>
+                                                : <div></div>}
 
-                                    </Paper>
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Paper className={classes.textBox}>
+                                            <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
+                                                <Grid item >
+                                                    <Button variant="outlined" color="primary" disabled={this.state.selected[1] === -1} size="large" style={{ marginRight: '1vw' }} onClick={this.sendMessage}>
+                                                        Send
+                                                    </Button>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Input
+                                                        id="message"
+                                                        variant="outlined"
+                                                        style={{width: '20vw'}}
+                                                        fullWidth
+                                                        onChange={this.handleChange('message')}
+                                                        placeholder="Type a message."
+                                                        value={this.state.message}
+                                                        type="text"
+                                                    />
+                                                </Grid>
+
+
+
+                                            </Grid>
+                                        </Paper>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <Paper className={classes.textBox}>
-                                        <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
-                                            <Grid item >
-                                                <Button variant="outlined" color="primary" disabled={this.state.selected[1] === -1} size="large" style={{ marginRight: '1vw' }} onClick={this.sendMessage}>
-                                                    Send
-                                                </Button>
+                            </Grid>
+
+                        </Grid>
+                    </div>
+
+                </React.Fragment>
+
+
+            );
+        } else{
+            return (
+                <React.Fragment>
+                    <CssBaseline />
+                    <Nav/>
+
+                    <div className={classes.root}>
+                        <Grid container >
+                            <Grid item xs={6}>
+                                <Paper className={classes.option}>
+                                    <List className={classes.root}>
+                                        {this.state.contacts.map((value) => {
+                                            return (
+                                                <ListItem selected={this.state.selected[1] == value[1]} key={value[1]} role={undefined} dense button
+                                                          onClick={(event) => this.handleListItemClick(value)}>
+                                                    <ListItemText id={value[1]} primary={value[0]} />
+                                                </ListItem>
+                                            );
+                                        })}
+                                    </List>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Grid container >
+                                    <Grid item xs={12}>
+                                        <Paper className={classes.messages}>
+                                            {this.state.selected[1] > -1 ?
+                                                <List className={classes.root2} >
+                                                    {this.state.messages.map((value) => {
+                                                        return (
+                                                            <ListItem  >
+                                                                <Paper className={classes.message}>
+                                                                    <Grid container wrap="nowrap" spacing={2} direction='column'>
+                                                                        <Grid container justfiy='flex-start'>
+                                                                            <Grid item xs={6}>
+                                                                                <Typography variant="caption" display="block" color={value[1] === this.state.email ? 'primary' : 'secondary'}>
+                                                                                    {value[1]}
+                                                                                </Typography>
+                                                                            </Grid>
+                                                                            <Grid item xs={6}>
+                                                                                <Typography variant="caption" display="block" color='textSecondary'>
+                                                                                    {'Delivered ' + value[2]}
+                                                                                </Typography>
+                                                                            </Grid>
+                                                                        </Grid>
+                                                                        <Grid item xs >
+                                                                            <Typography > {value[0]} </Typography>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </Paper>
+                                                            </ListItem>
+                                                        );
+                                                    })}
+                                                </List>
+                                                : <div></div>}
+
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Paper className={classes.textBox}>
+                                            <Grid id="submitMessage" container direction="row" justify="center" alignItems="center">
+                                                <Grid item >
+                                                    <Button variant="outlined" color="primary" disabled={this.state.selected[1] === -1} size="large" style={{ marginRight: '1vw' }} onClick={this.sendMessage}>
+                                                        Send
+                                                    </Button>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Input
+                                                        id="message"
+                                                        variant="outlined"
+                                                        style={{width: '20vw'}}
+                                                        fullWidth
+                                                        onChange={this.handleChange('message')}
+                                                        placeholder="Type a message."
+                                                        value={this.state.message}
+                                                        type="text"
+                                                    />
+                                                </Grid>
+
+
+
                                             </Grid>
-                                            <Grid item>
-                                                <Input
-                                                    id="message"
-                                                    variant="outlined"
-                                                    style={{width: '20vw'}}
-                                                    fullWidth
-                                                    onChange={this.handleChange('message')}
-                                                    placeholder="Type a message."
-                                                    value={this.state.message}
-                                                    type="text"
-                                                />
-                                            </Grid>
-
-
-
-                                        </Grid>
-                                    </Paper>
+                                        </Paper>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </div>
+                    </div>
 
-            </React.Fragment>
+                </React.Fragment>
 
 
-        );
+            );
+        }
+
 
 
     }

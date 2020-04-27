@@ -1,9 +1,13 @@
-to start with HTTPS
-
-set HTTPS=true&&npm start
 
 to start back end
 cd src -> Node Server.js
 
 to create items table
 cd src/python -> python3 parser.py
+
+to start with HTTPS
+
+WINDOWS
+set HTTPS=true&&npm start
+MAC
+HTTPS=true npm start
