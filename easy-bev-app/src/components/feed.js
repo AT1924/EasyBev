@@ -306,6 +306,7 @@ class Feed extends React.Component{
 
                         </Grid>
                     </Grid>
+                    <div style={{height: "10vh"}}></div>
                 </Container>
 
                 <Container maxWidth="md" component="footer" >
