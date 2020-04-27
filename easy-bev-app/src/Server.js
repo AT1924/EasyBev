@@ -71,9 +71,9 @@ function sendEmail(fromEmail, fromPassword, toEmail, subject, body){
 
 function getDistFromCode(code, merchantEmail) {
     console.log("Code", code, "memail", merchantEmail)
-    // if (parseInt(code) === 111111) {
-    //     return 1
-    // }
+    if (parseInt(code) === 111111) {
+        return 1
+    }
     let done = false;
     let out = {};
     const conn = db.createConnection('sqlite3://easy-bev.db');
