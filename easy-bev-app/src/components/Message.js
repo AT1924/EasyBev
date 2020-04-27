@@ -83,9 +83,9 @@ if (isMobile){
         },
         messages: {
             padding: theme.spacing(2),
-            marginTop: theme.spacing(5),
-            marginLeft: theme.spacing(5),
-            marginRight: theme.spacing(5),
+            marginTop: theme.spacing(4),
+            marginLeft: theme.spacing(4),
+            marginRight: theme.spacing(4),
             height: '60vh',
             textAlign: 'center',
             color: theme.palette.text.secondary,
@@ -105,7 +105,8 @@ if (isMobile){
         },
         textBox: {
             padding: theme.spacing(2),
-            marginRight: theme.spacing(5),
+            marginLeft: theme.spacing(4),
+            marginRight: theme.spacing(4),
             textAlign: 'center',
             color: theme.palette.text.secondary,
         },
