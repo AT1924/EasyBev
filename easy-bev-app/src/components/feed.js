@@ -290,8 +290,8 @@ class Feed extends React.Component{
 
 
                 <Container maxWidth="md" component="main">
-                    <Grid container spacing={5} alignItems="center">
-                        <Typography align="center"  variant="h4" style={{marginTop: '5vh', marginLeft:'2vw'}}>
+                    <Grid container spacing={5} justify="center" alignItems="center">
+                        <Typography align="center"  variant="overline" style={{marginTop: '5vh', marginLeft:'2vw', fontSize: "225%"}}>
                             Promotions
                         </Typography>
                         <Grid item>
@@ -306,6 +306,7 @@ class Feed extends React.Component{
 
                         </Grid>
                     </Grid>
+                    <div style={{height: "10vh"}}></div>
                 </Container>
 
                 <Container maxWidth="md" component="footer" >

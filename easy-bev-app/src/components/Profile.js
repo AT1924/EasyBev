@@ -28,6 +28,8 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from "@material-ui/core/Divider";
 import {red} from "@material-ui/core/colors";
+import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect";
+import {Helmet} from "react-helmet";
 import InputBase from "@material-ui/core/InputBase";
 import IconButton from "@material-ui/core/IconButton";
 import Tabs from "@material-ui/core/Tabs";
@@ -309,7 +311,309 @@ class Profile extends React.Component {
         const {emailMessage, company, address, state, zip, email, type, rows, panel1, panel2,
             payname, payphone, payaddress, paycountry, paycity, payzip, paycardnum, paycardver, monthexp, yearexp, billing} = this.state;
 
+        if (isMobile){
+            return (
+                <React.Fragment>
+                    <Helmet>
+                        <meta name="viewport" content="height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
 
+                    </Helmet>
+
+                    <CssBaseline />
+                    <Nav/>
+
+                    <Container component="main" maxWidth='md'>
+                        <CssBaseline />
+                        <div className={classes.root}>
+                            <Typography component="h1" variant="h5" className={classes.divide}>
+                                Settings
+                            </Typography>
+
+                            <ExpansionPanel expanded={panel1} onChange={this.handleOpen('panel1')}>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel2bh-content"
+                                    id="panel2bh-header"
+                                >
+                                    <Typography className={classes.heading}>User Information</Typography>
+                                    {/*<Typography className={classes.secondaryHeading}>*/}
+                                    {/*    Last Edited: 09/92/12*/}
+                                    {/*</Typography>*/}
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <form className={classes.form} noValidate onSubmit={this.signIn}>
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="company"
+                                            label="Type"
+                                            value={type}
+                                        />
+                                        <TextField
+                                            disabled
+                                            fullWidth
+                                            margin="normal"
+                                            id="company"
+                                            label="Company Name"
+                                            value={company}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="address"
+                                            label="Address"
+                                            value={address}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="State"
+                                            label="State"
+                                            value={state}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="zip"
+                                            label="Zip-code"
+                                            // defaultValue={zip}
+                                            value={zip}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            margin="normal"
+                                            disabled
+                                            id="email"
+                                            label="Email"
+                                            value={email}
+                                        />
+
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            className={classes.submit}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </form>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                            <ExpansionPanel expanded={panel2} onChange={this.handleOpen('panel2')}>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel3bh-content"
+                                    id="panel3bh-header"
+                                >
+                                    <Typography className={classes.heading}>Billing Information</Typography>
+                                    {this.checkBill() ? <Typography className={classes.secondaryHeading}>
+                                        Please Enter Payment Information
+                                    </Typography> : <div></div>}
+
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <form className={classes.form} noValidate >
+                                        <TextField
+                                            onChange={this.handleChange('payname')}
+                                            disabled={billing}
+                                            fullWidth
+                                            margin="normal"
+                                            id="payname"
+                                            label="Name"
+                                            // defaultValue="Credit Card Holder Name"
+                                            value={payname}
+                                        />
+                                        <TextField
+                                            onChange={this.handleChange('payphone')}
+                                            disabled={billing}
+                                            fullWidth
+                                            margin="normal"
+                                            id="payphone"
+                                            label="Phone"
+                                            // defaultValue="Phone"
+                                            value={payphone}
+                                        />
+                                        <TextField
+                                            onChange={this.handleChange('payaddress')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="payaddress"
+                                            label="Address"
+                                            // defaultValue="Billing Address"
+                                            value={payaddress}
+                                        />
+
+                                        <TextField
+                                            onChange={this.handleChange('paycountry')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="paycountry"
+                                            label="Country"
+                                            // defaultValue='Billing Country'
+                                            value={paycountry}
+                                        />
+
+                                        <TextField
+                                            onChange={this.handleChange('paycity')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billcity"
+                                            label="City"
+                                            // defaultValue='Billing City'
+                                            value={paycity}
+                                        />
+
+                                        <TextField
+                                            onChange={this.handleChange('payzip')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billzip"
+                                            label="Postal Code"
+                                            // defaultValue='Billing Zip'
+                                            value={payzip}
+                                        />
+                                        <Divider className={classes.divide}/>
+                                        <TextField
+                                            onChange={this.handleChange('paycardnum')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billcardnum"
+                                            label="Credit Card No."
+                                            // defaultValue='Card Number'
+                                            value={paycardnum}
+                                        />
+                                        <TextField
+                                            onChange={this.handleChange('paycardver')}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billvernum"
+                                            label="Card Verification No."
+                                            // defaultValue='Billing Zip'
+                                            value={paycardver}
+                                        />
+                                        <TextField
+                                            onChange={this.handleChange('monthexp')}
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billexpmonth"
+                                            label="Month of Expiration"
+                                            // defaultValue='Expiry Month'
+                                            value={monthexp}
+                                        />
+                                        <TextField
+                                            onChange={this.handleChange('yearexp')}
+                                            margin="normal"
+                                            disabled={billing}
+                                            id="billexpmonth"
+                                            label="Year of Expiration"
+                                            // defaultValue='Expiry Year'
+                                            value={yearexp}
+                                        />
+                                        {this.state.response}
+
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            className={classes.submit}
+                                            onClick={billing ? this.changeBill : this.updatePay}
+                                        >
+                                            {billing ? "Edit" : "Submit"}
+                                        </Button>
+
+
+                                    </form>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                        </div>
+                        <div className={classes.paper} >
+
+                            {this.check() ? <Container>
+                                    <Typography component="h1" variant="h5" className={classes.divide}>
+                                        Client List
+                                    </Typography>
+                                    <Grid container direction="row" alignItems="flex-end" spacing={1} >
+                                        <Grid item>
+                                    <Button onClick={this.addClient} variant="contained" color="primary" component="span" style={{height: '10vh'}}  aria-label="menu">
+                                        Add
+                                    </Button>
+                                        </Grid>
+                                        <Grid item>
+                                    <TextField
+                                        variant="outlined"
+                                        margin="normal"
+                                        id="merchantEmail"
+                                        label="Merchant Email"
+                                        name="merchantEmail"
+                                        onChange={this.handleChange('merchantEmail')}
+                                    />
+                                        </Grid>
+                                    </Grid>
+
+
+                                    <Typography style={{margin: 25, color: '#B3B3B3B3'}}>
+                                        {emailMessage}
+                                    </Typography>
+                                    <TableContainer component={Paper}>
+                                        <Table className={classes.table} size="medium" aria-label="a dense table" >
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Id</TableCell>
+                                                    <TableCell align="right">Company Name</TableCell>
+                                                    <TableCell align="right">Email</TableCell>
+                                                    <TableCell align="right">Address</TableCell>
+                                                    <TableCell align="right">City</TableCell>
+                                                    <TableCell align="right">State</TableCell>
+                                                    <TableCell align="right">Zip</TableCell>
+                                                    {/*<TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {rows.map((row) => (
+                                                    <TableRow key={row.id}>
+                                                        <TableCell component="th" scope="row">
+                                                            {row.id}
+                                                        </TableCell>
+                                                        <TableCell align="right">{row.name}</TableCell>
+                                                        <TableCell align="right">{row.email}</TableCell>
+                                                        <TableCell align="right">{row.address}</TableCell>
+                                                        <TableCell align="right">{row.city}</TableCell>
+                                                        <TableCell align="right">{row.state}</TableCell>
+                                                        <TableCell align="right">{row.zip}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Container> :
+                                <Container>
+                                </Container>}
+
+
+                            <Grid/>
+
+                        </div>
+                    </Container>
+
+                </React.Fragment>
+
+
+            );
+        } else{
             return (
                 <React.Fragment>
                     <CssBaseline />
@@ -535,64 +839,69 @@ class Profile extends React.Component {
                         </div>
                         <div className={classes.paper} >
 
-                                {this.check() ? <Container>
-                                        <Typography component="h1" variant="h5" className={classes.divide}>
-                                            Client List
-                                        </Typography>
+                            {this.check() ? <Container>
+                                    <Typography component="h1" variant="h5" className={classes.divide}>
+                                        Client List
+                                    </Typography>
+                                    <Grid container direction="row" alignItems="flex-end" spacing={1} >
+                                        <Grid item>
+                                            <Button onClick={this.addClient} variant="contained" color="primary" component="span" style={{height: '10vh'}}  aria-label="menu">
+                                                Add
+                                            </Button>
+                                        </Grid>
+                                        <Grid item>
+                                            <TextField
+                                                variant="outlined"
+                                                margin="normal"
+                                                id="merchantEmail"
+                                                label="Merchant Email"
+                                                name="merchantEmail"
+                                                onChange={this.handleChange('merchantEmail')}
+                                            />
+                                        </Grid>
+                                    </Grid>
 
-                                        <Button onClick={this.addClient} variant="contained" color="primary" component="span"  aria-label="menu">
-                                            Add
-                                        </Button>
-                                        <TextField
-                                            variant="outlined"
-                                            margin="normal"
-                                            id="merchantEmail"
-                                            label="Merchant Email"
-                                            name="merchantEmail"
-                                            onChange={this.handleChange('merchantEmail')}
-                                        />
 
-
-                                        <Typography style={{margin: 25, color: '#B3B3B3B3'}}>
-                                            {emailMessage}
-                                        </Typography>
-                                        <TableContainer component={Paper}>
-                                            <Table className={classes.table} size="medium" aria-label="a dense table" >
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell>Id</TableCell>
-                                                        <TableCell align="right">Company Name</TableCell>
-                                                        <TableCell align="right">Email</TableCell>
-                                                        <TableCell align="right">Address</TableCell>
-                                                        <TableCell align="right">City</TableCell>
-                                                        <TableCell align="right">State</TableCell>
-                                                        <TableCell align="right">Zip</TableCell>
-                                                        {/*<TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
+                                    <Typography style={{margin: 25, color: '#B3B3B3B3'}}>
+                                        {emailMessage}
+                                    </Typography>
+                                    <TableContainer component={Paper}>
+                                        <Table className={classes.table} size="medium" aria-label="a dense table" >
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Id</TableCell>
+                                                    <TableCell align="right">Company Name</TableCell>
+                                                    <TableCell align="right">Email</TableCell>
+                                                    <TableCell align="right">Address</TableCell>
+                                                    <TableCell align="right">City</TableCell>
+                                                    <TableCell align="right">State</TableCell>
+                                                    <TableCell align="right">Zip</TableCell>
+                                                    {/*<TableCell align="right">Protein&nbsp;(g)</TableCell>*/}
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {rows.map((row) => (
+                                                    <TableRow key={row.id}>
+                                                        <TableCell component="th" scope="row">
+                                                            {row.id}
+                                                        </TableCell>
+                                                        <TableCell align="right">{row.name}</TableCell>
+                                                        <TableCell align="right">{row.email}</TableCell>
+                                                        <TableCell align="right">{row.address}</TableCell>
+                                                        <TableCell align="right">{row.city}</TableCell>
+                                                        <TableCell align="right">{row.state}</TableCell>
+                                                        <TableCell align="right">{row.zip}</TableCell>
                                                     </TableRow>
-                                                </TableHead>
-                                                <TableBody> 
-                                                    {rows.map((row) => (
-                                                        <TableRow key={row.id}>
-                                                            <TableCell component="th" scope="row">
-                                                                {row.id}
-                                                            </TableCell>
-                                                            <TableCell align="right">{row.name}</TableCell>
-                                                            <TableCell align="right">{row.email}</TableCell>
-                                                            <TableCell align="right">{row.address}</TableCell>
-                                                            <TableCell align="right">{row.city}</TableCell>
-                                                            <TableCell align="right">{row.state}</TableCell>
-                                                            <TableCell align="right">{row.zip}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TableContainer>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
                                 </Container> :
-                                    <Container>
-                                    </Container>}
+                                <Container>
+                                </Container>}
 
 
-                                <Grid/>
+                            <Grid/>
 
                         </div>
                     </Container>
@@ -601,6 +910,8 @@ class Profile extends React.Component {
 
 
             );
+        }
+
 
 
     }

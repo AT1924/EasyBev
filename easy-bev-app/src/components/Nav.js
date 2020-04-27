@@ -12,6 +12,7 @@ import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detec
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Redirect from "react-router-dom/es/Redirect";
+import image1 from "./logoT.gif";
 
 const styles = theme => ({
     '@global': {
@@ -25,6 +26,12 @@ const styles = theme => ({
         borderBottom: `1px solid ${theme.palette.divider}`,
 
     },
+    mobileBanner: {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        padding: 15,
+        backgroundColor: '#FFA500',
+        alignItems: 'center',
+    },
     bottomBar: {
         top: 'auto',
         bottom: 0,
@@ -37,6 +44,10 @@ const styles = theme => ({
     },
     link: {
         margin: theme.spacing(1, 1.5),
+    },
+    img: {
+        width: '30%',
+        resizeMode: 'contain',
     },
 });
 
@@ -98,6 +109,9 @@ class Nav extends React.Component{
             return (
                 <React.Fragment>
                     <CssBaseline />
+                    <AppBar position="static" className={classes.mobileBanner}>
+                        <img className={classes.img} alt="complex" src={image1} />
+                    </AppBar>
                     <AppBar position="fixed" color="default" elevation={0} className={classes.bottomBar}>
                         <Toolbar className={classes.toolbar}>
                             <nav>
@@ -109,7 +123,7 @@ class Nav extends React.Component{
                                 {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
-                                    Promotions
+                                    Add Promotions
                                 </Link>                           }
 
                                 <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
@@ -153,7 +167,7 @@ class Nav extends React.Component{
                                 {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
-                                    Promotions
+                                    Add Promotions
                                 </Link>                           }
                                 <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
                                     Messaging

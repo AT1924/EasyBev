@@ -8,6 +8,7 @@ class BarcodeScanner extends React.Component {
         super(props);
         this.bDestroyed = false;
         this.scanner = null;
+        console.log('props',props);
         this.elRef = React.createRef();
         const passedState = this.props.location.state;
         this.state = {results:"", passedState:passedState};

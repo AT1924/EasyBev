@@ -114,16 +114,14 @@ class Cart_Search extends React.Component{
         };
 
         if (this.props.passedState){
-            console.log("cart search received passed state", this.props.passedState);
             this.setState(this.props.passedState.passedState);
             const oldState = this.state;
             oldState.newRes = this.props.passedState.results;
             this.setState(oldState);
-
         }
         this.getChoice = this.getChoice.bind(this);
-        console.log("starting cart search with state")
-        console.log(this.state)
+        // console.log("starting cart search with state")
+        // console.log(this.state)
 
 
     }
@@ -141,7 +139,7 @@ class Cart_Search extends React.Component{
                 body: JSON.stringify({})
             })
                 .then( (response) => {
-                    console.log(response.json());
+                    // console.log(response.json());
                 });
         } catch(error) {
             console.error(error);
@@ -151,7 +149,7 @@ class Cart_Search extends React.Component{
 
     getChoice = (event, value) => {
         if (value !== null) {
-            console.log(value);
+            // console.log(value);
             this.setState({
                 currItem: value
             }, () => {
@@ -185,21 +183,24 @@ class Cart_Search extends React.Component{
         }
     }
 
-    callback = (result) => {
+    callback = (result, array) => {
+        // console.log(result, 'searching for this upc');
         let convert = parseInt(result);
         let match = -1;
-        console.log(this.props.children[0]);
-        for (let i = 0; i < this.props.children.length; i++) {
-            if (this.props.children[i].upc === convert) {
+        for (let i = 0; i < array.length; i++) {
+            // console.log(array[i].upc, convert);
+            if (array[i].upc === convert) {
                 match = i;
                 break;
             }
         }
         if (match === -1) {
+            // console.log('not in system');
             this.setState({error: "UPC not in system."})
         } else {
-            this.setState({currItem: this.props.children[match]})
+            this.setState({currItem: array[match]})
         }
+        this.setState({newRes: false});
 
     }
 
@@ -209,9 +210,15 @@ class Cart_Search extends React.Component{
 
     render() {
         const info = this.getItems();
-        //console.log(info);
+
+
+        if (this.state.newRes && this.props.children.length > 0) {
+            this.callback(this.state.newRes, this.props.children);
+        }
+
+
         if (this.state.searchOpt === "scan"){
-            console.log("SCAN with state", this.state)
+            // console.log("SCAN with state", this.state)
             return (<Redirect to={{
                 pathname: '/temp',
                 state: this.state
