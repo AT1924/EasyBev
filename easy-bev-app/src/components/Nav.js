@@ -109,7 +109,7 @@ class Nav extends React.Component{
                                 {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
-                                    Promotions
+                                    Add Promotions
                                 </Link>                           }
 
                                 <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
@@ -153,7 +153,7 @@ class Nav extends React.Component{
                                 {this.state.fromType === "merchants" ?                                 <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
                                     Cart
                                 </Link> :                                      <Link variant="button" color="textPrimary" href="/cart" className={classes.link}>
-                                    Promotions
+                                    Add Promotions
                                 </Link>                           }
                                 <Link variant="button" color="textPrimary" href="/message" className={classes.link}>
                                     Messaging
