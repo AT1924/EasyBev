@@ -12,7 +12,7 @@ import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detec
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Redirect from "react-router-dom/es/Redirect";
-import image1 from "./logoT.gif";
+import image1 from "./EasyBev_Logo.jpg";
 
 const styles = theme => ({
     '@global': {
@@ -29,7 +29,7 @@ const styles = theme => ({
     mobileBanner: {
         borderBottom: `1px solid ${theme.palette.divider}`,
         padding: 15,
-        backgroundColor: '#FFA500',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
     },
     bottomBar: {
@@ -46,7 +46,7 @@ const styles = theme => ({
         margin: theme.spacing(1, 1.5),
     },
     img: {
-        width: '30%',
+        width: '50%',
         resizeMode: 'contain',
     },
 });
