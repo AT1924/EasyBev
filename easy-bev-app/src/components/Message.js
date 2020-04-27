@@ -373,7 +373,8 @@ class Message extends React.Component {
                                                     <Input
                                                         id="message"
                                                         variant="outlined"
-                                                        style={{width: '20vw'}}
+                                                        label="Message"
+                                                        style={{width: '60vw'}}
                                                         fullWidth
                                                         onChange={this.handleChange('message')}
                                                         placeholder="Type a message."
