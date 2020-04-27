@@ -290,7 +290,7 @@ class Feed extends React.Component{
 
 
                 <Container maxWidth="md" component="main">
-                    <Grid container spacing={5} alignItems="center">
+                    <Grid container spacing={5} justify="center" alignItems="center">
                         <Typography align="center"  variant="h4" style={{marginTop: '5vh', marginLeft:'2vw'}}>
                             Promotions
                         </Typography>
