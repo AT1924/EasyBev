@@ -168,18 +168,32 @@ class Cart extends React.Component {
     populateCart = (searchData, qty) => {
 
         if (searchData != null) {
-            searchData['oqty'] = qty;
-            this.setState(state => {
-                //let values = Object.values(searchData);
-                //let item = [values[0], values[1]];
-                //state.currItem = Object.values(searchData);
-                state.cartListData.push(searchData);
-                return state
-            });
 
-            this.setState({total: this.state.total + searchData.price * searchData.oqty})
+            if(this.state.cartListData.some(el => el.name === searchData.name)){
 
-            // here use search data to get all the information regarding the item
+                // since we know that this element already exists we just update the quantity
+
+                let index = this.state.cartListData.findIndex(x => x.name === searchData.name);
+
+                let currQuantity = this.state.cartListData[index].oqty
+                this.state.cartListData[index].oqty = currQuantity + qty
+                this.setState({total: this.state.total + searchData.price * qty})
+                this.forceUpdate()
+
+
+            }
+            else {
+                searchData['oqty'] = qty;
+                this.setState(state => {
+                    //let values = Object.values(searchData);
+                    //let item = [values[0], values[1]];
+                    //state.currItem = Object.values(searchData);
+                    state.cartListData.push(searchData);
+                    return state
+                });
+
+                this.setState({total: this.state.total + searchData.price * searchData.oqty})
+            }
 
 
         }
