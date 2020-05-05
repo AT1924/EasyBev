@@ -164,6 +164,8 @@ class Orders extends React.Component{
                             let ord = [];
                             for (let i = 0; i< json.body.length; i++) {
                                 ord.push({id: json.body[i].id, price: json.body[i].price, timestamp: json.body[i].timestamp, items: JSON.parse(json.body[i].order_json)})
+                                console.log("got client", ord[i])
+
                             }
                             this.setState({orders: ord});
                         }
@@ -188,6 +190,7 @@ class Orders extends React.Component{
         console.log(curClient);
         if (curClient !== -1) {
             for (let i = 0; i< this.state.clients[curClient].orders.length; i++) {
+                console.log("got client:", this.state.clients[curClient])
                 ord.push({id: this.state.clients[curClient].orders[i].id, price: this.state.clients[curClient].orders[i].price,
                     timestamp: this.state.clients[curClient].orders[i].timestamp, items: JSON.parse(this.state.clients[curClient].orders[i].order_json)})
             }

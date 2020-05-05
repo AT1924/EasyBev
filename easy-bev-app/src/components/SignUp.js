@@ -342,16 +342,6 @@ class SignUp extends React.Component {
                                 </Grid>
                             </Grid>
                         </form>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            onClick={this.signUp}
-                        >
-                            Quick Sign up - ben@ben.com, ben
-                        </Button>
                     </div>
                     <Box mt={5}>
                         <Copyright/>

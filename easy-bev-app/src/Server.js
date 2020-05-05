@@ -141,7 +141,7 @@ function linkMerchantDistributor(d_info, body) {
     });
     deasync.loopWhile(()=>{return !done});
     if (!error){
-        const out = sendEmail("easybevcompany@gmail.com", "123456qwertY!", merchantEmail, "Easy Bev Code:"+ randomNum,"You were invited by"+d_email + " use the code "+randomNum+" to join");
+        const out = sendEmail("easybevcompany@gmail.com", "123456qwertY!", merchantEmail, "Easy Bev Code:"+ randomNum,"You were invited by "+d_email + " use the code "+randomNum+" to join");
         if (out.error){
             return out
         }
