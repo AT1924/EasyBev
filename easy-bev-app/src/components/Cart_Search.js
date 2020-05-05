@@ -230,6 +230,8 @@ class Cart_Search extends React.Component{
                         <Grid container id="topContainer" direction="column" justify="space-around">
 
                             <Grid container direction= "row" justify="center" alignItems="center">
+                                <div>
+                                <h3>type</h3>
                                 <Radio
                                     checked={this.state.searchOpt === 'type'}
                                     onChange={this.changeSearch}
@@ -238,6 +240,9 @@ class Cart_Search extends React.Component{
                                     label="Type to Search"
                                     labelPlacement="bottom"
                                 />
+                                </div>
+                                <div>
+                                    <h3>scan</h3>
                                 <Radio
                                     checked={this.state.searchOpt === 'scan'}
                                     onChange={this.changeSearch}
@@ -246,6 +251,7 @@ class Cart_Search extends React.Component{
                                     label="Scan to Search"
                                     labelPlacement="bottom"
                                 />
+                                </div>
                             </Grid>
 
                             {this.checkSearch() ? <Autocomplete
@@ -328,23 +334,29 @@ class Cart_Search extends React.Component{
                                 <BarcodeScanner callback={this.callback}></BarcodeScanner>}
                             {this.state.error}
 
+                            <div>
+                                <h3>type</h3>
+                                <Radio
+                                    checked={this.state.searchOpt === 'type'}
+                                    onChange={this.changeSearch}
+                                    value="type"
+                                    inputProps={{'aria-label': 'Type'}}
+                                    label="Type to Search"
+                                    labelPlacement="bottom"
+                                />
+                            </div>
+                            <div>
+                                <h3>scan</h3>
+                                <Radio
+                                    checked={this.state.searchOpt === 'scan'}
+                                    onChange={this.changeSearch}
+                                    value="scan"
+                                    inputProps={{'aria-label': 'Type'}}
+                                    label="Scan to Search"
+                                    labelPlacement="bottom"
+                                />
+                            </div>
 
-                            <Radio
-                                checked={this.state.searchOpt === 'type'}
-                                onChange={this.changeSearch}
-                                value="type"
-                                inputProps={{'aria-label': 'Type'}}
-                                label="Type to Search"
-                                labelPlacement="bottom"
-                            />
-                            <Radio
-                                checked={this.state.searchOpt === 'scan'}
-                                onChange={this.changeSearch}
-                                value="scan"
-                                inputProps={{'aria-label': 'Type'}}
-                                label="Scan to Search"
-                                labelPlacement="bottom"
-                            />
 
                             <Card className={styles.root} variant="outlined">
                                 <CardContent>

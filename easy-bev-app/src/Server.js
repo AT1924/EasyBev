@@ -24,7 +24,7 @@ const port = process.env.PORT || 8080;
 const TYPES = ["distributors", "merchants"];
 expressApp.use(bodyParser.json());
 expressApp.use(bodyParser.urlencoded({extended: true}));
-expressApp.use(session({secret: 'keyboard cat', cookie: {maxAge: 4*900000}}));
+expressApp.use(session({secret: 'keyboard cat', cookie: {maxAge: 2*900000}}));
 const emailToTypeToSocket = {};
 emailToTypeToSocket[TYPES[0]] = {};
 emailToTypeToSocket[TYPES[1]] = {};

@@ -107,11 +107,6 @@ const Ad  = (props) => {
                                         </Typography>
                                     ))}
                             </Grid>
-                            <Grid item>
-                                <Typography variant="body2" style={{ cursor: 'pointer' }}>
-                                    Remove
-                                </Typography>
-                            </Grid>
                         </Grid>
                         <Grid item>
                             <Typography variant="subtitle1">
@@ -243,8 +238,11 @@ class Feed extends React.Component{
                 body: JSON.stringify({})
             }).then( response => response.json())
                 .then(json => {
-
+                        console.log("received", json)
                         // title, description promotion price, expirydate, items
+                        if (json.error){
+                            this.setState({promotions: {}});
+                        }
                         this.setState({promotions: json.body});
                     }
                 );
